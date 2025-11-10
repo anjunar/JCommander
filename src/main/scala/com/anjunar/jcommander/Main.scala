@@ -65,7 +65,11 @@ object Main extends JFXApp3 {
     val rootPane = new BorderPane {
       top = topBar
       center = splitPane
-      bottom = new ActionButtons(toggleTheme, activeTable, otherTable)
+      bottom = new ActionButtons(toggleTheme, {
+        case "F5" => FileUtils.copyFiles(activeTable, otherTable, darkMode)
+        case "F6" => FileUtils.moveFiles(activeTable, otherTable, darkMode)
+        case "F8" => FileUtils.deleteFiles(activeTable, otherTable, darkMode)
+      })
     }
 
     stage = new JFXApp3.PrimaryStage {
@@ -131,6 +135,9 @@ object Main extends JFXApp3 {
           case KeyCode.ENTER =>
             openSelectedDirectory()
             e.consume()
+          case KeyCode.F5 => FileUtils.copyFiles(activeTable, otherTable, darkMode)
+          case KeyCode.F6 => FileUtils.moveFiles(activeTable, otherTable, darkMode)
+          case KeyCode.F8 => FileUtils.deleteFiles(activeTable, otherTable, darkMode)
           case _ =>
         }
       }

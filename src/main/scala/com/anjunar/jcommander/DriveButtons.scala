@@ -12,14 +12,14 @@ import scala.concurrent.Future
 import scala.collection.mutable
 import java.util.concurrent.atomic.AtomicBoolean
 
-class DriveButtons(load: FileStore => Unit, pollIntervalMillis: Long = 3000) {
+class DriveButtons(load: FileStore => Unit, pollIntervalMillis: Long = 3000) extends HBox {
 
   private val running = new AtomicBoolean(true)
   private var lastDrives: Set[String] = currentDriveNames
 
   val selectedLabel = new Label("Kein Laufwerk ausgewählt")
 
-  val buttonBox = new HBox(10)
+  spacing = 10
 
   refreshButtons()
 
@@ -39,7 +39,7 @@ class DriveButtons(load: FileStore => Unit, pollIntervalMillis: Long = 3000) {
 
   private def refreshButtons(): Unit = {
     val stores = FileSystems.getDefault.getFileStores.iterator().asScala.toSeq
-    buttonBox.children.clear()
+    children.clear()
 
     val buttons : Seq[Node] = stores.map { store =>
       val name = Option(store.name()).getOrElse("Unbenannt")
@@ -52,7 +52,7 @@ class DriveButtons(load: FileStore => Unit, pollIntervalMillis: Long = 3000) {
       }
     }
 
-    buttonBox.children = buttons
+    children = buttons
   }
 
   def stop(): Unit = {

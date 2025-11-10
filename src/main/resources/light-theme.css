@@ -6,6 +6,7 @@
     -fx-accent: #357edd;
 }
 
+/* Allgemeine Controls */
 .list-view {
     -fx-background-color: white;
     -fx-border-color: #ccc;
@@ -16,7 +17,88 @@
 }
 
 .button {
-    -fx-background-color: linear-gradient(to bottom, #fff, #e6e6e6);
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #e6e6e6);
     -fx-text-fill: #111;
     -fx-border-color: #ccc;
+    -fx-border-radius: 4;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f0f0f0, #dcdcdc);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #dcdcdc, #c8c8c8);
+}
+
+/* ===== Dialoge ===== */
+
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10;
+}
+
+.dialog-pane > .content.label {
+    -fx-text-fill: #111;
+}
+
+.dialog-pane > .header-panel {
+    -fx-background-color: #f2f2f2;
+    -fx-border-color: #ccc;
+    -fx-border-width: 0 0 1 0;
+}
+
+.dialog-pane > .header-panel .label {
+    -fx-text-fill: #111;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane:header .label {
+    -fx-text-fill: #111;
+}
+
+.dialog-pane > .button-bar {
+    -fx-background-color: #f2f2f2;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Dialog Buttons (OK, Cancel etc.) */
+.dialog-pane .button {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #e6e6e6);
+    -fx-text-fill: #111;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 4;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f0f0f0, #dcdcdc);
+}
+
+.dialog-pane .button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #dcdcdc, #c8c8c8);
+}
+
+/* Textfelder innerhalb von Dialogen */
+.text-field, .text-area {
+    -fx-background-color: white;
+    -fx-text-fill: #111;
+    -fx-border-color: #ccc;
+}
+
+/* Scrollbars im Light Theme */
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: #f7f7f7;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #ccc;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #aaa;
 }

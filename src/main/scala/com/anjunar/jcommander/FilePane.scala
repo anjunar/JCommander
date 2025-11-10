@@ -4,7 +4,6 @@ import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label, TableView, TextField}
 import scalafx.scene.layout.{HBox, Priority, VBox}
 
-import java.io.File
 import java.nio.file.FileStore
 
 class FilePane(table: TableView[FileItem], openAction: (store : FileStore) => Unit) extends VBox {
@@ -16,7 +15,6 @@ class FilePane(table: TableView[FileItem], openAction: (store : FileStore) => Un
       spacing = 5
       children = Seq(
         new DriveButtons(openAction)
-          .buttonBox
       )
     },
     table

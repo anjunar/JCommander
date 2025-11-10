@@ -6,6 +6,7 @@
     -fx-accent: #569cd6;
 }
 
+/* Allgemeine Controls */
 .list-view {
     -fx-background-color: #2a2a2a;
     -fx-border-color: #444;
@@ -19,4 +20,84 @@
     -fx-background-color: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
     -fx-text-fill: #ddd;
     -fx-border-color: #555;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #444, #333);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #222, #111);
+}
+
+/* ===== Dialoge ===== */
+
+.dialog-pane {
+    -fx-background-color: #2a2a2a;
+    -fx-border-color: #555;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10;
+}
+
+.dialog-pane > .content.label {
+    -fx-text-fill: #ddd;
+}
+
+.dialog-pane > .header-panel {
+    -fx-background-color: #252525;
+    -fx-border-color: #444;
+    -fx-border-width: 0 0 1 0;
+}
+
+.dialog-pane > .header-panel .label {
+    -fx-text-fill: #fff;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane:header .label {
+    -fx-text-fill: #fff;
+}
+
+.dialog-pane > .button-bar {
+    -fx-background-color: #252525;
+    -fx-border-color: #444;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Dialog Buttons (OK, Cancel etc.) */
+.dialog-pane .button {
+    -fx-background-color: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+    -fx-text-fill: #ddd;
+    -fx-border-color: #555;
+    -fx-border-radius: 4;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #444, #333);
+}
+
+.dialog-pane .button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #222, #111);
+}
+
+/* Textfelder innerhalb von Dialogen */
+.text-field, .text-area {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #ddd;
+    -fx-border-color: #444;
+}
+
+/* Scrollbars im Dark Theme */
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: #1e1e1e;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #444;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #666;
 }
