@@ -15,7 +15,7 @@ import scala.collection.mutable
 import scala.compiletime.uninitialized
 
 class FileTable extends TableView[FileItem] {
-  
+
   var directory : File = uninitialized
 
   val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm")
@@ -26,14 +26,14 @@ class FileTable extends TableView[FileItem] {
   selectionModel().selectionMode = scalafx.scene.control.SelectionMode.Multiple
 
   val extCol = new TableColumn[FileItem, String] {
-    text = "Erweiterung"
+    text = "Extension"
     cellValueFactory = f => ReadOnlyObjectWrapper(f.value.ext)
     prefWidth = 100
     resizable = false
   }
 
   val sizeCol = new TableColumn[FileItem, String] {
-    text = "Größe"
+    text = "Size"
     cellValueFactory = f => ReadOnlyObjectWrapper(f.value.size)
     prefWidth = 100
     resizable = false
@@ -41,7 +41,7 @@ class FileTable extends TableView[FileItem] {
   }
 
   val dateCol = new TableColumn[FileItem, String] {
-    text = "Geändert"
+    text = "Changed"
     cellValueFactory = f => ReadOnlyObjectWrapper(f.value.date)
     prefWidth = 160
     resizable = false

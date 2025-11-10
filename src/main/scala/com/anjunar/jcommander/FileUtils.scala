@@ -2,33 +2,42 @@ package com.anjunar.jcommander
 
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
-import scalafx.Includes.jfxDialogPane2sfx
+import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control.{ButtonType, CheckBox, Dialog, ProgressBar}
 import scalafx.scene.layout.VBox
 
-import java.nio.file.{Files, Path, StandardCopyOption}
+import java.io.{BufferedInputStream, BufferedOutputStream}
+import java.nio.file.{Files, Path, StandardCopyOption, StandardOpenOption}
 import scala.jdk.CollectionConverters.*
+import scala.util.Using
 
 object FileUtils {
 
   val log = Logger[FileUtils.type]
 
+  lazy val osName = System.getProperty("os.name") match {
+    case n if n.startsWith("Linux") => "linux"
+    case n if n.startsWith("Mac") => "mac"
+    case n if n.startsWith("Windows") => "win"
+    case _ => throw new Exception("Unknown platform!")
+  }
+
   def copyFiles(activeTable: ObjectProperty[FileTable],
                 otherTable: ObjectProperty[FileTable],
                 darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean) => {
+      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean, progressCallback: Double => Unit) => {
 
         val copyOption = copyOptions(replaceExisting, copyAttributes)
 
-        Files.copy(path, target, copyOption*)
+        copyFileWithProgress(path, target, progressCallback)
       },
       "Copy Files",
       "Should the selected Files be copied?",
-      "Coping Files...",
+      "Copying Files...",
       false,
       activeTable,
       otherTable,
@@ -40,7 +49,7 @@ object FileUtils {
                 otherTable: ObjectProperty[FileTable],
                 darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean) => {
+      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean, progressCallback: Double => Unit) => {
         val sameDrive =
           path.getRoot != null &&
             target.getRoot != null &&
@@ -49,9 +58,10 @@ object FileUtils {
         val copyOption = copyOptions(replaceExisting, copyAttributes)
 
         if sameDrive then {
+          Files.createDirectories(target.getParent)
           Files.move(path, target, copyOption*)
         } else
-          Files.copy(path, target, copyOption*)
+          copyFileWithProgress(path, target, progressCallback)
           setWriteable(path)
           Files.delete(path)
       },
@@ -80,7 +90,7 @@ object FileUtils {
                   otherTable: ObjectProperty[FileTable],
                   darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean) => {
+      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean, progressCallback: Double => Unit) => {
         setWriteable(path)
         Files.delete(path)
       },
@@ -118,15 +128,25 @@ object FileUtils {
     }
 
     val copyAttributesExistingBox = new CheckBox("Copying Attributes") {
-      selected = true
+      selected = false
+    }
+
+    val checkForLockedFilesBox = new CheckBox("Check for locked Files") {
+      selected = false
     }
 
     val confirmDialog = new Dialog[ButtonType]() {
       title = confirmTitle
       headerText = confirmTitle
       dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      if (! isDelete) {
-        dialogPane().content = new VBox(10, replaceExistingBox, copyAttributesExistingBox)
+      if (!isDelete) {
+        if (osName == "win") {
+          dialogPane().content = new VBox(10, replaceExistingBox)
+        } else {
+          dialogPane().content = new VBox(10, replaceExistingBox, copyAttributesExistingBox)
+        }
+      } else {
+        dialogPane().content = new VBox(10, checkForLockedFilesBox)
       }
       dialogPane().getStylesheets.add(
         getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
@@ -140,6 +160,7 @@ object FileUtils {
 
         val replaceExisting = replaceExistingBox.selected.value
         val copyAttributes = copyAttributesExistingBox.selected.value
+        val checkForLockedFiles = checkForLockedFilesBox.selected.value
 
         val selectedItems = activeTable.value.selectionModel.value.getSelectedItems
         val allFiles = selectedItems.stream().flatMap { fileItem =>
@@ -150,56 +171,125 @@ object FileUtils {
             java.util.stream.Stream.of(path)
         }.toList.asScala.toSeq
 
-        val progressBar = new ProgressBar {
-          prefWidth = 350
-        }
+        val lockedFiles = allFiles.filter(file => isFileLocked(file))
 
-        val task = new concurrent.Task[Unit]() {
-          override def call(): Unit = {
-            val total = allFiles.size
-            allFiles.zipWithIndex.foreach { case (path, i) =>
-              if (isCancelled) return
-              val target = otherTable.value.directory.toPath.resolve(path.getFileName)
+        if (lockedFiles.isEmpty || !checkForLockedFiles) {
+          val progressBar = new ProgressBar {
+            prefWidth = 350
+          }
 
-              try {
-                strategy.process(path, target, replaceExisting, copyAttributes)
-              } catch {
-                case ex : Exception => log.error(ex.getMessage, ex)
+          val task = new concurrent.Task[Unit]() {
+            override def call(): Unit = {
+              val total = allFiles.size
+              val baseSource = selectedItems.head.file.toPath.getParent
+              val targetRoot = otherTable.value.directory.toPath
+
+              allFiles.zipWithIndex.foreach { case (path, i) =>
+                if (isCancelled) return
+
+                val relative = baseSource.relativize(path)
+                val target = targetRoot.resolve(relative)
+                Files.createDirectories(target.getParent)
+
+                try {
+                  var fileProgress = 0.0
+
+                  strategy.process(path, target, replaceExisting, copyAttributes, progress => {
+                    fileProgress = progress
+                    val globalProgress = (i + fileProgress) / total
+                    updateProgress(globalProgress, 1.0)
+                  })
+
+                  if (fileProgress == 0.0) {
+                    updateProgress((i + 1.0) / total, 1.0)
+                  }
+                } catch {
+                  case ex: Exception => log.error(ex.getMessage, ex)
+                }
+
+                updateProgress(i + 1, total)
               }
-
-              updateProgress(i + 1, total)
             }
           }
+
+          val progressDialog = new Dialog[Unit]() {
+            title = progressText
+            dialogPane().content = new VBox(10, progressBar)
+            dialogPane().buttonTypes = Seq(ButtonType.Cancel)
+            dialogPane().getStylesheets.add(
+              getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
+            )
+          }
+
+          progressDialog.dialogPane().lookupButton(ButtonType.Cancel).addEventFilter(ActionEvent.Action, _ => {
+            task.cancel()
+            progressDialog.close()
+          })
+
+          progressBar.progress <== task.progressProperty()
+
+          task.setOnSucceeded { _ =>
+            progressDialog.close()
+          }
+
+          task.setOnFailed { _ =>
+            progressDialog.close()
+          }
+
+          Platform.runLater {
+            progressDialog.show()
+          }
+          new Thread(task).start()
+        } else {
+          val lockedDialog = new Dialog[ButtonType]() {
+            title = "Locked Files Detected"
+            headerText = "The following files are currently in use and cannot be processed:"
+            dialogPane().buttonTypes = Seq(ButtonType.OK)
+            val contentBox = new VBox(5)
+            lockedFiles.foreach(f => contentBox.getChildren.add(new javafx.scene.control.Label(f.toString)))
+            dialogPane().content = contentBox
+            dialogPane().getStylesheets.add(
+              getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
+            )
+          }
+
+          lockedDialog.showAndWait()
         }
+      }
+    }
+  }
 
-        val progressDialog = new Dialog[Unit]() {
-          title = progressText
-          dialogPane().content = new VBox(10, progressBar)
-          dialogPane().buttonTypes = Seq(ButtonType.Cancel)
-          dialogPane().getStylesheets.add(
-            getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
-          )
-        }
+  def isFileLocked(path: Path): Boolean = {
+    try {
+      val channel = java.nio.channels.FileChannel.open(path)
+      channel.close()
+      false
+    } catch {
+      case _: java.nio.file.AccessDeniedException => true
+      case _: java.io.IOException => true
+    }
+  }
 
-        progressDialog.dialogPane().lookupButton(ButtonType.Cancel).addEventFilter(ActionEvent.Action, _ => {
-          task.cancel()
-          progressDialog.close()
-        })
+  def copyFileWithProgress(source: Path,
+                           target: Path,
+                           progressCallback: Double => Unit
+                          ): Unit = {
+    Files.createDirectories(target.getParent)
 
-        progressBar.progress <== task.progressProperty()
+    val totalBytes = Files.size(source)
+    var copiedBytes: Long = 0
+    val buffer = new Array[Byte](1024 * 1024)
 
-        task.setOnSucceeded { _ =>
-          progressDialog.close()
-        }
-
-        task.setOnFailed { e =>
-          progressDialog.close()
-        }
-
-        Platform.runLater {
-          progressDialog.show()
-        }
-        new Thread(task).start()
+    Using.resources(
+      new BufferedInputStream(Files.newInputStream(source)),
+      new BufferedOutputStream(Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+    ) { (in, out) =>
+      var bytesRead = in.read(buffer)
+      while (bytesRead != -1) {
+        out.write(buffer, 0, bytesRead)
+        copiedBytes += bytesRead
+        progressCallback(copiedBytes.toDouble / totalBytes)
+        bytesRead = in.read(buffer)
       }
     }
   }
