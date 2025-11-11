@@ -30,12 +30,16 @@ public class WinNativeCopy {
         public final String source;
         public final String target;
         public final double percent;
+        public final long iWorkSofar;
+        public final long iWorkTotal;
 
-        public ProgressEvent(Type type, String source, String target, double percent) {
+        public ProgressEvent(Type type, String source, String target, double percent, long iWorkSofar, long iWorkTotal) {
             this.type = type;
             this.source = source;
             this.target = target;
             this.percent = percent;
+            this.iWorkSofar = iWorkSofar;
+            this.iWorkTotal = iWorkTotal;
         }
 
         @Override
