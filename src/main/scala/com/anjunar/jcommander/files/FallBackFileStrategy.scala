@@ -1,11 +1,9 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.files
 
 import java.nio.file.Path
 
-trait FileStrategy {
+trait FallBackFileStrategy {
   
   def process(path : Path, target : Path, replaceExisting : Boolean, copyAttributes : Boolean, progressCallback: Double => Unit) : Unit
-  
-  def winProcess(path : Seq[Path], target : Path, progressCallback: WinNativeCopy.ProgressCallback) : Unit
   
 }

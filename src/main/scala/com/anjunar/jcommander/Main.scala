@@ -1,5 +1,6 @@
 package com.anjunar.jcommander
 
+import com.anjunar.jcommander.files.{FallBackFileUtils, FileUtils, WinFileUtils}
 import scalafx.application.JFXApp3
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.Insets
@@ -17,6 +18,8 @@ object Main extends JFXApp3 {
   override def start(): Unit = {
 
     val darkMode = BooleanProperty(true)
+    
+    val fileUtils : FileUtils = new WinFileUtils()
 
     def makeFileTable(): FileTable = FileTable()
 
@@ -66,11 +69,11 @@ object Main extends JFXApp3 {
       top = topBar
       center = splitPane
       bottom = new ActionButtons(toggleTheme, {
-        case "F2" => FileUtils.renameFile(activeTable, darkMode)
-        case "F5" => FileUtils.copyFiles(activeTable, otherTable, darkMode)
-        case "F6" => FileUtils.moveFiles(activeTable, otherTable, darkMode)
-        case "F7" => FileUtils.mkDir(activeTable, darkMode)
-        case "F8" => FileUtils.deleteFiles(activeTable, otherTable, darkMode)
+        case "F2" => fileUtils.renameFile(activeTable, darkMode)
+        case "F5" => fileUtils.copyFiles(activeTable, otherTable, darkMode)
+        case "F6" => fileUtils.moveFiles(activeTable, otherTable, darkMode)
+        case "F7" => fileUtils.mkDir(activeTable, darkMode)
+        case "F8" => fileUtils.deleteFiles(activeTable, otherTable, darkMode)
       })
     }
 
@@ -137,11 +140,11 @@ object Main extends JFXApp3 {
           case KeyCode.ENTER =>
             openSelectedDirectory()
             e.consume()
-          case KeyCode.F2 => FileUtils.renameFile(activeTable, darkMode)
-          case KeyCode.F5 => FileUtils.copyFiles(activeTable, otherTable, darkMode)
-          case KeyCode.F6 => FileUtils.moveFiles(activeTable, otherTable, darkMode)
-          case KeyCode.F7 => FileUtils.mkDir(activeTable, darkMode)
-          case KeyCode.F8 => FileUtils.deleteFiles(activeTable, otherTable, darkMode)
+          case KeyCode.F2 => fileUtils.renameFile(activeTable, darkMode)
+          case KeyCode.F5 => fileUtils.copyFiles(activeTable, otherTable, darkMode)
+          case KeyCode.F6 => fileUtils.moveFiles(activeTable, otherTable, darkMode)
+          case KeyCode.F7 => fileUtils.mkDir(activeTable, darkMode)
+          case KeyCode.F8 => fileUtils.deleteFiles(activeTable, otherTable, darkMode)
           case _ =>
         }
       }
