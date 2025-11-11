@@ -1,5 +1,6 @@
 package com.anjunar.jcommander
 
+import com.anjunar.jcommander.NativeCopy.CopyProgress
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
@@ -19,13 +20,40 @@ object FileUtils {
 
   val log = Logger[FileUtils.type]
 
-  var fastCopy = true
+  var fastCopy = false
 
   lazy val osName = System.getProperty("os.name") match {
     case n if n.startsWith("Linux") => "linux"
     case n if n.startsWith("Mac") => "mac"
     case n if n.startsWith("Windows") => "win"
     case _ => throw new Exception("Unknown platform!")
+  }
+
+  def renameFile(activeTable : ObjectProperty[FileTable], darkMode : BooleanProperty): Unit = {
+    val textField: TextField = new TextField {
+      text = activeTable.value.selectionModel.value.getSelectedItem.name
+    }
+
+    val renameDialog = new Dialog[ButtonType]() {
+      title = "Rename File"
+      headerText = "Rename File"
+      dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+      dialogPane().content = new VBox(10, textField)
+      dialogPane().getStylesheets.add(
+        getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
+      )
+    }
+
+    renameDialog.resultConverter = btn => btn
+
+    renameDialog.showAndWait().foreach { result =>
+      if (result == ButtonType.OK) {
+        val newFileName = textField.text.value
+        val oldPath = activeTable.value.selectionModel.value.getSelectedItems.head.file.toPath
+        val newPath = oldPath.getParent.resolve(newFileName)
+        Files.move(oldPath, newPath)
+      }
+    }
   }
 
   def copyFiles(activeTable: ObjectProperty[FileTable],
@@ -307,10 +335,15 @@ object FileUtils {
 
     if (Files.isRegularFile(source)) {
 
+      val totalBytes = Files.size(source)
+
       if (fastCopy) {
-        Files.copy(source, target, copyOptions(replaceExisting, copyAttributes): _*)
+        NativeCopy.copyFile(source.toAbsolutePath.toString, target.toAbsolutePath.toString, 0,
+          (_, transferredBytes: Long) => {
+            progressCallback(transferredBytes.toDouble / totalBytes)
+            true
+        })
       } else {
-        val totalBytes = Files.size(source)
         var copiedBytes: Long = 0
         val buffer = new Array[Byte](1024 * 1024)
 

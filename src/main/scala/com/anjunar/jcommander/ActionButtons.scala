@@ -31,7 +31,7 @@ class ActionButtons(toggleTheme : Button, function : String => Unit) extends HBo
       }
     },
     new Button() {
-      text = "F2 User Menu"
+      text = "F2 Rename"
       onMouseClicked = _ => {
         function("F2")
       }

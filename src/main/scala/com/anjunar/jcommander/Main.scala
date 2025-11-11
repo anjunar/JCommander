@@ -66,6 +66,7 @@ object Main extends JFXApp3 {
       top = topBar
       center = splitPane
       bottom = new ActionButtons(toggleTheme, {
+        case "F2" => FileUtils.renameFile(activeTable, darkMode)
         case "F5" => FileUtils.copyFiles(activeTable, otherTable, darkMode)
         case "F6" => FileUtils.moveFiles(activeTable, otherTable, darkMode)
         case "F8" => FileUtils.deleteFiles(activeTable, otherTable, darkMode)
@@ -135,6 +136,7 @@ object Main extends JFXApp3 {
           case KeyCode.ENTER =>
             openSelectedDirectory()
             e.consume()
+          case KeyCode.F2 => FileUtils.renameFile(activeTable, darkMode)
           case KeyCode.F5 => FileUtils.copyFiles(activeTable, otherTable, darkMode)
           case KeyCode.F6 => FileUtils.moveFiles(activeTable, otherTable, darkMode)
           case KeyCode.F8 => FileUtils.deleteFiles(activeTable, otherTable, darkMode)
