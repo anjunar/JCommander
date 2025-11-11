@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.{FileTable, WinNativeCopy}
+import com.anjunar.jcommander.{FileTable, Main, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
@@ -134,7 +134,7 @@ class FallBackFileUtils extends AbstractFileUtils {
       headerText = confirmTitle
       dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
       if (!isDelete) {
-        if (osName == "win") {
+        if (Main.osName == "win") {
           dialogPane().content = new VBox(10, replaceExistingBox)
         } else {
           dialogPane().content = new VBox(10, replaceExistingBox, copyAttributesExistingBox)

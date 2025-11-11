@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.{FileTable, WinNativeCopy}
+import com.anjunar.jcommander.{FileTable, Main, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
 import scalafx.Includes.jfxDialogPane2sfx
@@ -86,7 +86,7 @@ class WinFileUtils extends AbstractFileUtils {
       dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
       dialogPane().content = new VBox(10) {
         if (!isDelete) {
-          if (osName == "win") {
+          if (Main.osName == "win") {
             children += replaceExistingBox
           } else {
             children ++= Seq(replaceExistingBox, copyAttributesBox)

@@ -15,11 +15,22 @@ import scalafx.Includes.{jfxMouseEvent2sfx, jfxScene2sfx}
 
 object Main extends JFXApp3 {
 
+  lazy val osName = System.getProperty("os.name") match {
+    case n if n.startsWith("Linux") => "linux"
+    case n if n.startsWith("Mac") => "mac"
+    case n if n.startsWith("Windows") => "win"
+    case _ => throw new Exception("Unknown platform!")
+  }
+
   override def start(): Unit = {
 
     val darkMode = BooleanProperty(true)
     
-    val fileUtils : FileUtils = new WinFileUtils()
+    val fileUtils : FileUtils = osName match {
+      case "linux" => new FallBackFileUtils()
+      case "mac" => new FallBackFileUtils()
+      case "win" => new WinFileUtils() 
+    }
 
     def makeFileTable(): FileTable = FileTable()
 

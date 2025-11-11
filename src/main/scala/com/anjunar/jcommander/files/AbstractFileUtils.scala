@@ -1,29 +1,14 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.{FileTable, WinNativeCopy}
-import com.typesafe.scalalogging.Logger
-import javafx.concurrent
+import com.anjunar.jcommander.FileTable
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
-import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
-import scalafx.event.ActionEvent
 import scalafx.scene.control.*
 import scalafx.scene.layout.VBox
 
-import java.io.{BufferedInputStream, BufferedOutputStream}
-import java.nio.file.{Files, Path, StandardCopyOption, StandardOpenOption}
-import scala.collection.mutable.ListBuffer
-import scala.jdk.CollectionConverters.*
-import scala.util.Using
+import java.nio.file.Files
 
 abstract class AbstractFileUtils extends FileUtils {
-
-  lazy val osName = System.getProperty("os.name") match {
-    case n if n.startsWith("Linux") => "linux"
-    case n if n.startsWith("Mac") => "mac"
-    case n if n.startsWith("Windows") => "win"
-    case _ => throw new Exception("Unknown platform!")
-  }
 
   def mkDir(activeTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit = {
     val textField: TextField = new TextField {
