@@ -14,6 +14,7 @@ public class WinNativeCopy {
         void onProgress(ProgressEvent event);
         void onError(ErrorEvent event);
         void onComplete();
+        boolean isCancelled();
     }
 
     public static class ProgressEvent {
