@@ -112,6 +112,7 @@ class WinFileUtils extends AbstractFileUtils {
 
         val progressBar = new ProgressBar { prefWidth = 350 }
         val progressLabel = new Label("0% copied")
+        val fileLabel = new Label("")
 
         val task = new concurrent.Task[Unit]() {
           override def call(): Unit = {
@@ -128,8 +129,18 @@ class WinFileUtils extends AbstractFileUtils {
                     val eta = if (event.percent > 0) (elapsed / event.percent) - elapsed else 0
                     val etaSec = (eta / 1000).toInt
 
+                    val etaText =
+                      if (etaSec > 0) f"$etaSec sec remaining"
+                      else "Calculating..."
+
                     Platform.runLater {
-                      progressLabel.text = f"${(event.percent * 100).toInt}%d%% copied (${if (etaSec > 0) s"$etaSec sec remaining" else "Calculating..."})"
+                      progressLabel.text =
+                        f"${(event.percent * 100).toInt}%% copied  –  ($etaText)"
+                    }
+
+                  case WinNativeCopy.ProgressEvent.Type.PRE_COPY =>
+                    Platform.runLater {
+                      fileLabel.text = event.source
                     }
 
                   case WinNativeCopy.ProgressEvent.Type.FINISH =>
@@ -159,7 +170,7 @@ class WinFileUtils extends AbstractFileUtils {
 
         val progressDialog = new Dialog[Unit]() {
           title = progressText
-          dialogPane().content = new VBox(10, progressBar, progressLabel)
+          dialogPane().content = new VBox(10, progressBar, progressLabel, fileLabel)
           dialogPane().buttonTypes = Seq(ButtonType.Cancel)
           dialogPane().getStylesheets.add(
             getClass.getResource(s"/${if (darkMode.value) "dark" else "light"}-theme.css").toExternalForm
