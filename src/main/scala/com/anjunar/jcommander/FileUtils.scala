@@ -6,7 +6,7 @@ import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.event.ActionEvent
-import scalafx.scene.control.{ButtonType, CheckBox, Dialog, ProgressBar}
+import scalafx.scene.control.*
 import scalafx.scene.layout.VBox
 
 import java.io.{BufferedInputStream, BufferedOutputStream}
@@ -19,6 +19,8 @@ object FileUtils {
 
   val log = Logger[FileUtils.type]
 
+  var fastCopy = true
+
   lazy val osName = System.getProperty("os.name") match {
     case n if n.startsWith("Linux") => "linux"
     case n if n.startsWith("Mac") => "mac"
@@ -30,11 +32,11 @@ object FileUtils {
                 otherTable: ObjectProperty[FileTable],
                 darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean, progressCallback: Double => Unit) => {
+      (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
 
         val copyOption = copyOptions(replaceExisting, copyAttributes)
 
-        copyFileWithProgress(path, target, progressCallback)
+        copyFileWithProgress(path, target, replaceExisting, copyAttributes, progressCallback)
       },
       "Copy Files",
       "Should the selected Files be copied?",
@@ -50,7 +52,7 @@ object FileUtils {
                 otherTable: ObjectProperty[FileTable],
                 darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean, progressCallback: Double => Unit) => {
+      (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         val sameDrive =
           path.getRoot != null &&
             target.getRoot != null &&
@@ -60,9 +62,9 @@ object FileUtils {
 
         if sameDrive then {
           Files.createDirectories(target.getParent)
-          Files.move(path, target, copyOption*)
+          Files.move(path, target, copyOption *)
         } else
-          copyFileWithProgress(path, target, progressCallback)
+          copyFileWithProgress(path, target, replaceExisting, copyAttributes, progressCallback)
           setWriteable(path)
           Files.delete(path)
       },
@@ -91,7 +93,7 @@ object FileUtils {
                   otherTable: ObjectProperty[FileTable],
                   darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting : Boolean, copyAttributes : Boolean, progressCallback: Double => Unit) => {
+      (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         setWriteable(path)
         Files.delete(path)
       },
@@ -116,10 +118,10 @@ object FileUtils {
   }
 
   def processFiles(strategy: FileStrategy,
-                   confirmTitle : String,
-                   confirmHeader : String,
-                   progressText : String,
-                   isDelete : Boolean,
+                   confirmTitle: String,
+                   confirmHeader: String,
+                   progressText: String,
+                   isDelete: Boolean,
                    activeTable: ObjectProperty[FileTable],
                    otherTable: ObjectProperty[FileTable],
                    darkMode: BooleanProperty): Unit = {
@@ -178,15 +180,22 @@ object FileUtils {
         }.toList.asScala.toSeq
 
         if (lockedFiles.isEmpty || !checkForLockedFiles) {
+
           val progressBar = new ProgressBar {
             prefWidth = 350
           }
+
+          val progressLabel = new Label("0 MB copied (0 MB/s)")
 
           val task = new concurrent.Task[Unit]() {
             override def call(): Unit = {
               val total = allFiles.size
               val baseSource = selectedItems.head.file.toPath.getParent
               val targetRoot = otherTable.value.directory.toPath
+
+              var totalBytesCopied: Long = 0
+              val startTime = System.nanoTime()
+              val totalBytes: Long = allFiles.map(path => if (Files.isRegularFile(path)) Files.size(path) else 0L).sum
 
               allFiles.zipWithIndex.foreach { case (path, i) =>
                 if (isCancelled) return
@@ -204,9 +213,22 @@ object FileUtils {
                     updateProgress(globalProgress, 1.0)
                   })
 
-                  if (fileProgress == 0.0) {
-                    updateProgress((i + 1.0) / total, 1.0)
+                  val fileSize = if (Files.isRegularFile(path)) Files.size(path) else 0L
+                  totalBytesCopied += fileSize
+
+                  val elapsedSeconds = (System.nanoTime() - startTime) / 1e9
+                  val mbCopied = totalBytesCopied / (1024.0 * 1024.0)
+                  val mbTotal = totalBytes / (1024.0 * 1024.0)
+                  val mbPerSec = if (elapsedSeconds > 0) mbCopied / elapsedSeconds else 0.0
+
+                  val remainingBytes = totalBytes - totalBytesCopied
+                  val etaSeconds = if (mbPerSec > 0) remainingBytes / (mbPerSec * 1024 * 1024) else 0.0
+                  val etaText = f"${(etaSeconds / 60).toInt}%02d:${(etaSeconds % 60).toInt}%02d"
+
+                  Platform.runLater {
+                    progressLabel.setText(f"$mbCopied%.2f / $mbTotal%.2f MB (${mbPerSec}%.2f MB/s), ETA: $etaText")
                   }
+
                 } catch {
                   case ex: Exception => log.error(ex.getMessage, ex)
                 }
@@ -218,7 +240,7 @@ object FileUtils {
 
           val progressDialog = new Dialog[Unit]() {
             title = progressText
-            dialogPane().content = new VBox(10, progressBar)
+            dialogPane().content = new VBox(10, progressBar, progressLabel)
             dialogPane().buttonTypes = Seq(ButtonType.Cancel)
             dialogPane().getStylesheets.add(
               getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
@@ -244,6 +266,7 @@ object FileUtils {
             progressDialog.show()
           }
           new Thread(task).start()
+
         } else {
           val lockedDialog = new Dialog[ButtonType]() {
             title = "Locked Files Detected"
@@ -276,28 +299,34 @@ object FileUtils {
 
   def copyFileWithProgress(source: Path,
                            target: Path,
-                           progressCallback: Double => Unit
-                          ): Unit =
+                           replaceExisting: Boolean,
+                           copyAttributes: Boolean,
+                           progressCallback: Double => Unit): Unit = {
+
+    Files.createDirectories(target.getParent)
 
     if (Files.isRegularFile(source)) {
-      Files.createDirectories(target.getParent)
 
-      val totalBytes = Files.size(source)
-      var copiedBytes: Long = 0
-      val buffer = new Array[Byte](1024 * 1024)
+      if (fastCopy) {
+        Files.copy(source, target, copyOptions(replaceExisting, copyAttributes): _*)
+      } else {
+        val totalBytes = Files.size(source)
+        var copiedBytes: Long = 0
+        val buffer = new Array[Byte](1024 * 1024)
 
-      Using.resources(
-        new BufferedInputStream(Files.newInputStream(source)),
-        new BufferedOutputStream(Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
-      ) { (in, out) =>
-        var bytesRead = in.read(buffer)
-        while (bytesRead != -1) {
-          out.write(buffer, 0, bytesRead)
-          copiedBytes += bytesRead
-          progressCallback(copiedBytes.toDouble / totalBytes)
-          bytesRead = in.read(buffer)
+        Using.resources(
+          new BufferedInputStream(Files.newInputStream(source)),
+          new BufferedOutputStream(Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+        ) { (in, out) =>
+          var bytesRead = in.read(buffer)
+          while (bytesRead != -1) {
+            out.write(buffer, 0, bytesRead)
+            copiedBytes += bytesRead
+            progressCallback(copiedBytes.toDouble / totalBytes)
+            bytesRead = in.read(buffer)
+          }
         }
       }
     }
-
+  }
 }
