@@ -11,6 +11,7 @@ import scalafx.scene.layout.VBox
 
 import java.io.{BufferedInputStream, BufferedOutputStream}
 import java.nio.file.{Files, Path, StandardCopyOption, StandardOpenOption}
+import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
@@ -162,16 +163,19 @@ object FileUtils {
         val copyAttributes = copyAttributesExistingBox.selected.value
         val checkForLockedFiles = checkForLockedFilesBox.selected.value
 
+        val lockedFiles = new ListBuffer[Path]
         val selectedItems = activeTable.value.selectionModel.value.getSelectedItems
         val allFiles = selectedItems.stream().flatMap { fileItem =>
           val path = fileItem.file.toPath
           if (Files.isDirectory(path))
-            Files.walk(path).sorted(java.util.Comparator.reverseOrder())
+            Files.walk(path).peek(path => {
+              if (checkForLockedFiles && isFileLocked(path)) {
+                lockedFiles.addOne(path)
+              }
+            }).sorted(java.util.Comparator.reverseOrder())
           else
             java.util.stream.Stream.of(path)
         }.toList.asScala.toSeq
-
-        val lockedFiles = allFiles.filter(file => isFileLocked(file))
 
         if (lockedFiles.isEmpty || !checkForLockedFiles) {
           val progressBar = new ProgressBar {
@@ -273,25 +277,27 @@ object FileUtils {
   def copyFileWithProgress(source: Path,
                            target: Path,
                            progressCallback: Double => Unit
-                          ): Unit = {
-    Files.createDirectories(target.getParent)
+                          ): Unit =
 
-    val totalBytes = Files.size(source)
-    var copiedBytes: Long = 0
-    val buffer = new Array[Byte](1024 * 1024)
+    if (Files.isRegularFile(source)) {
+      Files.createDirectories(target.getParent)
 
-    Using.resources(
-      new BufferedInputStream(Files.newInputStream(source)),
-      new BufferedOutputStream(Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
-    ) { (in, out) =>
-      var bytesRead = in.read(buffer)
-      while (bytesRead != -1) {
-        out.write(buffer, 0, bytesRead)
-        copiedBytes += bytesRead
-        progressCallback(copiedBytes.toDouble / totalBytes)
-        bytesRead = in.read(buffer)
+      val totalBytes = Files.size(source)
+      var copiedBytes: Long = 0
+      val buffer = new Array[Byte](1024 * 1024)
+
+      Using.resources(
+        new BufferedInputStream(Files.newInputStream(source)),
+        new BufferedOutputStream(Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+      ) { (in, out) =>
+        var bytesRead = in.read(buffer)
+        while (bytesRead != -1) {
+          out.write(buffer, 0, bytesRead)
+          copiedBytes += bytesRead
+          progressCallback(copiedBytes.toDouble / totalBytes)
+          bytesRead = in.read(buffer)
+        }
       }
     }
-  }
 
 }
