@@ -84,12 +84,17 @@ object FileUtils {
                 otherTable: ObjectProperty[FileTable],
                 darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
+      new FileStrategy {
+        override def process(path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit): Unit = {
+          val copyOption = copyOptions(replaceExisting, copyAttributes)
 
-        val copyOption = copyOptions(replaceExisting, copyAttributes)
-
-        copyFileWithProgress(path, target, replaceExisting, copyAttributes, progressCallback)
-      },
+          copyFileWithProgress(path, target, replaceExisting, copyAttributes, progressCallback)
+        }
+        override def winProcess(paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback): Unit = {
+          WinNativeCopy.copyFiles(paths.map(path => path.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback)
+        }
+      }
+      ,
       "Copy Files",
       "Should the selected Files be copied?",
       "Copying Files...",
@@ -104,21 +109,27 @@ object FileUtils {
                 otherTable: ObjectProperty[FileTable],
                 darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
-        val sameDrive =
-          path.getRoot != null &&
-            target.getRoot != null &&
-            path.getRoot.equals(target.getRoot)
+      new FileStrategy {
+        override def process(path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit): Unit = {
+          val sameDrive =
+            path.getRoot != null &&
+              target.getRoot != null &&
+              path.getRoot.equals(target.getRoot)
 
-        val copyOption = copyOptions(replaceExisting, copyAttributes)
+          val copyOption = copyOptions(replaceExisting, copyAttributes)
 
-        if sameDrive then {
-          Files.createDirectories(target.getParent)
-          Files.move(path, target, copyOption *)
-        } else
-          copyFileWithProgress(path, target, replaceExisting, copyAttributes, progressCallback)
-          setWriteable(path)
-          Files.delete(path)
+          if sameDrive then {
+            Files.createDirectories(target.getParent)
+            Files.move(path, target, copyOption *)
+          } else
+            copyFileWithProgress(path, target, replaceExisting, copyAttributes, progressCallback)
+            setWriteable(path)
+            Files.delete(path)
+        }
+
+        override def winProcess(paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback): Unit = {
+          WinNativeCopy.moveFiles(paths.map(path => path.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback)
+        }
       },
       "Move Files",
       "Should the selected Files be moved?",
@@ -145,9 +156,15 @@ object FileUtils {
                   otherTable: ObjectProperty[FileTable],
                   darkMode: BooleanProperty): Unit = {
     processFiles(
-      (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
-        setWriteable(path)
-        Files.delete(path)
+      new FileStrategy {
+        override def process(path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit): Unit = {
+          setWriteable(path)
+          Files.delete(path)
+        }
+
+        override def winProcess(paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback): Unit = {
+          WinNativeCopy.deleteFiles(paths.map(path => path.toAbsolutePath.toString).toArray, progressCallback)
+        }
       },
       "Delete Files",
       "Should the selected Files be deleted?",
@@ -222,25 +239,26 @@ object FileUtils {
 
         if (nativeCopy) {
 
-          val selectedFiles = selectedItems.stream()
-            .map(item => item.file.getAbsolutePath)
-            .toArray(size => new Array[String](size))
+          val selectedFiles = selectedItems.asScala.map(_.file.toPath).toSeq
 
-          val targetRoot = otherTable.value.directory
+          val targetRoot = otherTable.value.directory.toPath
+          
+          strategy.winProcess(selectedFiles, targetRoot, new WinNativeCopy.ProgressCallback {
 
-          WinNativeCopy.copyFiles(selectedFiles, targetRoot.getAbsolutePath, new WinNativeCopy.ProgressCallback {
-            override def onProgress(currentFile: String, percent: Double): Unit = {
-              log.info(s"Copying $currentFile, $percent%")
+            override def onProgress(event: WinNativeCopy.ProgressEvent): Unit = {
+              log.info(event.toString)
+            }
+
+            override def onError(event: WinNativeCopy.ErrorEvent): Unit = {
+              log.error(event.toString)
             }
 
             override def onComplete(): Unit = {
               log.info("Copy Complete")
             }
 
-            override def onError(file: String, errorCode: Int): Unit = {
-              log.error(s"Error copying $file, $errorCode")
-            }
           })
+
 
         } else {
           val allFiles = selectedItems.stream().flatMap { fileItem =>
