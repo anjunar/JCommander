@@ -69,6 +69,7 @@ object Main extends JFXApp3 {
         case "F2" => FileUtils.renameFile(activeTable, darkMode)
         case "F5" => FileUtils.copyFiles(activeTable, otherTable, darkMode)
         case "F6" => FileUtils.moveFiles(activeTable, otherTable, darkMode)
+        case "F7" => FileUtils.mkDir(activeTable, darkMode)
         case "F8" => FileUtils.deleteFiles(activeTable, otherTable, darkMode)
       })
     }
@@ -139,6 +140,7 @@ object Main extends JFXApp3 {
           case KeyCode.F2 => FileUtils.renameFile(activeTable, darkMode)
           case KeyCode.F5 => FileUtils.copyFiles(activeTable, otherTable, darkMode)
           case KeyCode.F6 => FileUtils.moveFiles(activeTable, otherTable, darkMode)
+          case KeyCode.F7 => FileUtils.mkDir(activeTable, darkMode)
           case KeyCode.F8 => FileUtils.deleteFiles(activeTable, otherTable, darkMode)
           case _ =>
         }

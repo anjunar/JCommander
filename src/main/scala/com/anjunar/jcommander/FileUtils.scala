@@ -1,6 +1,5 @@
 package com.anjunar.jcommander
 
-import com.anjunar.jcommander.NativeCopy.CopyProgress
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
@@ -20,13 +19,38 @@ object FileUtils {
 
   val log = Logger[FileUtils.type]
 
-  var fastCopy = false
+  var nativeCopy = true
 
   lazy val osName = System.getProperty("os.name") match {
     case n if n.startsWith("Linux") => "linux"
     case n if n.startsWith("Mac") => "mac"
     case n if n.startsWith("Windows") => "win"
     case _ => throw new Exception("Unknown platform!")
+  }
+
+  def mkDir(activeTable : ObjectProperty[FileTable], darkMode : BooleanProperty) : Unit = {
+    val textField: TextField = new TextField {
+      promptText = "Directory Name"
+    }
+
+    val mkDirDialog = new Dialog[ButtonType]() {
+      title = "Create Directory"
+      headerText = "Create Directory"
+      dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+      dialogPane().content = new VBox(10, textField)
+      dialogPane().getStylesheets.add(
+        getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
+      )
+    }
+
+    mkDirDialog.resultConverter = btn => btn
+
+    mkDirDialog.showAndWait().foreach { result =>
+      if (result == ButtonType.OK) {
+        val newFileName = textField.text.value
+        Files.createDirectory(activeTable.value.directory.toPath.resolve(newFileName))
+      }
+    }
   }
 
   def renameFile(activeTable : ObjectProperty[FileTable], darkMode : BooleanProperty): Unit = {
@@ -195,120 +219,145 @@ object FileUtils {
 
         val lockedFiles = new ListBuffer[Path]
         val selectedItems = activeTable.value.selectionModel.value.getSelectedItems
-        val allFiles = selectedItems.stream().flatMap { fileItem =>
-          val path = fileItem.file.toPath
-          if (Files.isDirectory(path))
-            Files.walk(path).peek(path => {
-              if (checkForLockedFiles && isFileLocked(path)) {
-                lockedFiles.addOne(path)
-              }
-            }).sorted(java.util.Comparator.reverseOrder())
-          else
-            java.util.stream.Stream.of(path)
-        }.toList.asScala.toSeq
 
-        if (lockedFiles.isEmpty || !checkForLockedFiles) {
+        if (nativeCopy) {
 
-          val progressBar = new ProgressBar {
-            prefWidth = 350
-          }
+          val selectedFiles = selectedItems.stream()
+            .map(item => item.file.getAbsolutePath)
+            .toArray(size => new Array[String](size))
 
-          val progressLabel = new Label("0 MB copied (0 MB/s)")
+          val targetRoot = otherTable.value.directory
 
-          val task = new concurrent.Task[Unit]() {
-            override def call(): Unit = {
-              val total = allFiles.size
-              val baseSource = selectedItems.head.file.toPath.getParent
-              val targetRoot = otherTable.value.directory.toPath
-
-              var totalBytesCopied: Long = 0
-              val startTime = System.nanoTime()
-              val totalBytes: Long = allFiles.map(path => if (Files.isRegularFile(path)) Files.size(path) else 0L).sum
-
-              allFiles.zipWithIndex.foreach { case (path, i) =>
-                if (isCancelled) return
-
-                val relative = baseSource.relativize(path)
-                val target = targetRoot.resolve(relative)
-                Files.createDirectories(target.getParent)
-
-                try {
-                  var fileProgress = 0.0
-
-                  strategy.process(path, target, replaceExisting, copyAttributes, progress => {
-                    fileProgress = progress
-                    val globalProgress = (i + fileProgress) / total
-                    updateProgress(globalProgress, 1.0)
-                  })
-
-                  val fileSize = if (Files.isRegularFile(path)) Files.size(path) else 0L
-                  totalBytesCopied += fileSize
-
-                  val elapsedSeconds = (System.nanoTime() - startTime) / 1e9
-                  val mbCopied = totalBytesCopied / (1024.0 * 1024.0)
-                  val mbTotal = totalBytes / (1024.0 * 1024.0)
-                  val mbPerSec = if (elapsedSeconds > 0) mbCopied / elapsedSeconds else 0.0
-
-                  val remainingBytes = totalBytes - totalBytesCopied
-                  val etaSeconds = if (mbPerSec > 0) remainingBytes / (mbPerSec * 1024 * 1024) else 0.0
-                  val etaText = f"${(etaSeconds / 60).toInt}%02d:${(etaSeconds % 60).toInt}%02d"
-
-                  Platform.runLater {
-                    progressLabel.setText(f"$mbCopied%.2f / $mbTotal%.2f MB (${mbPerSec}%.2f MB/s), ETA: $etaText")
-                  }
-
-                } catch {
-                  case ex: Exception => log.error(ex.getMessage, ex)
-                }
-
-                updateProgress(i + 1, total)
-              }
+          WinNativeCopy.copyFiles(selectedFiles, targetRoot.getAbsolutePath, new WinNativeCopy.ProgressCallback {
+            override def onProgress(currentFile: String, percent: Double): Unit = {
+              log.info(s"Copying $currentFile, $percent%")
             }
-          }
 
-          val progressDialog = new Dialog[Unit]() {
-            title = progressText
-            dialogPane().content = new VBox(10, progressBar, progressLabel)
-            dialogPane().buttonTypes = Seq(ButtonType.Cancel)
-            dialogPane().getStylesheets.add(
-              getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
-            )
-          }
+            override def onComplete(): Unit = {
+              log.info("Copy Complete")
+            }
 
-          progressDialog.dialogPane().lookupButton(ButtonType.Cancel).addEventFilter(ActionEvent.Action, _ => {
-            task.cancel()
-            progressDialog.close()
+            override def onError(file: String, errorCode: Int): Unit = {
+              log.error(s"Error copying $file, $errorCode")
+            }
           })
 
-          progressBar.progress <== task.progressProperty()
-
-          task.setOnSucceeded { _ =>
-            progressDialog.close()
-          }
-
-          task.setOnFailed { _ =>
-            progressDialog.close()
-          }
-
-          Platform.runLater {
-            progressDialog.show()
-          }
-          new Thread(task).start()
-
         } else {
-          val lockedDialog = new Dialog[ButtonType]() {
-            title = "Locked Files Detected"
-            headerText = "The following files are currently in use and cannot be processed:"
-            dialogPane().buttonTypes = Seq(ButtonType.OK)
-            val contentBox = new VBox(5)
-            lockedFiles.foreach(f => contentBox.getChildren.add(new javafx.scene.control.Label(f.toString)))
-            dialogPane().content = contentBox
-            dialogPane().getStylesheets.add(
-              getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
-            )
-          }
+          val allFiles = selectedItems.stream().flatMap { fileItem =>
+            val path = fileItem.file.toPath
+            if (Files.isDirectory(path))
+              Files.walk(path).peek(path => {
+                if (checkForLockedFiles && isFileLocked(path)) {
+                  lockedFiles.addOne(path)
+                }
+              }).sorted(java.util.Comparator.reverseOrder())
+            else
+              java.util.stream.Stream.of(path)
+          }.toList.asScala.toSeq
 
-          lockedDialog.showAndWait()
+          if (lockedFiles.isEmpty || !checkForLockedFiles) {
+
+            val progressBar = new ProgressBar {
+              prefWidth = 350
+            }
+
+            val progressLabel = new Label("0 MB copied (0 MB/s)")
+
+            val task = new concurrent.Task[Unit]() {
+              override def call(): Unit = {
+                val total = allFiles.size
+                val baseSource = selectedItems.head.file.toPath.getParent
+                val targetRoot = otherTable.value.directory.toPath
+
+                var totalBytesCopied: Long = 0
+                val startTime = System.nanoTime()
+                val totalBytes: Long = allFiles.map(path => if (Files.isRegularFile(path)) Files.size(path) else 0L).sum
+
+                allFiles.zipWithIndex.foreach { case (path, i) =>
+                  if (isCancelled) return
+
+                  val relative = baseSource.relativize(path)
+                  val target = targetRoot.resolve(relative)
+                  Files.createDirectories(target.getParent)
+
+                  try {
+                    var fileProgress = 0.0
+
+                    strategy.process(path, target, replaceExisting, copyAttributes, progress => {
+                      fileProgress = progress
+                      val globalProgress = (i + fileProgress) / total
+                      updateProgress(globalProgress, 1.0)
+                    })
+
+                    val fileSize = if (Files.isRegularFile(path)) Files.size(path) else 0L
+                    totalBytesCopied += fileSize
+
+                    val elapsedSeconds = (System.nanoTime() - startTime) / 1e9
+                    val mbCopied = totalBytesCopied / (1024.0 * 1024.0)
+                    val mbTotal = totalBytes / (1024.0 * 1024.0)
+                    val mbPerSec = if (elapsedSeconds > 0) mbCopied / elapsedSeconds else 0.0
+
+                    val remainingBytes = totalBytes - totalBytesCopied
+                    val etaSeconds = if (mbPerSec > 0) remainingBytes / (mbPerSec * 1024 * 1024) else 0.0
+                    val etaText = f"${(etaSeconds / 60).toInt}%02d:${(etaSeconds % 60).toInt}%02d"
+
+                    Platform.runLater {
+                      progressLabel.setText(f"$mbCopied%.2f / $mbTotal%.2f MB (${mbPerSec}%.2f MB/s), ETA: $etaText")
+                    }
+
+                  } catch {
+                    case ex: Exception => log.error(ex.getMessage, ex)
+                  }
+
+                  updateProgress(i + 1, total)
+                }
+              }
+            }
+
+            val progressDialog = new Dialog[Unit]() {
+              title = progressText
+              dialogPane().content = new VBox(10, progressBar, progressLabel)
+              dialogPane().buttonTypes = Seq(ButtonType.Cancel)
+              dialogPane().getStylesheets.add(
+                getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
+              )
+            }
+
+            progressDialog.dialogPane().lookupButton(ButtonType.Cancel).addEventFilter(ActionEvent.Action, _ => {
+              task.cancel()
+              progressDialog.close()
+            })
+
+            progressBar.progress <== task.progressProperty()
+
+            task.setOnSucceeded { _ =>
+              progressDialog.close()
+            }
+
+            task.setOnFailed { _ =>
+              progressDialog.close()
+            }
+
+            Platform.runLater {
+              progressDialog.show()
+            }
+            new Thread(task).start()
+
+          } else {
+            val lockedDialog = new Dialog[ButtonType]() {
+              title = "Locked Files Detected"
+              headerText = "The following files are currently in use and cannot be processed:"
+              dialogPane().buttonTypes = Seq(ButtonType.OK)
+              val contentBox = new VBox(5)
+              lockedFiles.foreach(f => contentBox.getChildren.add(new javafx.scene.control.Label(f.toString)))
+              dialogPane().content = contentBox
+              dialogPane().getStylesheets.add(
+                getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
+              )
+            }
+
+            lockedDialog.showAndWait()
+          }
         }
       }
     }
@@ -337,27 +386,19 @@ object FileUtils {
 
       val totalBytes = Files.size(source)
 
-      if (fastCopy) {
-        NativeCopy.copyFile(source.toAbsolutePath.toString, target.toAbsolutePath.toString, 0,
-          (_, transferredBytes: Long) => {
-            progressCallback(transferredBytes.toDouble / totalBytes)
-            true
-        })
-      } else {
-        var copiedBytes: Long = 0
-        val buffer = new Array[Byte](1024 * 1024)
+      var copiedBytes: Long = 0
+      val buffer = new Array[Byte](1024 * 1024)
 
-        Using.resources(
-          new BufferedInputStream(Files.newInputStream(source)),
-          new BufferedOutputStream(Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
-        ) { (in, out) =>
-          var bytesRead = in.read(buffer)
-          while (bytesRead != -1) {
-            out.write(buffer, 0, bytesRead)
-            copiedBytes += bytesRead
-            progressCallback(copiedBytes.toDouble / totalBytes)
-            bytesRead = in.read(buffer)
-          }
+      Using.resources(
+        new BufferedInputStream(Files.newInputStream(source)),
+        new BufferedOutputStream(Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+      ) { (in, out) =>
+        var bytesRead = in.read(buffer)
+        while (bytesRead != -1) {
+          out.write(buffer, 0, bytesRead)
+          copiedBytes += bytesRead
+          progressCallback(copiedBytes.toDouble / totalBytes)
+          bytesRead = in.read(buffer)
         }
       }
     }
