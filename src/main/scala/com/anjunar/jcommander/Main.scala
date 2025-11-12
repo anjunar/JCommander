@@ -1,6 +1,8 @@
 package com.anjunar.jcommander
 
 import com.anjunar.jcommander.files.{FallBackFileUtils, FileUtils, WinFileUtils}
+import jakarta.enterprise.inject.se.SeContainerInitializer
+import jakarta.enterprise.inject.spi.CDI
 import scalafx.application.JFXApp3
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.Insets
@@ -15,25 +17,14 @@ import scalafx.Includes.{jfxMouseEvent2sfx, jfxScene2sfx}
 
 object Main extends JFXApp3 {
 
-  lazy val osName = System.getProperty("os.name") match {
-    case n if n.startsWith("Linux") => "linux"
-    case n if n.startsWith("Mac") => "mac"
-    case n if n.startsWith("Windows") => "win"
-    case _ => throw new Exception("Unknown platform!")
-  }
-
   override def start(): Unit = {
 
-    val darkMode = BooleanProperty(true)
+    val container = SeContainerInitializer.newInstance().initialize()
+
+    val fileUtils = inject(classOf[FileUtils])
     
-    val fileUtils : FileUtils = osName match {
-      case "linux" => new FallBackFileUtils()
-      case "mac" => new FallBackFileUtils()
-      case "win" => new WinFileUtils()
-    }
-
-    def makeFileTable(): FileTable = FileTable(fileUtils)
-
+    val darkMode = inject(classOf[DarkMode])
+    
     def chooseDirectory(table: FileTable, store: FileStore): Unit = {
       val roots = FileSystems.getDefault.getRootDirectories.iterator()
       while (roots.hasNext) {
@@ -50,21 +41,17 @@ object Main extends JFXApp3 {
       }
     }
 
-    val leftTable = makeFileTable()
-    val rightTable = makeFileTable()
+    val leftTable = inject(classOf[FileTable.Left])
+    val rightTable = inject(classOf[FileTable.Right])
 
-    val leftPane = new FilePane(leftTable, store => chooseDirectory(leftTable, store))
-    val rightPane = new FilePane(rightTable, store => chooseDirectory(rightTable, store))
+    val activeTable = inject(classOf[ActiveTable])
 
-    val toggleTheme = new Button("🌓") {
-      tooltip = new Tooltip("Theme wechseln")
-      onAction = _ => darkMode.value = !darkMode.value
-    }
+    val leftPane = new FilePane(leftTable.node, store => chooseDirectory(leftTable, store))
+    val rightPane = new FilePane(rightTable.node, store => chooseDirectory(rightTable, store))
 
     val topBar = new HBox {
       spacing = 10
-      padding = Insets(6)
-      children = Seq(new Label("JCommander File Manager"))
+      children = new HeaderMenuBar()
     }
 
     val splitPane = new SplitPane {
@@ -72,20 +59,12 @@ object Main extends JFXApp3 {
       setDividerPosition(0, 0.5)
     }
 
-    val activeTable = ObjectProperty[FileTable](leftTable)
-    val otherTable = ObjectProperty[FileTable](rightTable)
-    leftTable.requestFocus()
+    leftTable.node.requestFocus()
 
     val rootPane = new BorderPane {
       top = topBar
       center = splitPane
-      bottom = new ActionButtons(toggleTheme, {
-        case "F2" => fileUtils.renameFile(activeTable, darkMode)
-        case "F5" => fileUtils.copyFiles(activeTable, otherTable, darkMode)
-        case "F6" => fileUtils.moveFiles(activeTable, otherTable, darkMode)
-        case "F7" => fileUtils.mkDir(activeTable, darkMode)
-        case "F8" => fileUtils.deleteFiles(activeTable, otherTable, darkMode)
-      })
+      bottom = new ActionButtons
     }
 
     stage = new JFXApp3.PrimaryStage {
@@ -99,7 +78,7 @@ object Main extends JFXApp3 {
     val darkCSS = getClass.getResource("/dark-theme.css").toExternalForm
     stage.scene().stylesheets.add(darkCSS)
 
-    darkMode.onChange { (_, _, isDark) =>
+    darkMode.valueProperty.onChange { (_, _, isDark) =>
       val styles = stage.scene().stylesheets
       styles.clear()
       styles.add(if (isDark) darkCSS else lightCSS)
@@ -110,22 +89,14 @@ object Main extends JFXApp3 {
     rightTable.loadDirectory(home)
 
     def switchFocus(): Unit = {
-      if (activeTable.value eq leftTable) {
-        activeTable.value = rightTable
-        otherTable.value = leftTable
-        rightTable.requestFocus()
-      } else {
-        activeTable.value = leftTable
-        otherTable.value = rightTable
-        leftTable.requestFocus()
-      }
+      activeTable.swap()
     }
 
     def onFileEnter(): Unit = {
-      val selected = activeTable.value.selectionModel().getSelectedItem
+      val selected = activeTable.active.node.selectionModel().getSelectedItem
       if (selected != null) {
         if (selected.file.isDirectory) {
-          activeTable.value.loadDirectory(selected.file)  
+          activeTable.active.loadDirectory(selected.file)  
         } else {
           fileUtils.executeFile(selected.file) 
         }
@@ -133,21 +104,15 @@ object Main extends JFXApp3 {
     }
 
     Seq(leftTable, rightTable).foreach { table =>
-      table.onMouseClicked = e => {
+      table.node.onMouseClicked = e => {
         if (e.clickCount == 2) {
           onFileEnter()
           e.consume()
         }
-
-        activeTable.value = table
-        if (table == leftTable) {
-          otherTable.value = rightTable
-        } else {
-          otherTable.value = leftTable
-        }
+        activeTable.setActive(table)
       }
 
-      table.onKeyPressed = e => {
+      table.node.onKeyPressed = e => {
         e.getCode match {
           case KeyCode.TAB =>
             switchFocus()
@@ -155,14 +120,15 @@ object Main extends JFXApp3 {
           case KeyCode.ENTER =>
             onFileEnter()
             e.consume()
-          case KeyCode.F2 => fileUtils.renameFile(activeTable, darkMode)
-          case KeyCode.F5 => fileUtils.copyFiles(activeTable, otherTable, darkMode)
-          case KeyCode.F6 => fileUtils.moveFiles(activeTable, otherTable, darkMode)
-          case KeyCode.F7 => fileUtils.mkDir(activeTable, darkMode)
-          case KeyCode.F8 => fileUtils.deleteFiles(activeTable, otherTable, darkMode)
+          case KeyCode.F2 => fileUtils.renameFile(activeTable.active)
+          case KeyCode.F5 => fileUtils.copyFiles(activeTable.active, activeTable.inActive)
+          case KeyCode.F6 => fileUtils.moveFiles(activeTable.active, activeTable.inActive)
+          case KeyCode.F7 => fileUtils.mkDir(activeTable.active)
+          case KeyCode.F8 => fileUtils.deleteFiles(activeTable.active, activeTable.inActive)
           case _ =>
         }
       }
     }
   }
+  
 }

@@ -1,36 +1,34 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.{FileTable, Main, WinNativeCopy}
+import com.anjunar.jcommander.{FileTable, OSType, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
 import scalafx.Includes.jfxDialogPane2sfx
 import scalafx.application.Platform
-import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control.*
 import scalafx.scene.layout.VBox
 
 import java.awt.image.BufferedImage
-import java.io.{BufferedInputStream, ByteArrayInputStream, File}
+import java.io.{ByteArrayInputStream, File}
 import java.nio.file.Path
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.imageio.ImageIO
-import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters.*
 
 class WinFileUtils extends AbstractFileUtils {
 
   val log = Logger[WinFileUtils]
 
-  override def getFileIcon(file: File, large : Boolean): BufferedImage = {
+  override def getFileIcon(file: File, large: Boolean): BufferedImage = {
     val bytes = WinNativeCopy.getFileIcon(file.getAbsolutePath, large)
     ImageIO.read(new ByteArrayInputStream(bytes))
   }
 
   override def executeFile(file: File): Unit = WinNativeCopy.executeFile(file.getAbsolutePath)
 
-  override def copyFiles(activeTable: ObjectProperty[FileTable], otherTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit = {
+  override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.copyFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback)
@@ -40,12 +38,11 @@ class WinFileUtils extends AbstractFileUtils {
       "Copying Files...",
       false,
       activeTable,
-      otherTable,
-      darkMode
+      otherTable
     )
   }
 
-  override def moveFiles(activeTable: ObjectProperty[FileTable], otherTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit = {
+  override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.moveFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback)
@@ -55,12 +52,11 @@ class WinFileUtils extends AbstractFileUtils {
       "Moving Files...",
       false,
       activeTable,
-      otherTable,
-      darkMode
+      otherTable
     )
   }
 
-  override def deleteFiles(activeTable: ObjectProperty[FileTable], otherTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit = {
+  override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.deleteFiles(paths.map(_.toAbsolutePath.toString).toArray, progressCallback)
@@ -70,8 +66,7 @@ class WinFileUtils extends AbstractFileUtils {
       "Deleting Files...",
       true,
       activeTable,
-      otherTable,
-      darkMode
+      otherTable
     )
   }
 
@@ -81,14 +76,19 @@ class WinFileUtils extends AbstractFileUtils {
                     confirmHeader: String,
                     progressText: String,
                     isDelete: Boolean,
-                    activeTable: ObjectProperty[FileTable],
-                    otherTable: ObjectProperty[FileTable],
-                    darkMode: BooleanProperty
+                    activeTable: FileTable,
+                    otherTable: FileTable
                   ): Unit = {
 
-    val replaceExistingBox = new CheckBox("Replace existing files") { selected = true }
-    val copyAttributesBox = new CheckBox("Copying Attributes") { selected = false }
-    val checkLockedFilesBox = new CheckBox("Check for locked Files") { selected = false }
+    val replaceExistingBox = new CheckBox("Replace existing files") {
+      selected = true
+    }
+    val copyAttributesBox = new CheckBox("Copying Attributes") {
+      selected = false
+    }
+    val checkLockedFilesBox = new CheckBox("Check for locked Files") {
+      selected = false
+    }
 
     val confirmDialog = new Dialog[ButtonType]() {
       title = confirmTitle
@@ -96,7 +96,7 @@ class WinFileUtils extends AbstractFileUtils {
       dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
       dialogPane().content = new VBox(10) {
         if (!isDelete) {
-          if (Main.osName == "win") {
+          if (OSType.osName == "win") {
             children += replaceExistingBox
           } else {
             children ++= Seq(replaceExistingBox, copyAttributesBox)
@@ -115,12 +115,14 @@ class WinFileUtils extends AbstractFileUtils {
     confirmDialog.showAndWait().foreach { result =>
       if (result == ButtonType.OK) {
 
-        val selectedFiles = activeTable.value.selectionModel.value.getSelectedItems.asScala.map(_.file.toPath).toSeq
-        val targetDir = otherTable.value.directory.toPath
+        val selectedFiles = activeTable.node.selectionModel.value.getSelectedItems.asScala.map(_.file.toPath).toSeq
+        val targetDir = otherTable.directory.toPath
 
         val cancelledFlag = new AtomicBoolean(false)
 
-        val progressBar = new ProgressBar { prefWidth = 350 }
+        val progressBar = new ProgressBar {
+          prefWidth = 350
+        }
         val progressLabel = new Label("0% copied")
         val fileLabel = new Label("")
 
@@ -190,7 +192,7 @@ class WinFileUtils extends AbstractFileUtils {
         // Cancel-Button: Setzt Flag und schließt Dialog
         val cancelButton = progressDialog.dialogPane().lookupButton(ButtonType.Cancel).asInstanceOf[javafx.scene.control.Button]
         cancelButton.addEventFilter(ActionEvent.ACTION, _ => {
-          cancelledFlag.set(true)  // <-- WICHTIG: Setzt Abbruch-Flag
+          cancelledFlag.set(true) // <-- WICHTIG: Setzt Abbruch-Flag
           task.cancel()
           progressDialog.close()
           log.info("Operation cancelledFlag by user.")

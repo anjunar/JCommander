@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.FileTable
+import com.anjunar.jcommander.{DarkMode, FileTable, inject}
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.scene.control.*
@@ -10,8 +10,10 @@ import java.io.File
 import java.nio.file.Files
 
 abstract class AbstractFileUtils extends FileUtils {
+  
+  val darkMode = inject(classOf[DarkMode])
 
-  def mkDir(activeTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit = {
+  def mkDir(activeTable: FileTable): Unit = {
     val textField: TextField = new TextField {
       promptText = "Directory Name"
     }
@@ -31,14 +33,14 @@ abstract class AbstractFileUtils extends FileUtils {
     mkDirDialog.showAndWait().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
-        Files.createDirectory(activeTable.value.directory.toPath.resolve(newFileName))
+        Files.createDirectory(activeTable.directory.toPath.resolve(newFileName))
       }
     }
   }
 
-  def renameFile(activeTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit = {
+  def renameFile(activeTable: FileTable): Unit = {
     val textField: TextField = new TextField {
-      text = activeTable.value.selectionModel.value.getSelectedItem.name
+      text = activeTable.node.selectionModel.value.getSelectedItem.name
     }
 
     val renameDialog = new Dialog[ButtonType]() {
@@ -56,7 +58,7 @@ abstract class AbstractFileUtils extends FileUtils {
     renameDialog.showAndWait().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
-        val oldPath = activeTable.value.selectionModel.value.getSelectedItems.head.file.toPath
+        val oldPath = activeTable.node.selectionModel.value.getSelectedItems.head.file.toPath
         val newPath = oldPath.getParent.resolve(newFileName)
         Files.move(oldPath, newPath)
       }

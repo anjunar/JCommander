@@ -12,19 +12,13 @@ trait FileUtils {
   
   def executeFile(file : File) : Unit
 
-  def mkDir(activeTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit
+  def mkDir(activeTable: FileTable): Unit
 
-  def renameFile(activeTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit
+  def renameFile(activeTable: FileTable): Unit
 
-  def copyFiles(activeTable: ObjectProperty[FileTable],
-                otherTable: ObjectProperty[FileTable],
-                darkMode: BooleanProperty): Unit
+  def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit
 
-  def moveFiles(activeTable: ObjectProperty[FileTable],
-                otherTable: ObjectProperty[FileTable],
-                darkMode: BooleanProperty): Unit
+  def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit
 
-  def deleteFiles(activeTable: ObjectProperty[FileTable],
-                  otherTable: ObjectProperty[FileTable],
-                  darkMode: BooleanProperty): Unit
+  def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit
 }

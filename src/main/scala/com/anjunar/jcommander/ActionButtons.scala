@@ -1,5 +1,6 @@
 package com.anjunar.jcommander
 
+import com.anjunar.jcommander.files.FileUtils
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
 import javafx.concurrent.WorkerStateEvent
@@ -15,9 +16,15 @@ import scalafx.scene.layout.{HBox, Priority, VBox}
 import java.nio.file.{Files, Path, StandardCopyOption}
 import scala.jdk.CollectionConverters.*
 
-class ActionButtons(toggleTheme : Button, function : String => Unit) extends HBox {
+class ActionButtons extends HBox {
 
   val log = Logger[ActionButtons]
+  
+  val fileUtils = inject(classOf[FileUtils])
+  
+  val activeTable = inject(classOf[ActiveTable])
+  
+  val toggleTheme = inject(classOf[DarkMode])
 
   spacing = 2
   fillHeight = true
@@ -27,64 +34,64 @@ class ActionButtons(toggleTheme : Button, function : String => Unit) extends HBo
     new Button() {
       text = "F1 Help"
       onMouseClicked = _ => {
-        function("F1")
+        
       }
     },
     new Button() {
       text = "F2 Rename"
       onMouseClicked = _ => {
-        function("F2")
+        fileUtils.renameFile(activeTable.active)
       }
     },
     new Button() {
       text = "F3 View"
       onMouseClicked = _ => {
-        function("F3")
+
       }
     },
     new Button() {
       text = "F4 Edit"
       onMouseClicked = _ => {
-        function("F4")
+
       }
     },
     new Button() {
       text = "F5 Copy"
       onMouseClicked = _ => {
-        function("F5")
+        fileUtils.copyFiles(activeTable.active, activeTable.inActive)
       }
     },
     new Button() {
       text = "F6 Move"
       onMouseClicked = _ => {
-        function("F6")
+        fileUtils.moveFiles(activeTable.active, activeTable.inActive)
       }
     },
     new Button() {
       text = "F7 MkDir"
       onMouseClicked = _ => {
-        function("F7")
+        fileUtils.mkDir(activeTable.active)
       }
     },
     new Button() {
       text = "F8 Delete"
       onMouseClicked = _ => {
-        function("F8")
+        fileUtils.deleteFiles(activeTable.active, activeTable.inActive)
       }
     },
     new Button() {
       text = "F9 Menu"
       onMouseClicked = _ => {
-        function("F9")
+        
       }
     },
     new Button() {
       text = "F10 Quit"
       onMouseClicked = _ => {
-        function("F10")
+        
       }
     },
-    toggleTheme
+    toggleTheme.node
   )
 
   buttons.foreach { b =>
