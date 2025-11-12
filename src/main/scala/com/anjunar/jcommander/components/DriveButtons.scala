@@ -1,7 +1,8 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.Component
-import jakarta.enterprise.context.ApplicationScoped
+import com.anjunar.jcommander.components.DriveButtons.OnDriveChange
+import jakarta.enterprise.context.{ApplicationScoped, Dependent}
 import jakarta.enterprise.event.Event
 import jakarta.enterprise.inject.spi.BeanManager
 import jakarta.inject.Inject
@@ -10,6 +11,7 @@ import scalafx.scene.Node
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.layout.HBox
 
+import java.io.File
 import java.nio.file.{FileStore, FileSystems}
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.collection.mutable
@@ -18,7 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters.*
 
-@ApplicationScoped
+@Dependent
 class DriveButtons extends Component[HBox] {
 
   private val running = new AtomicBoolean(true)
@@ -33,6 +35,12 @@ class DriveButtons extends Component[HBox] {
 
   lazy val node = new HBox {
     spacing = 10
+  }
+
+  val home = new Button("Home") {
+    onAction = _ => {
+      beanManager.getEvent.fire(OnDriveChange(new File(System.getProperty("user.home"))))
+    }
   }
 
   refreshButtons()
@@ -61,15 +69,32 @@ class DriveButtons extends Component[HBox] {
       new Button(displayName) {
         onAction = _ => {
           selectedLabel.text = s"Ausgewählt: $displayName"
-          beanManager.getEvent.fire(store)
+          val roots = FileSystems.getDefault.getRootDirectories.iterator()
+          while (roots.hasNext) {
+            val root = roots.next()
+            try {
+              val rootStore = java.nio.file.Files.getFileStore(root)
+              if (rootStore == store) {
+                beanManager.getEvent.fire(OnDriveChange(root.toFile))
+              }
+            } catch {
+              case _: Exception =>
+            }
+          }
         }
       }
     }
 
-    node.children = buttons
+    node.children = Seq(home) ++ buttons
   }
 
   def stop(): Unit = {
     running.set(false)
   }
+}
+
+object DriveButtons {
+
+  case class OnDriveChange(file : File)
+
 }

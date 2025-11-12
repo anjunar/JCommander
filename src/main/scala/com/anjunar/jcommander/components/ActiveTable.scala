@@ -1,5 +1,6 @@
 package com.anjunar.jcommander.components
 
+import com.anjunar.jcommander.components.DriveButtons.OnDriveChange
 import com.anjunar.jcommander.inject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
@@ -30,28 +31,18 @@ class ActiveTable {
 
     inActive.node.selectionModel.value.clearSelection()
 
-    val lastSelection = active.lastSelections(active.directory.getAbsolutePath)
-    val fileItem = active.node.items.value.stream().filter(item => item.name == lastSelection).findFirst().get()
-    active.node.selectionModel.value.select(fileItem)
-    
+    val lastSelection = active.lastSelections.get(active.directory.getAbsolutePath)
+    if (lastSelection.isDefined) {
+      val fileItem = active.node.items.value.stream().filter(item => item.name == lastSelection.get).findFirst().get()
+      active.node.selectionModel.value.select(fileItem)
+    }
+
     active.node.requestFocus()
     
   }
 
-  def onFileStoreChange(@Observes store: FileStore) : Unit = {
-    val roots = FileSystems.getDefault.getRootDirectories.iterator()
-    while (roots.hasNext) {
-      val root = roots.next()
-      try {
-        val rootStore = java.nio.file.Files.getFileStore(root)
-        if (rootStore == store) {
-          active.loadDirectory(root.toFile)
-          return
-        }
-      } catch {
-        case _: Exception =>
-      }
-    }
+  def onFileStoreChange(@Observes event: OnDriveChange) : Unit = {
+    active.loadDirectory(event.file)
   }
 
 }
