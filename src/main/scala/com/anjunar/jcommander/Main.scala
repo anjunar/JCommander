@@ -29,10 +29,10 @@ object Main extends JFXApp3 {
     val fileUtils : FileUtils = osName match {
       case "linux" => new FallBackFileUtils()
       case "mac" => new FallBackFileUtils()
-      case "win" => new WinFileUtils() 
+      case "win" => new WinFileUtils()
     }
 
-    def makeFileTable(): FileTable = FileTable()
+    def makeFileTable(): FileTable = FileTable(fileUtils)
 
     def chooseDirectory(table: FileTable, store: FileStore): Unit = {
       val roots = FileSystems.getDefault.getRootDirectories.iterator()
@@ -121,18 +121,22 @@ object Main extends JFXApp3 {
       }
     }
 
-    def openSelectedDirectory(): Unit = {
+    def onFileEnter(): Unit = {
       val selected = activeTable.value.selectionModel().getSelectedItem
-      if (selected != null && selected.file.isDirectory)
-        activeTable.value.loadDirectory(selected.file)
+      if (selected != null) {
+        if (selected.file.isDirectory) {
+          activeTable.value.loadDirectory(selected.file)  
+        } else {
+          fileUtils.executeFile(selected.file) 
+        }
+      }
     }
 
     Seq(leftTable, rightTable).foreach { table =>
       table.onMouseClicked = e => {
         if (e.clickCount == 2) {
-          val selected = table.selectionModel().getSelectedItem
-          if (selected != null && selected.file.isDirectory)
-            table.loadDirectory(selected.file)
+          onFileEnter()
+          e.consume()
         }
 
         activeTable.value = table
@@ -149,7 +153,7 @@ object Main extends JFXApp3 {
             switchFocus()
             e.consume()
           case KeyCode.ENTER =>
-            openSelectedDirectory()
+            onFileEnter()
             e.consume()
           case KeyCode.F2 => fileUtils.renameFile(activeTable, darkMode)
           case KeyCode.F5 => fileUtils.copyFiles(activeTable, otherTable, darkMode)

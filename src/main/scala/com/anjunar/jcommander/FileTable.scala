@@ -1,20 +1,25 @@
 package com.anjunar.jcommander
 
-import javafx.application.Platform
-import javafx.scene.control.TableRow
+import com.anjunar.jcommander.files.FileUtils
+import javafx.scene.control.{TableRow, TableCell as JfxTableCell}
 import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
-import scalafx.Includes.{jfxTableSelectionModel2sfx, observableList2ObservableBuffer}
-import scalafx.beans.property.ReadOnlyObjectWrapper
+import scalafx.Includes.{jfxObjectProperty2sfx, jfxTableSelectionModel2sfx, observableList2ObservableBuffer}
+import scalafx.application.Platform
+import scalafx.beans.property.{ObjectProperty, ReadOnlyObjectWrapper}
 import scalafx.collections.ObservableBuffer
-import scalafx.scene.control.{TableColumn, TableView}
+import scalafx.embed.swing.SwingFXUtils
+import scalafx.scene.control.{TableCell, TableColumn, TableView}
+import scalafx.scene.image.ImageView
 
+import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Files
 import java.text.SimpleDateFormat
+import java.util.concurrent.Executors
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 
-class FileTable extends TableView[FileItem] {
+class FileTable(fileUtils : FileUtils) extends TableView[FileItem] {
 
   var directory : File = uninitialized
 
@@ -24,6 +29,44 @@ class FileTable extends TableView[FileItem] {
   val lastSelections = mutable.Map[String, String]()
 
   selectionModel().selectionMode = scalafx.scene.control.SelectionMode.Multiple
+
+  val nameCol = new TableColumn[FileItem, FileItem] {
+    text = "Name"
+    cellValueFactory = f => ReadOnlyObjectWrapper(f.value)
+
+    cellFactory = { (_: TableColumn[FileItem, FileItem]) =>
+      new TableCell[FileItem, FileItem] {
+        override val delegate: JfxTableCell[FileItem, FileItem] =
+          new JfxTableCell[FileItem, FileItem]() {
+            private val imageView = new ImageView {
+              fitWidth = 18
+              fitHeight = 18
+              preserveRatio = true
+            }
+
+            override def updateItem(item: FileItem, empty: Boolean): Unit = {
+              super.updateItem(item, empty)
+              if (empty || item == null) {
+                setText(null)
+                setGraphic(null)
+              } else {
+                setText(item.name)
+                val icon = item.icon.value
+                if (icon != null) {
+                  imageView.image = SwingFXUtils.toFXImage(icon, null)
+                  setGraphic(imageView)
+                } else {
+                  val iconImg = fileUtils.getFileIcon(item.file, large = false)
+                  item.icon.value = iconImg
+                  imageView.image = SwingFXUtils.toFXImage(iconImg, null)
+                  graphic = imageView
+                }
+              }
+            }
+          }
+      }
+    }
+  }
 
   val extCol = new TableColumn[FileItem, String] {
     text = "Extension"
@@ -45,11 +88,6 @@ class FileTable extends TableView[FileItem] {
     cellValueFactory = f => ReadOnlyObjectWrapper(f.value.date)
     prefWidth = 160
     resizable = false
-  }
-
-  val nameCol = new TableColumn[FileItem, String] {
-    text = "Name"
-    cellValueFactory = f => ReadOnlyObjectWrapper(f.value.name)
   }
 
   columns ++= Seq(nameCol, extCol, sizeCol, dateCol)

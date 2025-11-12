@@ -6,6 +6,7 @@ import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.scene.control.*
 import scalafx.scene.layout.VBox
 
+import java.io.File
 import java.nio.file.Files
 
 abstract class AbstractFileUtils extends FileUtils {

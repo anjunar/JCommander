@@ -10,15 +10,25 @@ import scalafx.event.ActionEvent
 import scalafx.scene.control.*
 import scalafx.scene.layout.VBox
 
+import java.awt.image.BufferedImage
+import java.io.{BufferedInputStream, ByteArrayInputStream, File}
 import java.nio.file.Path
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.imageio.ImageIO
 import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters.*
 
 class WinFileUtils extends AbstractFileUtils {
 
   val log = Logger[WinFileUtils]
+
+  override def getFileIcon(file: File, large : Boolean): BufferedImage = {
+    val bytes = WinNativeCopy.getFileIcon(file.getAbsolutePath, large)
+    ImageIO.read(new ByteArrayInputStream(bytes))
+  }
+
+  override def executeFile(file: File): Unit = WinNativeCopy.executeFile(file.getAbsolutePath)
 
   override def copyFiles(activeTable: ObjectProperty[FileTable], otherTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit = {
     processFiles(

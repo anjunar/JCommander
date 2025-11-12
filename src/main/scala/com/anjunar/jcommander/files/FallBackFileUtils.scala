@@ -10,7 +10,8 @@ import scalafx.event.ActionEvent
 import scalafx.scene.control.*
 import scalafx.scene.layout.VBox
 
-import java.io.{BufferedInputStream, BufferedOutputStream}
+import java.awt.image.BufferedImage
+import java.io.{BufferedInputStream, BufferedOutputStream, File}
 import java.nio.file.{Files, Path, StandardCopyOption, StandardOpenOption}
 import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters.*
@@ -19,6 +20,10 @@ import scala.util.Using
 class FallBackFileUtils extends AbstractFileUtils {
 
   val log = Logger[FallBackFileUtils]
+
+  override def getFileIcon(file: File, large: Boolean): BufferedImage = ???
+
+  override def executeFile(file: File): Unit = ???
 
   override def copyFiles(activeTable: ObjectProperty[FileTable],
                          otherTable: ObjectProperty[FileTable],

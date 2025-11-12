@@ -9,6 +9,8 @@ public class WinNativeCopy {
     public static native void copyFiles(String[] sources, String targetDir, ProgressCallback callback);
     public static native void moveFiles(String[] sources, String targetDir, ProgressCallback callback);
     public static native void deleteFiles(String[] sources, ProgressCallback callback);
+    public static native void executeFile(String path);
+    public static native byte[] getFileIcon(String path, boolean large);
 
     public interface ProgressCallback {
         void onProgress(ProgressEvent event);

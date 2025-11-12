@@ -3,7 +3,14 @@ package com.anjunar.jcommander.files
 import com.anjunar.jcommander.FileTable
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 
+import java.awt.image.BufferedImage
+import java.io.File
+
 trait FileUtils {
+  
+  def getFileIcon(file : File, large : Boolean) : BufferedImage
+  
+  def executeFile(file : File) : Unit
 
   def mkDir(activeTable: ObjectProperty[FileTable], darkMode: BooleanProperty): Unit
 
