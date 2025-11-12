@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.{FileTable, OSType, WinNativeCopy}
+import com.anjunar.jcommander.components.FileTable
+import com.anjunar.jcommander.{OSType, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
 import scalafx.Includes.jfxDialogPane2sfx

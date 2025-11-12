@@ -1,13 +1,14 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.files
 
+import com.anjunar.jcommander.components.FileTable
 import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
 import scalafx.scene.control.TableView
 
 import java.io.File
-import java.nio.file._
-import java.nio.file.StandardWatchEventKinds._
-import scala.jdk.CollectionConverters._
+import java.nio.file.*
+import java.nio.file.StandardWatchEventKinds.*
+import scala.jdk.CollectionConverters.*
 
 class FileWatcher(path: Path, table: FileTable) {
 

@@ -1,6 +1,7 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.files.FileUtils
+import com.anjunar.jcommander.files.{FileItem, FileUtils, FileWatcher}
+import com.anjunar.jcommander.*
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
 import javafx.scene.control.{TableRow, TableCell as JfxTableCell}
@@ -29,7 +30,7 @@ class FileTable extends Component[TableView[FileItem]] {
 
   val lastSelections = mutable.Map[String, String]()
 
-  val node: TableView[FileItem] = new TableView[FileItem] {
+  lazy val node: TableView[FileItem] = new TableView[FileItem] {
     selectionModel().selectionMode = scalafx.scene.control.SelectionMode.Multiple
 
     val nameCol = new TableColumn[FileItem, FileItem] {

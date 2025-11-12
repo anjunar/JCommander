@@ -4,6 +4,6 @@ import scalafx.scene.Node
 
 trait Component[N <: Node] {
   
-  val node: N
+  lazy val node: N
 
 }

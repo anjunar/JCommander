@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.{DarkMode, FileTable, Main, OSType, WinNativeCopy, inject}
+import com.anjunar.jcommander.components.{DarkMode, FileTable}
+import com.anjunar.jcommander.{Main, OSType, WinNativeCopy, inject}
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.concurrent

@@ -1,5 +1,6 @@
 package com.anjunar.jcommander
 
+import com.anjunar.jcommander.components.{ActionButtons, ActiveTable, DarkMode, FilePane, FileTable, HeaderMenuBar}
 import com.anjunar.jcommander.files.{FallBackFileUtils, FileUtils, WinFileUtils}
 import jakarta.enterprise.inject.se.SeContainerInitializer
 import jakarta.enterprise.inject.spi.CDI
@@ -25,46 +26,32 @@ object Main extends JFXApp3 {
     
     val darkMode = inject(classOf[DarkMode])
     
-    def chooseDirectory(table: FileTable, store: FileStore): Unit = {
-      val roots = FileSystems.getDefault.getRootDirectories.iterator()
-      while (roots.hasNext) {
-        val root = roots.next()
-        try {
-          val rootStore = java.nio.file.Files.getFileStore(root)
-          if (rootStore == store) {
-            table.loadDirectory(root.toFile)
-            return
-          }
-        } catch {
-          case _: Exception =>
-        }
-      }
-    }
-
     val leftTable = inject(classOf[FileTable.Left])
     val rightTable = inject(classOf[FileTable.Right])
 
     val activeTable = inject(classOf[ActiveTable])
 
-    val leftPane = new FilePane(leftTable.node, store => chooseDirectory(leftTable, store))
-    val rightPane = new FilePane(rightTable.node, store => chooseDirectory(rightTable, store))
+    val leftPane = inject(classOf[FilePane.Left])
+    val rightPane = inject(classOf[FilePane.Right])
 
     val topBar = new HBox {
       spacing = 10
-      children = new HeaderMenuBar()
+      children = new HeaderMenuBar().node
     }
 
     val splitPane = new SplitPane {
-      items.addAll(leftPane, rightPane)
+      items.addAll(leftPane.node, rightPane.node)
       setDividerPosition(0, 0.5)
     }
 
     leftTable.node.requestFocus()
 
+    val actionButtons = inject(classOf[ActionButtons])
+    
     val rootPane = new BorderPane {
       top = topBar
       center = splitPane
-      bottom = new ActionButtons
+      bottom = actionButtons.node
     }
 
     stage = new JFXApp3.PrimaryStage {

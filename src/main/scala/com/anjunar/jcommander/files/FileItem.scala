@@ -1,4 +1,4 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.files
 
 import javafx.beans.property.SimpleObjectProperty
 import scalafx.beans.property.ObjectProperty

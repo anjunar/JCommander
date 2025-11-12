@@ -1,4 +1,4 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.files
 
 import java.awt.image.BufferedImage
 import java.io.File

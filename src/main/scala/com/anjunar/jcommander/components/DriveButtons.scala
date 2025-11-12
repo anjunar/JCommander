@@ -1,25 +1,39 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.components
 
+import com.anjunar.jcommander.Component
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.event.Event
+import jakarta.enterprise.inject.spi.BeanManager
+import jakarta.inject.Inject
 import scalafx.application.Platform
 import scalafx.scene.Node
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.layout.HBox
 
 import java.nio.file.{FileStore, FileSystems}
-import scala.jdk.CollectionConverters.*
+import java.util.concurrent.atomic.AtomicBoolean
+import scala.collection.mutable
+import scala.compiletime.uninitialized
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.collection.mutable
-import java.util.concurrent.atomic.AtomicBoolean
+import scala.jdk.CollectionConverters.*
 
-class DriveButtons(load: FileStore => Unit, pollIntervalMillis: Long = 3000) extends HBox {
+@ApplicationScoped
+class DriveButtons extends Component[HBox] {
 
   private val running = new AtomicBoolean(true)
   private var lastDrives: Set[String] = currentDriveNames
 
+  private val pollIntervalMillis = 3000
+
   val selectedLabel = new Label("Kein Laufwerk ausgewählt")
 
-  spacing = 10
+  @Inject
+  var beanManager : BeanManager = uninitialized
+
+  lazy val node = new HBox {
+    spacing = 10
+  }
 
   refreshButtons()
 
@@ -39,7 +53,7 @@ class DriveButtons(load: FileStore => Unit, pollIntervalMillis: Long = 3000) ext
 
   private def refreshButtons(): Unit = {
     val stores = FileSystems.getDefault.getFileStores.iterator().asScala.toSeq
-    children.clear()
+    node.children.clear()
 
     val buttons : Seq[Node] = stores.map { store =>
       val name = Option(store.name()).getOrElse("Unbenannt")
@@ -47,12 +61,12 @@ class DriveButtons(load: FileStore => Unit, pollIntervalMillis: Long = 3000) ext
       new Button(displayName) {
         onAction = _ => {
           selectedLabel.text = s"Ausgewählt: $displayName"
-          load(store)
+          beanManager.getEvent.fire(store)
         }
       }
     }
 
-    children = buttons
+    node.children = buttons
   }
 
   def stop(): Unit = {

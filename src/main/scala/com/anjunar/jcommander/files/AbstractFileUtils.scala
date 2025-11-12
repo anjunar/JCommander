@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.{DarkMode, FileTable, inject}
+import com.anjunar.jcommander.components.{DarkMode, FileTable}
+import com.anjunar.jcommander.inject
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.scene.control.*

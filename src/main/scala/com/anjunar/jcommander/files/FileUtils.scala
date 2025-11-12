@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.FileTable
+import com.anjunar.jcommander.components.FileTable
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 
 import java.awt.image.BufferedImage

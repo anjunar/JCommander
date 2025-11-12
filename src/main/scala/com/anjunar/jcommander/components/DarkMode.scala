@@ -1,5 +1,6 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.components
 
+import com.anjunar.jcommander.Component
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.beans.property.BooleanProperty
 import scalafx.scene.Node
@@ -12,7 +13,7 @@ class DarkMode extends Component[Button] {
 
   val valueProperty = BooleanProperty(true)
 
-  override val node: Button = new Button("Dark Mode") {
+  lazy val node: Button = new Button("Dark Mode") {
     tooltip = new Tooltip("Dark Mode")
     onAction = _ => valueProperty.value = !valueProperty.value
   }
