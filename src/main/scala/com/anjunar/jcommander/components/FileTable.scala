@@ -2,7 +2,9 @@ package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.files.{FileItem, FileUtils, FileWatcher}
 import com.anjunar.jcommander.*
+import com.anjunar.jcommander.components.DriveButtons.{OnDriveChangeLeft, OnDriveChangeRight}
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.event.Observes
 import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
 import javafx.scene.control.{TableRow, TableCell as JfxTableCell}
 import scalafx.Includes.{jfxObjectProperty2sfx, jfxTableSelectionModel2sfx, observableList2ObservableBuffer}
@@ -114,7 +116,7 @@ class FileTable extends Component[TableView[FileItem]] {
   def loadDirectory(dir: File): Unit = {
     directory = dir
     val files = Option(dir.listFiles()).getOrElse(Array.empty[File])
-    val parent = Option(dir.getParentFile).map(p => FileItem("..", "<DIR>", "", "", p)).toSeq
+    val parent = Option(dir.getParentFile).map(p => FileItem("..", "<UP-DIR>", "<UP-DIR>", "", p, true)).toSeq
     val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm")
 
     val fileItems = files.toSeq
@@ -176,9 +178,21 @@ class FileTable extends Component[TableView[FileItem]] {
 object FileTable {
 
   @ApplicationScoped
-  class Left extends FileTable
+  class Left extends FileTable {
+
+    def onFileStoreChange(@Observes event: OnDriveChangeLeft): Unit = {
+      loadDirectory(event.file)
+    }
+    
+  }
 
   @ApplicationScoped
-  class Right extends FileTable
+  class Right extends FileTable {
+
+    def onFileStoreChange(@Observes event: OnDriveChangeRight): Unit = {
+      loadDirectory(event.file)
+    }
+
+  }
 
 }

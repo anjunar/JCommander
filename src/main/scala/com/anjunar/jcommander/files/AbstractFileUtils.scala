@@ -2,6 +2,7 @@ package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.{DarkMode, FileTable}
 import com.anjunar.jcommander.inject
+import com.typesafe.scalalogging.Logger
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.scene.control.*
@@ -9,10 +10,28 @@ import scalafx.scene.layout.VBox
 
 import java.io.File
 import java.nio.file.Files
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 abstract class AbstractFileUtils extends FileUtils {
   
+  val log = Logger[AbstractFileUtils]
+  
   val darkMode = inject(classOf[DarkMode])
+
+  override def executeFile(file: File, workingDir : File, args: Seq[String]): Unit = {
+    Future {
+      try {
+        val pb = new ProcessBuilder(Seq(file.getAbsolutePath) ++ args *)
+        if (workingDir != null) 
+          pb.directory(workingDir)
+        val p = pb.start()
+        val code = p.waitFor()
+      } catch {
+        case ex => log.error(ex.getMessage, ex)
+      }
+    }
+  }
 
   def mkDir(activeTable: FileTable): Unit = {
     val textField: TextField = new TextField {

@@ -1,6 +1,5 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.components.DriveButtons.OnDriveChange
 import com.anjunar.jcommander.inject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
@@ -39,10 +38,6 @@ class ActiveTable {
 
     active.node.requestFocus()
     
-  }
-
-  def onFileStoreChange(@Observes event: OnDriveChange) : Unit = {
-    active.loadDirectory(event.file)
   }
 
 }

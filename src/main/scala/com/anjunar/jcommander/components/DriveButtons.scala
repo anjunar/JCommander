@@ -1,7 +1,6 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.Component
-import com.anjunar.jcommander.components.DriveButtons.OnDriveChange
+import com.anjunar.jcommander.{Component, inject}
 import jakarta.enterprise.context.{ApplicationScoped, Dependent}
 import jakarta.enterprise.event.Event
 import jakarta.enterprise.inject.spi.BeanManager
@@ -20,8 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters.*
 
-@Dependent
-class DriveButtons extends Component[HBox] {
+abstract class DriveButtons extends Component[HBox] {
 
   private val running = new AtomicBoolean(true)
   private var lastDrives: Set[String] = currentDriveNames
@@ -30,16 +28,16 @@ class DriveButtons extends Component[HBox] {
 
   val selectedLabel = new Label("Kein Laufwerk ausgewählt")
 
-  @Inject
-  var beanManager : BeanManager = uninitialized
+  def onDriveChange(file : File) : Unit
 
   lazy val node = new HBox {
     spacing = 10
   }
 
   val home = new Button("Home") {
+    style = "-fx-background-color: transparent; -fx-text-fill: -fx-text-base-color;"
     onAction = _ => {
-      beanManager.getEvent.fire(OnDriveChange(new File(System.getProperty("user.home"))))
+      onDriveChange(new File(System.getProperty("user.home")))
     }
   }
 
@@ -67,6 +65,7 @@ class DriveButtons extends Component[HBox] {
       val name = Option(store.name()).getOrElse("Unbenannt")
       val displayName = if (name.nonEmpty) name else store.toString
       new Button(displayName) {
+        style = "-fx-background-color: transparent; -fx-text-fill: -fx-text-base-color;"
         onAction = _ => {
           selectedLabel.text = s"Ausgewählt: $displayName"
           val roots = FileSystems.getDefault.getRootDirectories.iterator()
@@ -75,7 +74,7 @@ class DriveButtons extends Component[HBox] {
             try {
               val rootStore = java.nio.file.Files.getFileStore(root)
               if (rootStore == store) {
-                beanManager.getEvent.fire(OnDriveChange(root.toFile))
+                onDriveChange(root.toFile)
               }
             } catch {
               case _: Exception =>
@@ -95,6 +94,26 @@ class DriveButtons extends Component[HBox] {
 
 object DriveButtons {
 
-  case class OnDriveChange(file : File)
+  case class OnDriveChangeLeft(file : File)
+
+  case class OnDriveChangeRight(file : File)
+  
+  @ApplicationScoped
+  class Left extends DriveButtons {
+
+    var beanManager: BeanManager = inject(classOf[BeanManager])
+
+    override def onDriveChange(file: File): Unit = beanManager.getEvent.fire(OnDriveChangeLeft(file))
+    
+  }
+
+  @ApplicationScoped
+  class Right extends DriveButtons {
+
+    var beanManager: BeanManager = inject(classOf[BeanManager])
+    
+    override def onDriveChange(file: File): Unit = beanManager.getEvent.fire(OnDriveChangeRight(file))
+    
+  }
 
 }

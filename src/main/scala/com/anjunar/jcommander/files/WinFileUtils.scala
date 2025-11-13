@@ -20,7 +20,15 @@ import scala.jdk.CollectionConverters.*
 
 class WinFileUtils extends AbstractFileUtils {
 
-  val log = Logger[WinFileUtils]
+  override val log = Logger[WinFileUtils]
+
+  override def console(workingDir: File): Unit = {
+    new ProcessBuilder(
+      "cmd.exe", "/c", "start", "powershell",
+      "-NoExit", "-Command",
+      s"Set-Location '${workingDir.getAbsolutePath}'"
+    ).directory(workingDir).start()
+  }
 
   override def getFileIcon(file: File, large: Boolean): BufferedImage = {
     val bytes = WinNativeCopy.getFileIcon(file.getAbsolutePath, large)

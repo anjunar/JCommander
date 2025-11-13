@@ -1,5 +1,7 @@
 package com.anjunar.jcommander.components
 
+import com.anjunar.jcommander.commands.*
+import com.anjunar.jcommander.configuration.SublimeConf
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.{Component, inject}
 import com.typesafe.scalalogging.Logger
@@ -13,11 +15,13 @@ class ActionButtons extends Component[HBox] {
 
   val log = Logger[ActionButtons]
 
-  val fileUtils = inject(classOf[FileUtils])
+  val fileUtils: FileUtils = inject(classOf[FileUtils])
 
-  val activeTable = inject(classOf[ActiveTable])
+  val activeTable: ActiveTable = inject(classOf[ActiveTable])
 
-  val toggleTheme = inject(classOf[DarkMode])
+  val toggleTheme: DarkMode = inject(classOf[DarkMode])
+
+  val editorConfig: SublimeConf = inject(classOf[SublimeConf])
 
   lazy val node = new HBox {
     spacing = 2
@@ -34,43 +38,43 @@ class ActionButtons extends Component[HBox] {
       new Button() {
         text = "F2 Rename"
         onMouseClicked = _ => {
-          fileUtils.renameFile(activeTable.active)
+          inject(classOf[RenameCommand]).execute()
         }
       },
       new Button() {
-        text = "F3 View"
+        text = "F3 Edit"
         onMouseClicked = _ => {
-
+          inject(classOf[EditCommand]).execute()
         }
       },
       new Button() {
-        text = "F4 Edit"
+        text = "F4 Console"
         onMouseClicked = _ => {
-
+          inject(classOf[ConsoleCommand]).execute()
         }
       },
       new Button() {
         text = "F5 Copy"
         onMouseClicked = _ => {
-          fileUtils.copyFiles(activeTable.active, activeTable.inActive)
+          inject(classOf[CopyCommand]).execute()
         }
       },
       new Button() {
         text = "F6 Move"
         onMouseClicked = _ => {
-          fileUtils.moveFiles(activeTable.active, activeTable.inActive)
+          inject(classOf[MoveCommand]).execute()
         }
       },
       new Button() {
         text = "F7 MkDir"
         onMouseClicked = _ => {
-          fileUtils.mkDir(activeTable.active)
+          inject(classOf[MkDirCommand]).execute()
         }
       },
       new Button() {
         text = "F8 Delete"
         onMouseClicked = _ => {
-          fileUtils.deleteFiles(activeTable.active, activeTable.inActive)
+          inject(classOf[DeleteCommand]).execute()
         }
       },
       new Button() {

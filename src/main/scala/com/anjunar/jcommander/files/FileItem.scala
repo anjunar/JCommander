@@ -12,6 +12,7 @@ case class FileItem(name: String,
                     size: String,
                     date: String,
                     file: File,
+                    isUpDir : Boolean = false,
                     icon: SimpleObjectProperty[BufferedImage] = new SimpleObjectProperty[BufferedImage](null)) {
 
   def isReadable : Boolean = Files.isReadable(file.toPath)

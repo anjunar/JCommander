@@ -1,6 +1,8 @@
 package com.anjunar.jcommander
 
+import com.anjunar.jcommander.commands.{ConsoleCommand, CopyCommand, DeleteCommand, EditCommand, MkDirCommand, MoveCommand, RenameCommand}
 import com.anjunar.jcommander.components.{ActionButtons, ActiveTable, DarkMode, FilePane, FileTable, HeaderMenuBar}
+import com.anjunar.jcommander.configuration.SublimeConf
 import com.anjunar.jcommander.files.{FallBackFileUtils, FileUtils, WinFileUtils}
 import jakarta.enterprise.inject.se.SeContainerInitializer
 import jakarta.enterprise.inject.spi.CDI
@@ -47,7 +49,7 @@ object Main extends JFXApp3 {
     leftTable.node.requestFocus()
 
     val actionButtons = inject(classOf[ActionButtons])
-    
+
     val rootPane = new BorderPane {
       top = topBar
       center = splitPane
@@ -107,11 +109,13 @@ object Main extends JFXApp3 {
           case KeyCode.ENTER =>
             onFileEnter()
             e.consume()
-          case KeyCode.F2 => fileUtils.renameFile(activeTable.active)
-          case KeyCode.F5 => fileUtils.copyFiles(activeTable.active, activeTable.inActive)
-          case KeyCode.F6 => fileUtils.moveFiles(activeTable.active, activeTable.inActive)
-          case KeyCode.F7 => fileUtils.mkDir(activeTable.active)
-          case KeyCode.F8 => fileUtils.deleteFiles(activeTable.active, activeTable.inActive)
+          case KeyCode.F2 => inject(classOf[RenameCommand]).execute()
+          case KeyCode.F3 => inject(classOf[EditCommand]).execute()
+          case KeyCode.F4 => inject(classOf[ConsoleCommand]).execute()
+          case KeyCode.F5 => inject(classOf[CopyCommand]).execute()
+          case KeyCode.F6 => inject(classOf[MoveCommand]).execute()
+          case KeyCode.F7 => inject(classOf[MkDirCommand]).execute()
+          case KeyCode.F8 => inject(classOf[DeleteCommand]).execute()
           case _ =>
         }
       }

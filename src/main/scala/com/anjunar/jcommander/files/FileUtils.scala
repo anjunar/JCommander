@@ -9,6 +9,10 @@ import java.io.File
 trait FileUtils {
   
   def getFileIcon(file : File, large : Boolean) : BufferedImage
+
+  def executeFile(file : File, workingDir : File, args : Seq[String]) : Unit
+  
+  def console(workingDir : File) : Unit
   
   def executeFile(file : File) : Unit
 
