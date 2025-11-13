@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.{Component, inject}
+import com.anjunar.jcommander.inject
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Separator}

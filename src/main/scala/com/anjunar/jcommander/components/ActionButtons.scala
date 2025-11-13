@@ -3,7 +3,7 @@ package com.anjunar.jcommander.components
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.configuration.SublimeConf
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.{Component, inject}
+import com.anjunar.jcommander.inject
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.event.EventHandler
@@ -86,7 +86,7 @@ class ActionButtons extends Component[HBox] {
       new Button() {
         text = "F10 Quit"
         onMouseClicked = _ => {
-
+          inject(classOf[QuitCommand]).execute()
         }
       },
       toggleTheme.node

@@ -1,22 +1,18 @@
 package com.anjunar.jcommander
 
-import com.anjunar.jcommander.commands.{ConsoleCommand, CopyCommand, DeleteCommand, EditCommand, MkDirCommand, MoveCommand, RenameCommand}
-import com.anjunar.jcommander.components.{ActionButtons, ActiveTable, DarkMode, FilePane, FileTable, HeaderMenuBar}
-import com.anjunar.jcommander.configuration.SublimeConf
-import com.anjunar.jcommander.files.{FallBackFileUtils, FileUtils, WinFileUtils}
+import com.anjunar.jcommander.commands.*
+import com.anjunar.jcommander.components.*
+import com.anjunar.jcommander.configuration.Configuration
+import com.anjunar.jcommander.files.FileUtils
+import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
+import com.fasterxml.jackson.databind.JsonNode
 import jakarta.enterprise.inject.se.SeContainerInitializer
-import jakarta.enterprise.inject.spi.CDI
+import javafx.scene.input.KeyCode
+import org.jboss.weld.proxy.WeldClientProxy
+import scalafx.Includes.{jfxMouseEvent2sfx, jfxScene2sfx}
 import scalafx.application.JFXApp3
-import scalafx.beans.property.{BooleanProperty, ObjectProperty}
-import scalafx.geometry.Insets
-import scalafx.scene.Scene
-import scalafx.scene.control.*
-import scalafx.scene.layout.*
 
 import java.io.File
-import java.nio.file.{FileStore, FileSystems}
-import javafx.scene.input.KeyCode
-import scalafx.Includes.{jfxMouseEvent2sfx, jfxScene2sfx}
 
 object Main extends JFXApp3 {
 
@@ -24,48 +20,37 @@ object Main extends JFXApp3 {
 
     val container = SeContainerInitializer.newInstance().initialize()
 
+    val configuration = inject(classOf[Configuration])
+
+    val objectMapper = ObjectMapperBuilder.build()
+
+    val homeDir = System.getProperty("user.home")
+    val configDir = new File(homeDir, ".jcommander")
+    val configFile = new File(configDir, "configuration.json")
+
+    if (configFile.exists()) {
+      val jsonNode: JsonNode = objectMapper.readTree(configFile)
+      objectMapper.readerForUpdating(configuration).readValue(jsonNode)
+    }
+
     val fileUtils = inject(classOf[FileUtils])
-    
+
     val darkMode = inject(classOf[DarkMode])
-    
+
     val leftTable = inject(classOf[FileTable.Left])
     val rightTable = inject(classOf[FileTable.Right])
 
     val activeTable = inject(classOf[ActiveTable])
 
-    val leftPane = inject(classOf[FilePane.Left])
-    val rightPane = inject(classOf[FilePane.Right])
-
-    val topBar = new HBox {
-      spacing = 10
-      children = new HeaderMenuBar().node
-    }
-
-    val splitPane = new SplitPane {
-      items.addAll(leftPane.node, rightPane.node)
-      setDividerPosition(0, 0.5)
-    }
-
     leftTable.node.requestFocus()
 
     val actionButtons = inject(classOf[ActionButtons])
 
-    val rootPane = new BorderPane {
-      top = topBar
-      center = splitPane
-      bottom = actionButtons.node
-    }
-
-    stage = new JFXApp3.PrimaryStage {
-      title = "JCommander File Manager"
-      width = 1100
-      height = 600
-      scene = new Scene(rootPane)
-    }
+    stage = inject(classOf[PrimaryStage]).node
 
     val lightCSS = getClass.getResource("/light-theme.css").toExternalForm
     val darkCSS = getClass.getResource("/dark-theme.css").toExternalForm
-    stage.scene().stylesheets.add(darkCSS)
+    stage.scene().stylesheets.add(if darkMode.value then darkCSS else lightCSS)
 
     darkMode.valueProperty.onChange { (_, _, isDark) =>
       val styles = stage.scene().stylesheets
@@ -85,9 +70,9 @@ object Main extends JFXApp3 {
       val selected = activeTable.active.node.selectionModel().getSelectedItem
       if (selected != null) {
         if (selected.file.isDirectory) {
-          activeTable.active.loadDirectory(selected.file)  
+          activeTable.active.loadDirectory(selected.file)
         } else {
-          fileUtils.executeFile(selected.file) 
+          fileUtils.executeFile(selected.file)
         }
       }
     }
@@ -116,10 +101,11 @@ object Main extends JFXApp3 {
           case KeyCode.F6 => inject(classOf[MoveCommand]).execute()
           case KeyCode.F7 => inject(classOf[MkDirCommand]).execute()
           case KeyCode.F8 => inject(classOf[DeleteCommand]).execute()
+          case KeyCode.F10 => inject(classOf[QuitCommand]).execute()
           case _ =>
         }
       }
     }
   }
-  
+
 }

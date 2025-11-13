@@ -13,6 +13,9 @@ lazy val root = (project in file("."))
       "org.slf4j" % "jul-to-slf4j" % "2.0.17",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.6",
       "org.jboss.weld.se" % "weld-se-core" % "6.0.3.Final",
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.20.1",
+      "com.fasterxml.jackson.core" % "jackson-core" % "2.20.1",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.20.1",
       "org.scalafx" %% "scalafx" % "24.0.2-R36",
       "io.methvin" % "directory-watcher" % "0.19.1"
     ),
