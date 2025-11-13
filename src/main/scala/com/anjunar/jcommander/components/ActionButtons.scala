@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.*
-import com.anjunar.jcommander.configuration.SublimeConf
+import com.anjunar.jcommander.configuration.SublimeTextConf
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.inject
 import com.typesafe.scalalogging.Logger
@@ -21,7 +21,7 @@ class ActionButtons extends Component[HBox] {
 
   val toggleTheme: DarkMode = inject(classOf[DarkMode])
 
-  val editorConfig: SublimeConf = inject(classOf[SublimeConf])
+  val editorConfig: SublimeTextConf = inject(classOf[SublimeTextConf])
 
   lazy val node = new HBox {
     spacing = 2

@@ -7,11 +7,9 @@ import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
 import com.anjunar.scala.universe.introspector.BeanIntrospector
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
 import jakarta.enterprise.inject.se.SeContainerInitializer
 import jakarta.inject.Inject
 import javafx.scene.input.KeyCode
-import org.jboss.weld.proxy.WeldClientProxy
 import scalafx.Includes.{jfxMouseEvent2sfx, jfxScene2sfx}
 import scalafx.application.JFXApp3
 
@@ -31,7 +29,7 @@ object Main extends JFXApp3 {
     val configDir = new File(homeDir, ".jcommander")
     val configFile = new File(configDir, "configuration.json")
 
-    def loadConfiguration(target : AnyRef, source : AnyRef, clazz : Class[? <: AnyRef]): Unit = {
+    def loadConfiguration(target: AnyRef, source: AnyRef, clazz: Class[? <: AnyRef]): Unit = {
       val beanModel = BeanIntrospector.createWithType(clazz)
       beanModel.properties.foreach(property => {
         if (property.findAnnotation(classOf[JsonProperty]) != null) {
@@ -79,9 +77,8 @@ object Main extends JFXApp3 {
       styles.add(if (isDark) darkCSS else lightCSS)
     }
 
-    val home = new File(System.getProperty("user.home"))
-    leftTable.loadDirectory(home)
-    rightTable.loadDirectory(home)
+    leftTable.loadDirectory(configuration.primaryStage.leftTable.file)
+    rightTable.loadDirectory(configuration.primaryStage.rightTable.file)
 
     def switchFocus(): Unit = {
       activeTable.swap()

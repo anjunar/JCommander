@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.objectmapper
 
-import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf, PrimaryStageConf, SublimeConf}
+import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf, PrimaryStageConf, SublimeTextConf}
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.jboss.weld.proxy.WeldClientProxy
 

@@ -3,6 +3,7 @@ package com.anjunar.jcommander.components
 import com.anjunar.jcommander.files.{FileItem, FileUtils, FileWatcher}
 import com.anjunar.jcommander.*
 import com.anjunar.jcommander.components.DriveButtons.{OnDriveChangeLeft, OnDriveChangeRight}
+import com.anjunar.jcommander.configuration.FileTableConf
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
 import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
@@ -21,9 +22,11 @@ import java.text.SimpleDateFormat
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 
-class FileTable extends Component[TableView[FileItem]] {
+abstract class FileTable extends Component[TableView[FileItem]] {
 
-  var fileUtils: FileUtils = inject(classOf[FileUtils])
+  val fileUtils: FileUtils = inject(classOf[FileUtils])
+
+  val configuration : FileTableConf
 
   var directory: File = uninitialized
 
@@ -115,6 +118,7 @@ class FileTable extends Component[TableView[FileItem]] {
 
   def loadDirectory(dir: File): Unit = {
     directory = dir
+    configuration.file = dir
     val files = Option(dir.listFiles()).getOrElse(Array.empty[File])
     val parent = Option(dir.getParentFile).map(p => FileItem("..", "<UP-DIR>", "<UP-DIR>", "", p, true)).toSeq
     val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm")
@@ -180,7 +184,9 @@ object FileTable {
   @ApplicationScoped
   class Left extends FileTable {
 
-    def onFileStoreChange(@Observes event: OnDriveChangeLeft): Unit = {
+    val configuration : FileTableConf = inject(classOf[FileTableConf.Left])
+
+    def onDriveChange(@Observes event: OnDriveChangeLeft): Unit = {
       loadDirectory(event.file)
     }
     
@@ -189,7 +195,9 @@ object FileTable {
   @ApplicationScoped
   class Right extends FileTable {
 
-    def onFileStoreChange(@Observes event: OnDriveChangeRight): Unit = {
+    val configuration : FileTableConf = inject(classOf[FileTableConf.Right])
+
+    def onDriveChange(@Observes event: OnDriveChangeRight): Unit = {
       loadDirectory(event.file)
     }
 

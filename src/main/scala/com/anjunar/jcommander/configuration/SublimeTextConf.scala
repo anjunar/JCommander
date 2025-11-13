@@ -6,7 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import scala.beans.BeanProperty
 
 @ApplicationScoped
-class SublimeConf {
+class SublimeTextConf {
 
   @BeanProperty
   @JsonProperty("executable")

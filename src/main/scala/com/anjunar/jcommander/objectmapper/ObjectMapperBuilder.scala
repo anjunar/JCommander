@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.objectmapper
 
-import com.anjunar.jcommander.configuration.{PrimaryStageConf, SublimeConf}
+import com.anjunar.jcommander.configuration.{PrimaryStageConf, SublimeTextConf}
 import com.anjunar.jcommander.inject
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.databind.{BeanProperty, DeserializationContext, InjectableValues, ObjectMapper}
@@ -45,7 +45,7 @@ object ObjectMapperBuilder {
           case id: String =>
             id match {
               case "primaryStage" => inject(classOf[PrimaryStageConf])
-              case "sublime" => inject(classOf[SublimeConf])
+              case "sublime" => inject(classOf[SublimeTextConf])
               case _ => null
             }
 

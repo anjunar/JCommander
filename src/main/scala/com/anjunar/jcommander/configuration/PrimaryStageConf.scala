@@ -24,4 +24,15 @@ class PrimaryStageConf {
   @JsonProperty("darkMode")
   var darkMode: DarkModeConf = uninitialized
 
+  @Inject
+  @BeanProperty
+  @JsonProperty("leftFileTable")
+  var leftTable : FileTableConf.Left = uninitialized
+
+  @Inject
+  @BeanProperty
+  @JsonProperty("rightFileTable")
+  var rightTable: FileTableConf.Right = uninitialized
+
+
 }
