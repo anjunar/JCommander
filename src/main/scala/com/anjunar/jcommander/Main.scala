@@ -5,8 +5,11 @@ import com.anjunar.jcommander.components.*
 import com.anjunar.jcommander.configuration.Configuration
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
+import com.anjunar.scala.universe.introspector.BeanIntrospector
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import jakarta.enterprise.inject.se.SeContainerInitializer
+import jakarta.inject.Inject
 import javafx.scene.input.KeyCode
 import org.jboss.weld.proxy.WeldClientProxy
 import scalafx.Includes.{jfxMouseEvent2sfx, jfxScene2sfx}
@@ -28,11 +31,27 @@ object Main extends JFXApp3 {
     val configDir = new File(homeDir, ".jcommander")
     val configFile = new File(configDir, "configuration.json")
 
+    def loadConfiguration(target : AnyRef, source : AnyRef, clazz : Class[? <: AnyRef]): Unit = {
+      val beanModel = BeanIntrospector.createWithType(clazz)
+      beanModel.properties.foreach(property => {
+        if (property.findAnnotation(classOf[JsonProperty]) != null) {
+
+          val sourceValue = property.get(source)
+          val targetValue = property.get(target)
+
+          if (property.findAnnotation(classOf[Inject]) != null) {
+            loadConfiguration(targetValue.asInstanceOf[AnyRef], sourceValue.asInstanceOf[AnyRef], property.propertyType.raw.asInstanceOf[Class[AnyRef]])
+          } else {
+            property.set(target, sourceValue)
+          }
+        }
+      })
+    }
+
     if (configFile.exists()) {
-//      val proxy = configuration.asInstanceOf[WeldClientProxy]
-//      val instance = proxy.getMetadata.getContextualInstance
-      val jsonNode: JsonNode = objectMapper.readTree(configFile)
-      objectMapper.readerForUpdating(configuration).readValue(jsonNode)
+      val loadedConf = objectMapper.readValue(configFile, classOf[Configuration])
+
+      loadConfiguration(configuration, loadedConf, classOf[Configuration])
     }
 
     val fileUtils = inject(classOf[FileUtils])

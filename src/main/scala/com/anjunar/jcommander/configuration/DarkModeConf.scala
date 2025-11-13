@@ -6,10 +6,10 @@ import jakarta.enterprise.context.ApplicationScoped
 import scala.beans.BeanProperty
 
 @ApplicationScoped
-class SublimeConf {
+class DarkModeConf {
 
-  @BeanProperty
-  @JsonProperty("executable")
-  var executable = "C:\\Program Files\\Sublime Text\\sublime_text.exe"
+  @JsonProperty("value")
+  @BeanProperty  
+  var value : Boolean = true
 
 }

@@ -8,6 +8,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "JCommander",
     libraryDependencies ++= Seq(
+      "com.google.guava" % "guava" % "33.5.0-jre",
       "ch.qos.logback" % "logback-classic" % "1.5.20",
       "org.slf4j" % "slf4j-api" % "2.0.17",
       "org.slf4j" % "jul-to-slf4j" % "2.0.17",
