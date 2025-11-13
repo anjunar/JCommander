@@ -18,6 +18,8 @@ lazy val root = (project in file("."))
       "com.fasterxml.jackson.core" % "jackson-core" % "2.20.1",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.20.1",
       "org.scalafx" %% "scalafx" % "24.0.2-R36",
+      "org.kordamp.ikonli" % "ikonli-javafx" % "12.4.0",
+      "org.kordamp.ikonli" % "ikonli-materialdesign2-pack" % "12.4.0",
       "io.methvin" % "directory-watcher" % "0.19.1"
     ),
     libraryDependencies ++= {

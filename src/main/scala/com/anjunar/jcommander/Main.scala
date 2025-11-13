@@ -10,8 +10,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.enterprise.inject.se.SeContainerInitializer
 import jakarta.inject.Inject
 import javafx.scene.input.KeyCode
+import org.kordamp.ikonli.javafx.FontIcon
 import scalafx.Includes.{jfxMouseEvent2sfx, jfxScene2sfx}
 import scalafx.application.JFXApp3
+import scalafx.scene.control.{ContextMenu, MenuItem}
+import scalafx.scene.input.MouseButton
+import scalafx.Includes.*
+import scalafx.scene.paint.Color
 
 import java.io.File
 
@@ -95,13 +100,59 @@ object Main extends JFXApp3 {
       }
     }
 
+    def themedIcon(iconName: String, size: Int = 20): FontIcon = {
+      val icon = new FontIcon(iconName)
+      icon.setIconSize(size)
+      icon.setIconColor(if (darkMode.value) Color.White else Color.Black)
+
+      // reaktiv anpassen, wenn das Theme wechselt
+      darkMode.valueProperty.onChange { (_, _, isDark) =>
+        icon.setIconColor(if (isDark) Color.White else Color.Black)
+      }
+
+      icon
+    }
+
     Seq(leftTable, rightTable).foreach { table =>
+
+      val contextMenu = new ContextMenu(
+        new MenuItem("Rename") {
+          graphic = themedIcon("mdi2t-text-box-edit-outline")
+          onAction = _ => inject(classOf[RenameCommand]).execute()
+        },
+        new MenuItem("Copy") {
+          graphic = themedIcon("mdi2c-content-copy")
+          onAction = _ => inject(classOf[CopyCommand]).execute()
+        },
+        new MenuItem("Move") {
+          graphic = themedIcon("mdi2f-file-move-outline")
+          onAction = _ => inject(classOf[MoveCommand]).execute()
+        },
+        new MenuItem("Delete") {
+          graphic = themedIcon("mdi2d-delete-outline")
+          onAction = _ => inject(classOf[DeleteCommand]).execute()
+        },
+        new MenuItem("Make Directory") {
+          graphic = themedIcon("mdi2f-folder-plus-outline")
+          onAction = _ => inject(classOf[MkDirCommand]).execute()
+        }
+      ) {
+        style = "-fx-padding: 8 12 8 12;"
+      }
+      
+      contextMenu.setAutoHide(true)
+
       table.node.onMouseClicked = e => {
-        if (e.clickCount == 2) {
+        activeTable.setActive(table)
+        contextMenu.hide()
+
+        if (e.button == MouseButton.Secondary) {
+          contextMenu.show(table.node, e.screenX, e.screenY)
+          e.consume()
+        } else if (e.clickCount == 2) {
           onFileEnter()
           e.consume()
         }
-        activeTable.setActive(table)
       }
 
       table.node.onKeyPressed = e => {
@@ -123,7 +174,9 @@ object Main extends JFXApp3 {
           case _ =>
         }
       }
-    }
-  }
 
+    }
+
+  }
+  
 }

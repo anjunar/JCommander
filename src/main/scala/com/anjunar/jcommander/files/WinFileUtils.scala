@@ -39,8 +39,8 @@ class WinFileUtils extends AbstractFileUtils {
 
   override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
-      (paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback) => {
-        WinNativeCopy.copyFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback)
+      (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
+        WinNativeCopy.copyFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback, overwrite)
       },
       "Copy Files",
       "Should the selected Files be copied?",
@@ -53,8 +53,8 @@ class WinFileUtils extends AbstractFileUtils {
 
   override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
-      (paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback) => {
-        WinNativeCopy.moveFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback)
+      (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
+        WinNativeCopy.moveFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback, overwrite)
       },
       "Move Files",
       "Should the selected Files be moved?",
@@ -67,8 +67,8 @@ class WinFileUtils extends AbstractFileUtils {
 
   override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
-      (paths: Seq[Path], target: Path, progressCallback: WinNativeCopy.ProgressCallback) => {
-        WinNativeCopy.deleteFiles(paths.map(_.toAbsolutePath.toString).toArray, progressCallback)
+      (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
+        WinNativeCopy.deleteFiles(paths.map(_.toAbsolutePath.toString).toArray, progressCallback, recycle)
       },
       "Delete Files",
       "Should the selected Files be deleted?",
@@ -90,13 +90,10 @@ class WinFileUtils extends AbstractFileUtils {
                   ): Unit = {
 
     val replaceExistingBox = new CheckBox("Replace existing files") {
+      selected = false
+    }
+    val moveToRecycleBinBox = new CheckBox("Move to Recycle Bin") {
       selected = true
-    }
-    val copyAttributesBox = new CheckBox("Copying Attributes") {
-      selected = false
-    }
-    val checkLockedFilesBox = new CheckBox("Check for locked Files") {
-      selected = false
     }
 
     val confirmDialog = new Dialog[ButtonType]() {
@@ -108,10 +105,10 @@ class WinFileUtils extends AbstractFileUtils {
           if (OSType.osName == "win") {
             children += replaceExistingBox
           } else {
-            children ++= Seq(replaceExistingBox, copyAttributesBox)
+            children ++= Seq(replaceExistingBox)
           }
         } else {
-          children += checkLockedFilesBox
+          children += moveToRecycleBinBox
         }
       }
       dialogPane().getStylesheets.add(
@@ -123,6 +120,9 @@ class WinFileUtils extends AbstractFileUtils {
 
     confirmDialog.showAndWait().foreach { result =>
       if (result == ButtonType.OK) {
+
+        val overwriteExisting = replaceExistingBox.selected.value
+        val moveToRecycleBin = moveToRecycleBinBox.selected.value
 
         val selectedFiles = activeTable.node.selectionModel.value.getSelectedItems.asScala.map(_.file.toPath).toSeq
         val targetDir = otherTable.directory.toPath
@@ -139,7 +139,7 @@ class WinFileUtils extends AbstractFileUtils {
           override def call(): Unit = {
             val startTime = Instant.now()
 
-            strategy.winProcess(selectedFiles, targetDir, new WinNativeCopy.ProgressCallback {
+            strategy.winProcess(selectedFiles, targetDir, overwriteExisting, moveToRecycleBin, new WinNativeCopy.ProgressCallback {
 
               override def onProgress(event: WinNativeCopy.ProgressEvent): Unit = {
                 event.`type` match {

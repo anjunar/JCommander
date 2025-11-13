@@ -6,9 +6,9 @@ public class WinNativeCopy {
         System.loadLibrary("win_native_copy");
     }
 
-    public static native void copyFiles(String[] sources, String targetDir, ProgressCallback callback);
-    public static native void moveFiles(String[] sources, String targetDir, ProgressCallback callback);
-    public static native void deleteFiles(String[] sources, ProgressCallback callback);
+    public static native void copyFiles(String[] sources, String targetDir, ProgressCallback callback, boolean overwrite);
+    public static native void moveFiles(String[] sources, String targetDir, ProgressCallback callback, boolean overwrite);
+    public static native void deleteFiles(String[] sources, ProgressCallback callback, boolean recycle);
     public static native void executeFile(String path);
     public static native byte[] getFileIcon(String path, boolean large);
 
