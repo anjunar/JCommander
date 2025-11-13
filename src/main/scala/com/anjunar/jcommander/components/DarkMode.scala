@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.configuration.Configuration
+import com.anjunar.jcommander.configuration.{Configuration, PrimaryStageConf}
 import com.anjunar.jcommander.inject
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.beans.property.BooleanProperty
@@ -10,7 +10,7 @@ import scalafx.scene.control.{Button, Tooltip}
 @ApplicationScoped
 class DarkMode extends Component[Button] {
 
-  val configuration: Configuration = inject(classOf[Configuration])
+  val configuration: PrimaryStageConf = inject(classOf[PrimaryStageConf])
 
   def value : Boolean = valueProperty.value
 

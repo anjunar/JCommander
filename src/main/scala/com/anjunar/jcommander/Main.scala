@@ -29,6 +29,8 @@ object Main extends JFXApp3 {
     val configFile = new File(configDir, "configuration.json")
 
     if (configFile.exists()) {
+//      val proxy = configuration.asInstanceOf[WeldClientProxy]
+//      val instance = proxy.getMetadata.getContextualInstance
       val jsonNode: JsonNode = objectMapper.readTree(configFile)
       objectMapper.readerForUpdating(configuration).readValue(jsonNode)
     }

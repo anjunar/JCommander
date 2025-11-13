@@ -17,6 +17,7 @@ class CdiAwareDeserializer[E](clazz : Class[E]) extends JsonDeserializer[E] {
       val instance = cdi.select(clazz).get()
       val proxy : WeldClientProxy = instance.asInstanceOf[WeldClientProxy]
       mapper.readerForUpdating(proxy.getMetadata.getContextualInstance).readValue(node)
+      instance
     } catch {
       case ex : Exception => mapper.treeToValue(node, clazz)
     }

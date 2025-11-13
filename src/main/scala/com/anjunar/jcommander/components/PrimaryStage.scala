@@ -1,5 +1,6 @@
 package com.anjunar.jcommander.components
 
+import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.configuration.PrimaryStageConf
 import com.anjunar.jcommander.inject
 import jakarta.enterprise.context.ApplicationScoped
@@ -18,6 +19,7 @@ class PrimaryStage extends Component[JFXApp3.PrimaryStage] {
     width = primaryStageConf.width
     height = primaryStageConf.height
     scene = new Scene(rootPane.node)
+    onCloseRequest = _ => inject(classOf[QuitCommand]).execute()
   }
   
 }

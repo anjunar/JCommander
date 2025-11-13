@@ -8,15 +8,13 @@ import scala.beans.BeanProperty
 @ApplicationScoped
 class PrimaryStageConf {
 
+  @JsonProperty("darkMode")
+  var darkMode: Boolean = true
+
   @JsonProperty("width")
   var width: Double = 1100
 
   @JsonProperty("height")
   var height: Double = 600
-  
-  def load(value : PrimaryStageConf): Unit = {
-    width = value.width
-    height = value.height
-  }
 
 }
