@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.configuration
 
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject

@@ -1,9 +1,9 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.*
-import com.anjunar.jcommander.configuration.SublimeTextConf
+import com.anjunar.jcommander.configuration.TextEditorConf
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.event.EventHandler
@@ -11,17 +11,17 @@ import scalafx.scene.control.Button
 import scalafx.scene.layout.{HBox, Priority}
 
 @ApplicationScoped
-class ActionButtons extends Component[HBox] {
+class ActionButtonsComponent extends Component[HBox] {
 
-  val log = Logger[ActionButtons]
+  val log = Logger[ActionButtonsComponent]
 
   val fileUtils: FileUtils = inject(classOf[FileUtils])
 
-  val activeTable: ActiveTable = inject(classOf[ActiveTable])
+  val activeTable: ActiveTableComponent = inject(classOf[ActiveTableComponent])
 
-  val toggleTheme: DarkMode = inject(classOf[DarkMode])
+  val toggleTheme: DarkModeComponent = inject(classOf[DarkModeComponent])
 
-  val editorConfig: SublimeTextConf = inject(classOf[SublimeTextConf])
+  val editorConfig: TextEditorConf = inject(classOf[TextEditorConf])
 
   lazy val node = new HBox {
     spacing = 2

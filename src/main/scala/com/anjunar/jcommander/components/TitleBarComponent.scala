@@ -1,20 +1,21 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.{Icons, inject}
+import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.Icons
 import com.anjunar.jcommander.commands.QuitCommand
-import scalafx.geometry.Insets
+import scalafx.Includes.*
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Cursor
 import scalafx.scene.control.Label
 import scalafx.scene.input.MouseEvent
-import scalafx.scene.layout.{HBox, Priority, Region}
-import scalafx.scene.paint.Color
-import scalafx.scene.text.Font
+import scalafx.scene.layout.{HBox, Priority, Region, VBox}
 import scalafx.stage.Stage
-import scalafx.Includes.*
 
-class TitleBar(stage: Stage) {
+class TitleBarComponent(stage: Stage) {
 
-  val headerMenuBar = inject(classOf[HeaderMenuBar])
+  private val headerMenuBar = inject(classOf[HeaderMenuBarComponent])
+
+  private val darkMode = inject(classOf[DarkModeComponent])
 
   private var xOffset = 0.0
   private var yOffset = 0.0
@@ -25,13 +26,11 @@ class TitleBar(stage: Stage) {
   private var savedH = 0.0
   private var maximized = false
 
-  private val darkMode = inject(classOf[DarkMode])
 
-  // Icons automatisch theme-farbig
-  private val minimizeIcon = Icons.themedIcon("mdi2w-window-minimize", 20)
-  private val maximizeIcon = Icons.themedIcon("mdi2w-window-maximize", 20)
-  private val restoreIcon  = Icons.themedIcon("mdi2w-window-restore", 20)
-  private val closeIcon    = Icons.themedIcon("mdi2w-window-close", 20)
+  private val minimizeIcon = Icons.themedIcon("mdi2w-window-minimize")
+  private val maximizeIcon = Icons.themedIcon("mdi2w-window-maximize")
+  private val restoreIcon = Icons.themedIcon("mdi2w-window-restore")
+  private val closeIcon = Icons.themedIcon("mdi2w-window-close")
 
   private def createButton(icon: scalafx.scene.Node, onClick: => Unit): HBox = {
     val btn = new HBox {
@@ -61,11 +60,17 @@ class TitleBar(stage: Stage) {
   private val spacer = new Region
   HBox.setHgrow(spacer, Priority.Always)
 
+  val menuWrapper = new VBox {
+    alignment = Pos.Center
+    children = Seq(headerMenuBar.node)
+  }
+
   val box = new HBox {
     spacing = 5
     padding = Insets(0)
+    alignment = Pos.CenterLeft
     style = s"-fx-background-color: ${if (darkMode.value) "#1e1e1e" else "#eee"};"
-    children = Seq(headerMenuBar.node, spacer, minimizeBtn, maximizeBtn, closeBtn)
+    children = Seq(menuWrapper, spacer, minimizeBtn, maximizeBtn, closeBtn)
   }
 
   darkMode.valueProperty.onChange { (_, _, isDark) =>

@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import jakarta.enterprise.context.{ApplicationScoped, Dependent}
 import jakarta.enterprise.event.Event
 import jakarta.enterprise.inject.spi.BeanManager
@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters.*
 
-abstract class DriveButtons extends Component[HBox] {
+abstract class DriveButtonsComponent extends Component[HBox] {
 
   private val running = new AtomicBoolean(true)
   private var lastDrives: Set[String] = currentDriveNames
@@ -92,14 +92,14 @@ abstract class DriveButtons extends Component[HBox] {
   }
 }
 
-object DriveButtons {
+object DriveButtonsComponent {
 
   case class OnDriveChangeLeft(file : File)
 
   case class OnDriveChangeRight(file : File)
   
   @ApplicationScoped
-  class Left extends DriveButtons {
+  class Left extends DriveButtonsComponent {
 
     var beanManager: BeanManager = inject(classOf[BeanManager])
 
@@ -108,7 +108,7 @@ object DriveButtons {
   }
 
   @ApplicationScoped
-  class Right extends DriveButtons {
+  class Right extends DriveButtonsComponent {
 
     var beanManager: BeanManager = inject(classOf[BeanManager])
     

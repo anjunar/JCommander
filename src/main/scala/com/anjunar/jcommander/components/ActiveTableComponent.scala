@@ -1,21 +1,21 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
 
 import java.nio.file.{FileStore, FileSystems}
 
 @ApplicationScoped
-class ActiveTable {
+class ActiveTableComponent {
 
-  val leftTable: FileTable.Left = inject(classOf[FileTable.Left])
-  val rightTable: FileTable.Right = inject(classOf[FileTable.Right])
+  val leftTable: FileTableComponent.Left = inject(classOf[FileTableComponent.Left])
+  val rightTable: FileTableComponent.Right = inject(classOf[FileTableComponent.Right])
 
-  var active: FileTable = leftTable
-  var inActive: FileTable = rightTable
+  var active: FileTableComponent = leftTable
+  var inActive: FileTableComponent = rightTable
 
-  def setActive(table: FileTable) : Unit = {
+  def setActive(table: FileTableComponent) : Unit = {
     if (table != active) {
       swap()
     }

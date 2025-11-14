@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.commands
 
-import com.anjunar.jcommander.configuration.SublimeTextConf
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.configuration.TextEditorConf
+import com.anjunar.jcommander.CdiUtils.*
 import jakarta.enterprise.context.Dependent
 
 import java.io.File
@@ -9,7 +9,7 @@ import java.io.File
 @Dependent
 class EditCommand extends AbstractFileCommand {
 
-  val configuration = inject(classOf[SublimeTextConf])
+  val configuration = inject(classOf[TextEditorConf])
 
   override def execute(): Unit = {
     if (canExecute) {

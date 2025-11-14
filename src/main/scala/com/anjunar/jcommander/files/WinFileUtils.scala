@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.FileTable
+import com.anjunar.jcommander.components.FileTableComponent
 import com.anjunar.jcommander.{OSType, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
@@ -37,7 +37,7 @@ class WinFileUtils extends AbstractFileUtils {
 
   override def executeFile(file: File): Unit = WinNativeCopy.executeFile(file.getAbsolutePath)
 
-  override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
+  override def copyFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.copyFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback, overwrite)
@@ -51,7 +51,7 @@ class WinFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
+  override def moveFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.moveFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback, overwrite)
@@ -65,7 +65,7 @@ class WinFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
+  override def deleteFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.deleteFiles(paths.map(_.toAbsolutePath.toString).toArray, progressCallback, recycle)
@@ -85,8 +85,8 @@ class WinFileUtils extends AbstractFileUtils {
                     confirmHeader: String,
                     progressText: String,
                     isDelete: Boolean,
-                    activeTable: FileTable,
-                    otherTable: FileTable
+                    activeTable: FileTableComponent,
+                    otherTable: FileTableComponent
                   ): Unit = {
 
     val replaceExistingBox = new CheckBox("Replace existing files") {

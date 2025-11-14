@@ -1,9 +1,9 @@
 package com.anjunar.jcommander.commands
 
-import com.anjunar.jcommander.components.PrimaryStage
+import com.anjunar.jcommander.components.PrimaryStageComponent
 import com.anjunar.jcommander.configuration.Configuration
 import com.anjunar.jcommander.objectmapper.{CdiModule, ObjectMapperBuilder}
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.enterprise.context.Dependent
@@ -16,7 +16,7 @@ import scala.util.Using
 class QuitCommand extends Command {
 
   val configuration: Configuration = inject(classOf[Configuration])
-  val primaryStage: PrimaryStage = inject(classOf[PrimaryStage])
+  val primaryStage: PrimaryStageComponent = inject(classOf[PrimaryStageComponent])
 
   override def canExecute: Boolean = true
 

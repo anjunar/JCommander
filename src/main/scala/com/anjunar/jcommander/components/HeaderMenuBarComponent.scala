@@ -1,13 +1,15 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.QuitCommand
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.scene.control.*
 import scalafx.scene.layout.HBox
 
 @ApplicationScoped
-class HeaderMenuBar extends Component[HBox] {
+class HeaderMenuBarComponent extends Component[HBox] {
+  
+  val darkMode = inject(classOf[DarkModeComponent])
 
   lazy val node = new HBox {
     spacing = 10
@@ -20,7 +22,10 @@ class HeaderMenuBar extends Component[HBox] {
           new MenuItem("Open...") {
             onAction = _ => println("Öffnen gewählt")
           },
-          new SeparatorMenuItem,
+          new MenuItem("Configuration") {
+            onAction = _ => inject(classOf[ConfigurationComponent]).node.showAndWait()
+          },
+        new SeparatorMenuItem,
           new MenuItem("Exit") {
             onAction = _ => inject(classOf[QuitCommand]).execute()
           }
@@ -47,14 +52,6 @@ class HeaderMenuBar extends Component[HBox] {
         )
       }
 
-      val configurationMenu = new Menu("Configuration") {
-        items = List(
-          new MenuItem("Sublime Text") {
-            onAction = _ => println("Kopieren gewählt")
-          }
-        )
-      }
-
       val helpMenu = new Menu("Help") {
         items = List(
           new MenuItem("About...") {
@@ -62,13 +59,16 @@ class HeaderMenuBar extends Component[HBox] {
               title = "About JCommander"
               headerText = "JCommander"
               contentText = "A File-Commander with ScalaFX."
+              dialogPane().getStylesheets.add(
+                getClass.getResource(s"/${if (darkMode.value) "dark" else "light"}-theme.css").toExternalForm
+              )
             }.showAndWait()
           }
         )
       }
 
       useSystemMenuBar = false
-      menus = List(fileMenu, editMenu, viewMenu, configurationMenu, helpMenu)
+      menus = List(fileMenu, editMenu, viewMenu, helpMenu)
     })
   }
 

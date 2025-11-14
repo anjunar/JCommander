@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class Launcher {
-    public static void main(String[] args) throws Exception {
+    static void main(String[] args) throws Exception {
         File distDir = new File("app/lib");
         if (!distDir.exists() || !distDir.isDirectory()) {
             throw new RuntimeException("Dist-Verzeichnis nicht gefunden: " + distDir.getAbsolutePath());
@@ -23,13 +23,10 @@ public class Launcher {
                 })
                 .toArray(URL[]::new);
 
-        // URLClassLoader mit SystemClassLoader als Parent
         URLClassLoader loader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
 
-        // Setze Thread Context ClassLoader für JavaFX/ScalaFX
         Thread.currentThread().setContextClassLoader(loader);
 
-        // Main-Klasse laden und starten
         Class<?> mainClass = Class.forName("com.anjunar.jcommander.Main", true, loader);
         Method mainMethod = mainClass.getMethod("main", String[].class);
         mainMethod.invoke(null, (Object) args);

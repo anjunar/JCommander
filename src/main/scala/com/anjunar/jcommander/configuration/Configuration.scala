@@ -17,7 +17,7 @@ class Configuration {
 
   @Inject
   @BeanProperty
-  @JsonProperty("sublime")
-  var sublimeConf: SublimeTextConf = uninitialized
+  @JsonProperty("textEditor")
+  var textEditor: TextEditorConf = uninitialized
 
 }

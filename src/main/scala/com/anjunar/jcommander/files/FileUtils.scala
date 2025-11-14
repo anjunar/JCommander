@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.FileTable
+import com.anjunar.jcommander.components.FileTableComponent
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 
 import java.awt.image.BufferedImage
@@ -16,13 +16,13 @@ trait FileUtils {
   
   def executeFile(file : File) : Unit
 
-  def mkDir(activeTable: FileTable): Unit
+  def mkDir(activeTable: FileTableComponent): Unit
 
-  def renameFile(activeTable: FileTable): Unit
+  def renameFile(activeTable: FileTableComponent): Unit
 
-  def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit
+  def copyFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit
 
-  def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit
+  def moveFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit
 
-  def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit
+  def deleteFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit
 }

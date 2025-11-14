@@ -1,12 +1,12 @@
 package com.anjunar.jcommander.commands
 
-import com.anjunar.jcommander.components.ActiveTable
+import com.anjunar.jcommander.components.ActiveTableComponent
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 
 abstract class AbstractFileCommand extends Command {
 
-  val activeTable: ActiveTable = inject(classOf[ActiveTable])
+  val activeTable: ActiveTableComponent = inject(classOf[ActiveTableComponent])
 
   val fileUtils: FileUtils = inject(classOf[FileUtils])
 

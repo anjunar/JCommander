@@ -1,8 +1,8 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.files.{FileItem, FileUtils, FileWatcher}
-import com.anjunar.jcommander.*
-import com.anjunar.jcommander.components.DriveButtons.{OnDriveChangeLeft, OnDriveChangeRight}
+import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.components.DriveButtonsComponent.{OnDriveChangeLeft, OnDriveChangeRight}
 import com.anjunar.jcommander.configuration.FileTableConf
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
@@ -25,7 +25,7 @@ import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
 
-abstract class FileTable extends Component[TableView[FileItem]] {
+abstract class FileTableComponent extends Component[TableView[FileItem]] {
 
   val fileUtils: FileUtils = inject(classOf[FileUtils])
   val configuration: FileTableConf
@@ -307,10 +307,10 @@ abstract class FileTable extends Component[TableView[FileItem]] {
 
 }
 
-object FileTable {
+object FileTableComponent {
 
   @ApplicationScoped
-  class Left extends FileTable {
+  class Left extends FileTableComponent {
     val configuration: FileTableConf = inject(classOf[FileTableConf.Left])
 
     def onDriveChange(@Observes event: OnDriveChangeLeft): Unit = {
@@ -319,7 +319,7 @@ object FileTable {
   }
 
   @ApplicationScoped
-  class Right extends FileTable {
+  class Right extends FileTableComponent {
     val configuration: FileTableConf = inject(classOf[FileTableConf.Right])
 
     def onDriveChange(@Observes event: OnDriveChangeRight): Unit = {

@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{DarkMode, FileTable}
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.components.{DarkModeComponent, FileTableComponent}
+import com.anjunar.jcommander.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
@@ -17,7 +17,7 @@ abstract class AbstractFileUtils extends FileUtils {
   
   val log = Logger[AbstractFileUtils]
   
-  val darkMode = inject(classOf[DarkMode])
+  val darkMode = inject(classOf[DarkModeComponent])
 
   override def executeFile(file: File, workingDir : File, args: Seq[String]): Unit = {
     Future {
@@ -33,7 +33,7 @@ abstract class AbstractFileUtils extends FileUtils {
     }
   }
 
-  def mkDir(activeTable: FileTable): Unit = {
+  def mkDir(activeTable: FileTableComponent): Unit = {
     val textField: TextField = new TextField {
       promptText = "Directory Name"
     }
@@ -58,7 +58,7 @@ abstract class AbstractFileUtils extends FileUtils {
     }
   }
 
-  def renameFile(activeTable: FileTable): Unit = {
+  def renameFile(activeTable: FileTableComponent): Unit = {
     val textField: TextField = new TextField {
       text = activeTable.node.selectionModel.value.getSelectedItem.name
     }

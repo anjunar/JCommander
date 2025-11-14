@@ -1,8 +1,8 @@
 package com.anjunar.jcommander.commands
 
-import com.anjunar.jcommander.components.ActiveTable
+import com.anjunar.jcommander.components.ActiveTableComponent
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import jakarta.enterprise.context.Dependent
 
 @Dependent
@@ -10,7 +10,7 @@ class ConsoleCommand extends Command {
 
   val fileUtils: FileUtils = inject(classOf[FileUtils])
   
-  val activeTable: ActiveTable = inject(classOf[ActiveTable])
+  val activeTable: ActiveTableComponent = inject(classOf[ActiveTableComponent])
   
   override def canExecute: Boolean = true
   

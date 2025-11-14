@@ -2,6 +2,7 @@ package com.anjunar.jcommander
 
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.components.*
+import com.anjunar.jcommander.CdiUtils.*
 import com.anjunar.jcommander.configuration.Configuration
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
@@ -59,18 +60,18 @@ object Main extends JFXApp3 {
 
     val fileUtils = inject(classOf[FileUtils])
 
-    val darkMode = inject(classOf[DarkMode])
+    val darkMode = inject(classOf[DarkModeComponent])
 
-    val leftTable = inject(classOf[FileTable.Left])
-    val rightTable = inject(classOf[FileTable.Right])
+    val leftTable = inject(classOf[FileTableComponent.Left])
+    val rightTable = inject(classOf[FileTableComponent.Right])
 
-    val activeTable = inject(classOf[ActiveTable])
+    val activeTable = inject(classOf[ActiveTableComponent])
 
     leftTable.node.requestFocus()
 
-    val actionButtons = inject(classOf[ActionButtons])
+    val actionButtons = inject(classOf[ActionButtonsComponent])
 
-    stage = inject(classOf[PrimaryStage]).node
+    stage = inject(classOf[PrimaryStageComponent]).node
 
     val lightCSS = getClass.getResource("/light-theme.css").toExternalForm
     val darkCSS = getClass.getResource("/dark-theme.css").toExternalForm

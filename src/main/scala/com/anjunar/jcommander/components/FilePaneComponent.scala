@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Separator}
@@ -8,10 +8,10 @@ import scalafx.scene.layout.{HBox, Priority, VBox}
 import java.io.File
 import scalafx.application.Platform
 
-abstract class FilePane extends Component[VBox] {
+abstract class FilePaneComponent extends Component[VBox] {
 
-  val driveButtons : DriveButtons
-  val table: FileTable
+  val driveButtons : DriveButtonsComponent
+  val table: FileTableComponent
 
   lazy val breadcrumbBox = new HBox {
     spacing = 5
@@ -66,17 +66,17 @@ abstract class FilePane extends Component[VBox] {
 
 }
 
-object FilePane {
+object FilePaneComponent {
 
   @ApplicationScoped
-  class Left extends FilePane {
-    val driveButtons: DriveButtons = inject(classOf[DriveButtons.Left])
-    val table: FileTable = inject(classOf[FileTable.Left])
+  class Left extends FilePaneComponent {
+    val driveButtons: DriveButtonsComponent = inject(classOf[DriveButtonsComponent.Left])
+    val table: FileTableComponent = inject(classOf[FileTableComponent.Left])
   }
 
   @ApplicationScoped
-  class Right extends FilePane {
-    val driveButtons: DriveButtons = inject(classOf[DriveButtons.Right])
-    val table: FileTable = inject(classOf[FileTable.Right])
+  class Right extends FilePaneComponent {
+    val driveButtons: DriveButtonsComponent = inject(classOf[DriveButtonsComponent.Right])
+    val table: FileTableComponent = inject(classOf[FileTableComponent.Right])
   }
 }

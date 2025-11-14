@@ -1,14 +1,14 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf, PrimaryStageConf}
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.beans.property.BooleanProperty
 import scalafx.scene.Node
 import scalafx.scene.control.{Button, Tooltip}
 
 @ApplicationScoped
-class DarkMode extends Component[Button] {
+class DarkModeComponent extends Component[Button] {
 
   val configuration: DarkModeConf = inject(classOf[DarkModeConf])
 

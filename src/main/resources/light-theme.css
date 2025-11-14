@@ -123,3 +123,57 @@
 .menu:hover {
     -fx-background-color: #e0e0e0;
 }
+
+/* ===== Alerts (Information, Warning, Error, Confirmation) ===== */
+
+.alert {
+    -fx-background-color: transparent;
+}
+
+.alert > .dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.alert > .dialog-pane > .header-panel {
+    -fx-background-color: #f2f2f2;
+    -fx-border-color: #ccc;
+    -fx-border-width: 0 0 1 0;
+}
+
+.alert > .dialog-pane > .header-panel .label {
+    -fx-text-fill: #111;
+    -fx-font-weight: bold;
+}
+
+.alert > .dialog-pane > .content.label {
+    -fx-text-fill: #111;
+}
+
+/* Buttons im Alert */
+.alert > .dialog-pane .button {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #e6e6e6);
+    -fx-text-fill: #111;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 4;
+}
+
+.alert > .dialog-pane .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f0f0f0, #dcdcdc);
+}
+
+.alert > .dialog-pane .button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #dcdcdc, #c8c8c8);
+}
+
+/* Icons (Info / Warning / Error) */
+.alert > .dialog-pane .graphic-container {
+    -fx-padding: 0 10 0 0;
+    -fx-background-color: transparent;
+}
+
+.alert > .dialog-pane .graphic-container .image-view {
+    -fx-opacity: 0.9;
+}

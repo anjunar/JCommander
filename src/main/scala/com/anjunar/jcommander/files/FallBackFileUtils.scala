@@ -1,7 +1,8 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{DarkMode, FileTable}
-import com.anjunar.jcommander.{Main, OSType, WinNativeCopy, inject}
+import com.anjunar.jcommander.components.{DarkModeComponent, FileTableComponent}
+import com.anjunar.jcommander.{Main, OSType, WinNativeCopy}
+import com.anjunar.jcommander.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.concurrent
@@ -29,7 +30,7 @@ class FallBackFileUtils extends AbstractFileUtils {
 
   override def executeFile(file: File): Unit = ???
 
-  override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
+  override def copyFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
     processFiles(
       (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         val copyOption = copyOptions(replaceExisting, copyAttributes)
@@ -45,7 +46,7 @@ class FallBackFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
+  override def moveFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
     processFiles(
       (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         val sameDrive =
@@ -83,7 +84,7 @@ class FallBackFileUtils extends AbstractFileUtils {
     copyOption
   }
 
-  override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
+  override def deleteFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
     processFiles(
       (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         setWriteable(path)
@@ -113,8 +114,8 @@ class FallBackFileUtils extends AbstractFileUtils {
                    confirmHeader: String,
                    progressText: String,
                    isDelete: Boolean,
-                   activeTable: FileTable,
-                   otherTable: FileTable): Unit = {
+                   activeTable: FileTableComponent,
+                   otherTable: FileTableComponent): Unit = {
 
     val replaceExistingBox = new CheckBox("Replace existing files") {
       selected = true

@@ -1,8 +1,8 @@
 package com.anjunar.jcommander.commands
 
-import com.anjunar.jcommander.components.ActiveTable
+import com.anjunar.jcommander.components.ActiveTableComponent
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.inject
+import com.anjunar.jcommander.CdiUtils.*
 import jakarta.enterprise.context.Dependent
 
 @Dependent
