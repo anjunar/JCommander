@@ -1,7 +1,8 @@
-package com.anjunar.jcommander.components
+package com.anjunar.jcommander.ui
 
 import com.anjunar.jcommander.CdiUtils.*
 import com.anjunar.jcommander.Icons
+import com.anjunar.jcommander.components.DarkModeComponent
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Cursor
@@ -10,13 +11,17 @@ import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, Priority, Region}
 import scalafx.stage.Stage
 
-class MinimalTitleBarComponent(stage: Stage, title: String = "") {
+class MinimalTitleBar(stage: Stage, title: String = "") {
 
   private val darkMode = inject(classOf[DarkModeComponent])
   private val closeIcon = Icons.themedIcon("mdi2w-window-close")
 
   private var xOffset = 0.0
   private var yOffset = 0.0
+
+  val titleLabel = new Label(title) {
+    padding = Insets(0, 0, 0, 10)
+  }
 
   private def createCloseButton(): HBox = {
     val btn = new HBox {
@@ -49,10 +54,6 @@ class MinimalTitleBarComponent(stage: Stage, title: String = "") {
     alignment = Pos.CenterLeft
     style = s"-fx-background-color: ${if (darkMode.value) "#1e1e1e" else "#eee"};"
     cursor = Cursor.Move
-
-    val titleLabel = new Label(title) {
-      padding = Insets(0, 0, 0, 10)
-    }
 
     children = Seq(titleLabel, spacer, closeBtn)
 

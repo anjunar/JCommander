@@ -2,6 +2,7 @@ package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.components.config.ConfigModule
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.ui.MinimalTitleBar
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.Includes.jfxMultipleSelectionModel2sfx
 import scalafx.geometry.{Insets, Pos}
@@ -22,7 +23,7 @@ class ConfigurationComponent extends Component[Stage] {
     height = 600
     initStyle(StageStyle.Undecorated)
 
-    val titleBar = new MinimalTitleBarComponent(this, "Configuration")
+    val titleBar = new MinimalTitleBar(this, "Configuration")
 
     val rootContainer: VBox = new VBox {
       style = "-fx-border-color: #444; -fx-border-width: 1;"

@@ -1,11 +1,11 @@
-package com.anjunar.jcommander.components
+package com.anjunar.jcommander.ui
 
 import scalafx.Includes.*
 import scalafx.scene.Node
-import scalafx.stage.Stage
 import scalafx.scene.input.MouseEvent
+import scalafx.stage.Stage
 
-class ResizableComponent(stage: Stage, root: Node) {
+class Resizable(stage: Stage, root: Node) {
 
   private val border = 6
   private var x = 0.0

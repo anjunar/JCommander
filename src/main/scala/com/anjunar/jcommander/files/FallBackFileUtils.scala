@@ -3,6 +3,7 @@ package com.anjunar.jcommander.files
 import com.anjunar.jcommander.components.{DarkModeComponent, FileTableComponent}
 import com.anjunar.jcommander.{Main, OSType, WinNativeCopy}
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.ui.ThemedDialog
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.concurrent
@@ -129,27 +130,24 @@ class FallBackFileUtils extends AbstractFileUtils {
       selected = false
     }
 
-    val confirmDialog = new Dialog[ButtonType]() {
+    val confirmDialog = new ThemedDialog[ButtonType]() {
       title = confirmTitle
       headerText = confirmTitle
-      dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
       if (!isDelete) {
         if (OSType.osName == "win") {
-          dialogPane().content = new VBox(10, replaceExistingBox)
+          dialogPane.content = new VBox(10, replaceExistingBox)
         } else {
-          dialogPane().content = new VBox(10, replaceExistingBox, copyAttributesExistingBox)
+          dialogPane.content = new VBox(10, replaceExistingBox, copyAttributesExistingBox)
         }
       } else {
-        dialogPane().content = new VBox(10, checkForLockedFilesBox)
+        dialogPane.content = new VBox(10, checkForLockedFilesBox)
       }
-      dialogPane().getStylesheets.add(
-        getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
-      )
     }
 
     confirmDialog.resultConverter = btn => btn
 
-    confirmDialog.showAndWait().foreach { result =>
+    confirmDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
 
         val replaceExisting = replaceExistingBox.selected.value
@@ -230,16 +228,13 @@ class FallBackFileUtils extends AbstractFileUtils {
             }
           }
 
-          val progressDialog = new Dialog[Unit]() {
+          val progressDialog = new ThemedDialog[Unit]() {
             title = progressText
-            dialogPane().content = new VBox(10, progressBar, progressLabel)
-            dialogPane().buttonTypes = Seq(ButtonType.Cancel)
-            dialogPane().getStylesheets.add(
-              getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
-            )
+            dialogPane.content = new VBox(10, progressBar, progressLabel)
+            dialogPane.buttonTypes = Seq(ButtonType.Cancel)
           }
 
-          progressDialog.dialogPane().lookupButton(ButtonType.Cancel).addEventFilter(ActionEvent.Action, _ => {
+          progressDialog.dialogPane.lookupButton(ButtonType.Cancel).addEventFilter(ActionEvent.Action, _ => {
             task.cancel()
             progressDialog.close()
           })

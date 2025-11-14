@@ -2,6 +2,7 @@ package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.{DarkModeComponent, FileTableComponent}
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.ui.ThemedDialog
 import com.typesafe.scalalogging.Logger
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
@@ -38,19 +39,16 @@ abstract class AbstractFileUtils extends FileUtils {
       promptText = "Directory Name"
     }
 
-    val mkDirDialog = new Dialog[ButtonType]() {
+    val mkDirDialog = new ThemedDialog[ButtonType]() {
       title = "Create Directory"
       headerText = "Create Directory"
-      dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      dialogPane().content = new VBox(10, textField)
-      dialogPane().getStylesheets.add(
-        getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
-      )
+      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+      dialogPane.content = new VBox(10, textField)
     }
 
     mkDirDialog.resultConverter = btn => btn
 
-    mkDirDialog.showAndWait().foreach { result =>
+    mkDirDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
         Files.createDirectory(activeTable.directory.toPath.resolve(newFileName))
@@ -63,19 +61,16 @@ abstract class AbstractFileUtils extends FileUtils {
       text = activeTable.node.selectionModel.value.getSelectedItem.name
     }
 
-    val renameDialog = new Dialog[ButtonType]() {
+    val renameDialog = new ThemedDialog[ButtonType]() {
       title = "Rename File"
       headerText = "Rename File"
-      dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      dialogPane().content = new VBox(10, textField)
-      dialogPane().getStylesheets.add(
-        getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
-      )
+      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+      dialogPane.content = new VBox(10, textField)
     }
 
     renameDialog.resultConverter = btn => btn
 
-    renameDialog.showAndWait().foreach { result =>
+    renameDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
         val oldPath = activeTable.node.selectionModel.value.getSelectedItems.head.file.toPath

@@ -1,8 +1,9 @@
-package com.anjunar.jcommander.components
+package com.anjunar.jcommander.ui
 
 import com.anjunar.jcommander.CdiUtils.*
 import com.anjunar.jcommander.Icons
 import com.anjunar.jcommander.commands.QuitCommand
+import com.anjunar.jcommander.components.{DarkModeComponent, HeaderMenuBarComponent}
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Cursor
@@ -11,7 +12,7 @@ import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, Priority, Region, VBox}
 import scalafx.stage.Stage
 
-class TitleBarComponent(stage: Stage) {
+class TitleBar(stage: Stage) {
 
   private val headerMenuBar = inject(classOf[HeaderMenuBarComponent])
 

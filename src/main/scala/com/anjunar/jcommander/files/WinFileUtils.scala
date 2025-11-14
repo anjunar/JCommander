@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.FileTableComponent
+import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.{OSType, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
@@ -8,7 +9,7 @@ import scalafx.Includes.jfxDialogPane2sfx
 import scalafx.application.Platform
 import scalafx.event.ActionEvent
 import scalafx.scene.control.*
-import scalafx.scene.layout.VBox
+import scalafx.scene.layout.{Pane, VBox}
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayInputStream, File}
@@ -96,29 +97,22 @@ class WinFileUtils extends AbstractFileUtils {
       selected = true
     }
 
-    val confirmDialog = new Dialog[ButtonType]() {
+    val confirmDialog = new ThemedDialog[ButtonType] {
       title = confirmTitle
       headerText = confirmHeader
-      dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      dialogPane().content = new VBox(10) {
+      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+      dialogPane.content = new VBox(10) {
         if (!isDelete) {
-          if (OSType.osName == "win") {
-            children += replaceExistingBox
-          } else {
-            children ++= Seq(replaceExistingBox)
-          }
+          children += replaceExistingBox
         } else {
           children += moveToRecycleBinBox
         }
       }
-      dialogPane().getStylesheets.add(
-        getClass.getResource(s"/${if (darkMode.value) "dark" else "light"}-theme.css").toExternalForm
-      )
     }
 
     confirmDialog.resultConverter = identity
 
-    confirmDialog.showAndWait().foreach { result =>
+    confirmDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
 
         val overwriteExisting = replaceExistingBox.selected.value
@@ -189,19 +183,15 @@ class WinFileUtils extends AbstractFileUtils {
           }
         }
 
-        val progressDialog = new Dialog[Unit]() {
+        val progressDialog = new ThemedDialog[Unit]() {
           title = progressText
-          dialogPane().content = new VBox(10, progressBar, progressLabel, fileLabel)
-          dialogPane().buttonTypes = Seq(ButtonType.Cancel)
-          dialogPane().getStylesheets.add(
-            getClass.getResource(s"/${if (darkMode.value) "dark" else "light"}-theme.css").toExternalForm
-          )
+          dialogPane.content = new VBox(10, progressBar, progressLabel, fileLabel)
+          dialogPane.buttonTypes = Seq(ButtonType.Cancel)
         }
 
-        // Cancel-Button: Setzt Flag und schließt Dialog
-        val cancelButton = progressDialog.dialogPane().lookupButton(ButtonType.Cancel).asInstanceOf[javafx.scene.control.Button]
-        cancelButton.addEventFilter(ActionEvent.ACTION, _ => {
-          cancelledFlag.set(true) // <-- WICHTIG: Setzt Abbruch-Flag
+        val cancelButton = progressDialog.dialogPane.lookupButton(ButtonType.Cancel).asInstanceOf[javafx.scene.control.Button]
+        cancelButton.addEventFilter(ActionEvent.Action, _ => {
+          cancelledFlag.set(true) 
           task.cancel()
           progressDialog.close()
           log.info("Operation cancelledFlag by user.")

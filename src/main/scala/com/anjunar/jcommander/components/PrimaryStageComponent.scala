@@ -3,6 +3,7 @@ package com.anjunar.jcommander.components
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.configuration.PrimaryStageConf
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.ui.{Resizable, TitleBar}
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
@@ -23,7 +24,7 @@ class PrimaryStageComponent extends Component[JFXApp3.PrimaryStage] {
     height = primaryStageConf.height
     icons += new Image(getClass.getResourceAsStream("/icon.ico"))
 
-    val titleBar = new TitleBarComponent(this)
+    val titleBar = new TitleBar(this)
 
     val container: VBox = new VBox {
       style = "-fx-border-color: #444; -fx-border-width: 1;"
@@ -34,7 +35,7 @@ class PrimaryStageComponent extends Component[JFXApp3.PrimaryStage] {
 
     scene = new Scene(container)
 
-    new ResizableComponent(this, container)
+    new Resizable(this, container)
 
     onCloseRequest = _ => inject(classOf[QuitCommand]).execute()
     initStyle(StageStyle.Undecorated)
