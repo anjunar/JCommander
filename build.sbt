@@ -1,3 +1,5 @@
+import com.typesafe.sbt.packager.Keys
+
 import scala.collection.Seq
 
 ThisBuild / version := "1.0.0"
@@ -5,7 +7,7 @@ ThisBuild / version := "1.0.0"
 ThisBuild / scalaVersion := "3.3.7"
 
 lazy val root = (project in file("."))
-  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(JavaAppPackaging, UniversalPlugin, JlinkPlugin, JDKPackagerPlugin)
   .settings(
     name := "JCommander",
     libraryDependencies ++= Seq(
@@ -32,15 +34,77 @@ lazy val root = (project in file("."))
       }
       Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
         .map(m => "org.openjfx" % s"javafx-$m" % "24" classifier osName)
+    },
+    Compile / mainClass := Some("com.anjunar.jcommander.Launcher"),
+
+    Universal / packageName := "jcommander",
+
+    packageBin / packageOptions += {
+      val cp = (Compile / dependencyClasspath).value.map(_.data.getName)
+
+      val classPathString = cp.map(jar => s"lib/$jar").mkString(" ")
+
+      Package.ManifestAttributes(
+        "Main-Class" -> "com.anjunar.jcommander.Launcher",
+        "Class-Path" -> classPathString
+      )
+    },
+
+    Universal / mappings := {
+      val stageDir = (Compile / packageBin).value
+      val libDir = (Universal / mappings).value.filterNot(_._2.contains("lib/"))
+
+      val mainJarMapping = stageDir -> stageDir.getName
+
+      val deps = (Compile / dependencyClasspath).value.map { dep =>
+        dep.data -> s"lib/${dep.data.getName}"
+      }
+
+      val distDir = baseDirectory.value / "target" / "dist"
+      val distMappings =
+        if (distDir.exists()) (distDir ** "*").get.map(f => f -> s"dist/${f.relativeTo(distDir).get.getPath}")
+        else Seq.empty
+
+      mainJarMapping +: (deps ++ distMappings)
     }
   )
 
-enablePlugins(JavaAppPackaging)
+lazy val jpackage = taskKey[Unit]("Create installer with jpackage")
 
-lazy val jpackageSettings = Seq(
-  packageName := "JCommanderBSP",
-  packageVersion := "1.0.0",
-  mainClass := Some("com.anjunar.jcommander.Launcher")
-)
+jpackage := {
+  val log = streams.value.log
 
-lazy val rootSettings = jpackageSettings
+  val javaHome = sys.props("java.home")
+  val jpackageExe =
+    if (scala.util.Properties.isWin) s"$javaHome\\bin\\jpackage.exe"
+    else s"$javaHome/bin/jpackage"
+
+  val stageDir = (Universal / stage).value
+  val mainJar = (stageDir / "jcommander_3-1.0.0.jar")
+
+  log.info(s"Stage dir  = ${stageDir.getAbsolutePath}")
+  log.info(s"Main JAR   = ${mainJar.getAbsolutePath}")
+  log.info(s"jpackage   = $jpackageExe")
+
+  if (!mainJar.exists())
+    sys.error(s"Main jar not found: $mainJar")
+
+  val outputDir = (Compile / target).value / "jpackage"
+  IO.createDirectory(outputDir)
+
+  val cmd = Seq(
+    jpackageExe,
+    "--type", "exe",
+    "--name", "JCommander",
+    "--input", stageDir.getAbsolutePath,
+    "--main-jar", mainJar.getName,
+    "--main-class", "com.anjunar.jcommander.Launcher",
+    "--dest", outputDir.getAbsolutePath,
+    "--icon", "src/main/resources/icon.ico"
+  )
+
+  log.info("Running: " + cmd.mkString(" "))
+
+  val exit = sys.process.Process(cmd).!
+  if (exit != 0) sys.error(s"jpackage failed with exit code $exit")
+}

@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 public class Launcher {
     public static void main(String[] args) throws Exception {
-        File distDir = new File("app/dist");
+        File distDir = new File("app/lib");
         if (!distDir.exists() || !distDir.isDirectory()) {
             throw new RuntimeException("Dist-Verzeichnis nicht gefunden: " + distDir.getAbsolutePath());
         }
