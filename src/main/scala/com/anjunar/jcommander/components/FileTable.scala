@@ -8,7 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
 import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
 import javafx.scene.control.{TableRow, TableCell as JfxTableCell}
-import scalafx.Includes.{jfxObjectProperty2sfx, jfxSortType2sfx, jfxTableSelectionModel2sfx, observableList2ObservableBuffer}
+import scalafx.Includes.*
 import scalafx.application.Platform
 import scalafx.beans.property.ReadOnlyObjectWrapper
 import scalafx.collections.ObservableBuffer
@@ -27,14 +27,11 @@ import scala.jdk.CollectionConverters.*
 abstract class FileTable extends Component[TableView[FileItem]] {
 
   val fileUtils: FileUtils = inject(classOf[FileUtils])
-
-  val configuration : FileTableConf
+  val configuration: FileTableConf
 
   var directory: File = uninitialized
-
   val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm")
   var currentWatcher: Option[FileWatcher] = None
-
   val lastSelections = mutable.Map[String, String]()
 
   lazy val node: TableView[FileItem] = new TableView[FileItem] {
@@ -69,20 +66,13 @@ abstract class FileTable extends Component[TableView[FileItem]] {
                       item.icon.value = img
                       img
                     }
-                  imageView.setImage(SwingFXUtils.toFXImage(fxImg, null))
+                  imageView.image = SwingFXUtils.toFXImage(fxImg, null)
                   setGraphic(imageView)
                 }
               }
             }
         }
       }
-
-      comparator = (a: FileItem, b: FileItem) =>
-        (a.file.isDirectory, b.file.isDirectory) match {
-          case (true, false) => -1
-          case (false, true) => 1
-          case _ => a.name.compareToIgnoreCase(b.name)
-        }
     }
 
     val extCol = new TableColumn[FileItem, FileItem] {
@@ -102,17 +92,6 @@ abstract class FileTable extends Component[TableView[FileItem]] {
                 else setText(if (item.file.isDirectory) "<DIR>" else item.ext)
               }
             }
-        }
-      }
-
-      comparator = (a: FileItem, b: FileItem) => {
-        (a.file.isDirectory, b.file.isDirectory) match {
-          case (true, false) => -1
-          case (false, true) => 1
-          case _ =>
-            val ea = if (a.file.isDirectory) "" else a.ext
-            val eb = if (b.file.isDirectory) "" else b.ext
-            ea.compareToIgnoreCase(eb)
         }
       }
     }
@@ -137,12 +116,6 @@ abstract class FileTable extends Component[TableView[FileItem]] {
             }
         }
       }
-
-      comparator = (a: FileItem, b: FileItem) => {
-        val sa = if (a.file.isDirectory) Long.MinValue else a.file.length()
-        val sb = if (b.file.isDirectory) Long.MinValue else b.file.length()
-        java.lang.Long.compare(sa, sb)
-      }
     }
 
     val dateCol = new TableColumn[FileItem, FileItem] {
@@ -164,9 +137,6 @@ abstract class FileTable extends Component[TableView[FileItem]] {
             }
         }
       }
-
-      comparator = (a: FileItem, b: FileItem) =>
-        java.lang.Long.compare(a.file.lastModified(), b.file.lastModified())
     }
 
     columns ++= Seq(nameCol, extCol, sizeCol, dateCol)
@@ -178,26 +148,75 @@ abstract class FileTable extends Component[TableView[FileItem]] {
       if (newPref > 100) nameCol.prefWidth = newPref
     }
 
-    columns.foreach(_.setReorderable(false))
-
-    selectionModel.value.getSelectedItems.onChange { (_, _) =>
-      val selected = selectionModel.value.getSelectedItem
-      if (selected != null && selected.file != null && selected.file.getParent != null) {
-        lastSelections.update(selected.file.getParent, selected.name)
+    selectionModel().selectedItemProperty().onChange { (_, _, newItem) =>
+      if (newItem != null && newItem.file != null && newItem.file.getParent != null) {
+        lastSelections.update(newItem.file.getParent, newItem.name)
       }
     }
+
+    delegate.setSortPolicy(tv => {
+      val sortOrder = tv.getSortOrder
+      val sortCol = if (sortOrder.isEmpty) None else Some(sortOrder.get(0))
+      val sortType = sortCol.map(_.getSortType).getOrElse(javafx.scene.control.TableColumn.SortType.ASCENDING)
+
+      val upDirFirst: java.util.Comparator[FileItem] = (a, b) =>
+        if (a.isUpDir && !b.isUpDir) -1
+        else if (!a.isUpDir && b.isUpDir) 1
+        else 0
+
+      val dirFirst: java.util.Comparator[FileItem] = (a, b) =>
+        if (a.file.isDirectory && !b.file.isDirectory && !a.isUpDir && !b.isUpDir) -1
+        else if (!a.file.isDirectory && b.file.isDirectory && !a.isUpDir && !b.isUpDir) 1
+        else 0
+
+      val secondary: java.util.Comparator[FileItem] = sortCol match {
+        case Some(col) => col.getText match {
+          case "Name" =>
+            (a, b) => {
+              val r = a.name.compareToIgnoreCase(b.name)
+              if (sortType == javafx.scene.control.TableColumn.SortType.ASCENDING) r else -r
+            }
+          case "Extension" =>
+            (a, b) => {
+              val ea = if (a.file.isDirectory || a.isUpDir) "" else a.ext
+              val eb = if (b.file.isDirectory || b.isUpDir) "" else b.ext
+              val r = ea.compareToIgnoreCase(eb)
+              if (sortType == javafx.scene.control.TableColumn.SortType.ASCENDING) r else -r
+            }
+          case "Size" =>
+            (a, b) => {
+              val sa = if (a.file.isDirectory || a.isUpDir) Long.MinValue else a.file.length()
+              val sb = if (b.file.isDirectory || b.isUpDir) Long.MinValue else b.file.length()
+              val r = java.lang.Long.compare(sa, sb)
+              if (sortType == javafx.scene.control.TableColumn.SortType.ASCENDING) r else -r
+            }
+          case "Changed" =>
+            (a, b) => {
+              val r = java.lang.Long.compare(a.file.lastModified(), b.file.lastModified())
+              if (sortType == javafx.scene.control.TableColumn.SortType.ASCENDING) r else -r
+            }
+          case _ => (_: FileItem, _: FileItem) => 0
+        }
+        case None =>
+          (a, b) => a.name.compareToIgnoreCase(b.name)
+      }
+
+      val finalComp = upDirFirst.thenComparing(dirFirst).thenComparing(secondary)
+      javafx.collections.FXCollections.sort(tv.getItems, finalComp)
+      true
+    })
   }
 
   def loadDirectory(dir: File): Unit = {
     directory = dir
     configuration.file = dir
+
     val files = Option(dir.listFiles()).getOrElse(Array.empty[File])
     val parent = Option(dir.getParentFile).map(p => FileItem("..", "<UP-DIR>", "<UP-DIR>", "", p, true)).toSeq
     val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm")
 
     val fileItems = files.toSeq
       .filter(f => !(f.isDirectory && !Files.isReadable(f.toPath)))
-      .sortBy(f => (!f.isDirectory, f.getName.toLowerCase))
       .map { f =>
         val name = f.getName
         val ext = if (f.isDirectory) "<DIR>" else fileExtension(f)
@@ -214,21 +233,30 @@ abstract class FileTable extends Component[TableView[FileItem]] {
     val buffer = ObservableBuffer.from(parent ++ fileItems)
     node.items = buffer
 
+    node.sortOrder.clear()
+    node.sortOrder += node.columns.find(_.text.value == "Name").get
+    node.columns.find(_.text.value == "Name").get.sortType = SortType.Ascending
+    node.sort() // ← Einmalig, sicher!
+
     lastSelections.get(dir.getAbsolutePath).foreach { lastName =>
-      buffer.find(_.name == lastName).foreach { item =>
-        node.selectionModel.value.select(item)
+      buffer.indexWhere(_.name == lastName) match {
+        case -1 => ()
+        case index =>
+          val item = buffer(index)
+          node.selectionModel().select(item)
 
-        val jTable = node.delegate
-        val index = buffer.indexOf(item)
-        jTable.scrollTo(index)
+          Platform.runLater { () =>
+            val jTable = node.delegate
+            jTable.scrollTo(math.max(0, index - 5))
 
-        if (index >= 0) Platform.runLater(() => {
-          val skin = jTable.getSkin.asInstanceOf[TableViewSkin[FileItem]]
-          val flow = skin.getChildren.get(1).asInstanceOf[VirtualFlow[TableRow[FileItem]]]
-          val visibleCount = flow.getLastVisibleCell.getIndex - flow.getFirstVisibleCell.getIndex
-          val targetIndex = math.max(0, index - visibleCount / 2)
-          jTable.scrollTo(targetIndex)
-        })
+            if (index >= 0) Platform.runLater(() => {
+              val skin = jTable.getSkin.asInstanceOf[TableViewSkin[FileItem]]
+              val flow = skin.getChildren.get(1).asInstanceOf[VirtualFlow[TableRow[FileItem]]]
+              val visibleCount = flow.getLastVisibleCell.getIndex - flow.getFirstVisibleCell.getIndex
+              val targetIndex = math.max(0, index - visibleCount / 2)
+              jTable.scrollTo(targetIndex)
+            })
+          }
       }
     }
   }
@@ -237,9 +265,9 @@ abstract class FileTable extends Component[TableView[FileItem]] {
     if (file.isDirectory) "<DIR>"
     else {
       val s = file.length()
-      if (s > 1e9) f"${s / 1e9}%.1f GB"
-      else if (s > 1e6) f"${s / 1e6}%.1f MB"
-      else if (s > 1e3) f"${s / 1e3}%.1f KB"
+      if (s >= 1e9) f"${s / 1e9}%.1f GB"
+      else if (s >= 1e6) f"${s / 1e6}%.1f MB"
+      else if (s >= 1e3) f"${s / 1e3}%.1f KB"
       else s"$s B"
     }
 
@@ -249,30 +277,26 @@ abstract class FileTable extends Component[TableView[FileItem]] {
     if (idx > 0 && idx < name.length - 1) name.substring(idx + 1).toLowerCase
     else ""
   }
+
 }
 
 object FileTable {
 
   @ApplicationScoped
   class Left extends FileTable {
-
-    val configuration : FileTableConf = inject(classOf[FileTableConf.Left])
+    val configuration: FileTableConf = inject(classOf[FileTableConf.Left])
 
     def onDriveChange(@Observes event: OnDriveChangeLeft): Unit = {
       loadDirectory(event.file)
     }
-
   }
 
   @ApplicationScoped
   class Right extends FileTable {
-
-    val configuration : FileTableConf = inject(classOf[FileTableConf.Right])
+    val configuration: FileTableConf = inject(classOf[FileTableConf.Right])
 
     def onDriveChange(@Observes event: OnDriveChangeRight): Unit = {
       loadDirectory(event.file)
     }
-
   }
-
 }
