@@ -8,11 +8,12 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
 import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
 import javafx.scene.control.{TableRow, TableCell as JfxTableCell}
-import scalafx.Includes.{jfxObjectProperty2sfx, jfxTableSelectionModel2sfx, observableList2ObservableBuffer}
+import scalafx.Includes.{jfxObjectProperty2sfx, jfxSortType2sfx, jfxTableSelectionModel2sfx, observableList2ObservableBuffer}
 import scalafx.application.Platform
 import scalafx.beans.property.ReadOnlyObjectWrapper
 import scalafx.collections.ObservableBuffer
 import scalafx.embed.swing.SwingFXUtils
+import scalafx.scene.control.TableColumn.SortType
 import scalafx.scene.control.{TableCell, TableColumn, TableView}
 import scalafx.scene.image.ImageView
 
@@ -21,6 +22,7 @@ import java.nio.file.Files
 import java.text.SimpleDateFormat
 import scala.collection.mutable
 import scala.compiletime.uninitialized
+import scala.jdk.CollectionConverters.*
 
 abstract class FileTable extends Component[TableView[FileItem]] {
 
@@ -60,45 +62,115 @@ abstract class FileTable extends Component[TableView[FileItem]] {
                 } else {
                   setText(item.name)
                   val icon = item.icon.value
-                  if (icon != null) {
-                    imageView.image = SwingFXUtils.toFXImage(icon, null)
-                    setGraphic(imageView)
-                  } else {
-                    val iconImg = fileUtils.getFileIcon(item.file, large = false)
-                    item.icon.value = iconImg
-                    imageView.image = SwingFXUtils.toFXImage(iconImg, null)
-                    graphic = imageView
-                  }
+                  val fxImg =
+                    if (icon != null) icon
+                    else {
+                      val img = fileUtils.getFileIcon(item.file, large = false)
+                      item.icon.value = img
+                      img
+                    }
+                  imageView.setImage(SwingFXUtils.toFXImage(fxImg, null))
+                  setGraphic(imageView)
                 }
               }
             }
         }
       }
+
+      comparator = (a: FileItem, b: FileItem) =>
+        (a.file.isDirectory, b.file.isDirectory) match {
+          case (true, false) => -1
+          case (false, true) => 1
+          case _ => a.name.compareToIgnoreCase(b.name)
+        }
     }
 
-    val extCol = new TableColumn[FileItem, String] {
+    val extCol = new TableColumn[FileItem, FileItem] {
       text = "Extension"
-      cellValueFactory = f => ReadOnlyObjectWrapper(f.value.ext)
       prefWidth = 100
       resizable = false
+
+      cellValueFactory = f => ReadOnlyObjectWrapper(f.value)
+
+      cellFactory = { (_: TableColumn[FileItem, FileItem]) =>
+        new TableCell[FileItem, FileItem] {
+          override val delegate: JfxTableCell[FileItem, FileItem] =
+            new JfxTableCell[FileItem, FileItem]() {
+              override def updateItem(item: FileItem, empty: Boolean): Unit = {
+                super.updateItem(item, empty)
+                if (empty || item == null) setText(null)
+                else setText(if (item.file.isDirectory) "<DIR>" else item.ext)
+              }
+            }
+        }
+      }
+
+      comparator = (a: FileItem, b: FileItem) => {
+        (a.file.isDirectory, b.file.isDirectory) match {
+          case (true, false) => -1
+          case (false, true) => 1
+          case _ =>
+            val ea = if (a.file.isDirectory) "" else a.ext
+            val eb = if (b.file.isDirectory) "" else b.ext
+            ea.compareToIgnoreCase(eb)
+        }
+      }
     }
 
-    val sizeCol = new TableColumn[FileItem, String] {
+    val sizeCol = new TableColumn[FileItem, FileItem] {
       text = "Size"
-      cellValueFactory = f => ReadOnlyObjectWrapper(f.value.size)
       prefWidth = 100
       resizable = false
       style = "-fx-alignment: CENTER-RIGHT;"
+
+      cellValueFactory = f => ReadOnlyObjectWrapper(f.value)
+
+      cellFactory = { (_: TableColumn[FileItem, FileItem]) =>
+        new TableCell[FileItem, FileItem] {
+          override val delegate: JfxTableCell[FileItem, FileItem] =
+            new JfxTableCell[FileItem, FileItem]() {
+              override def updateItem(item: FileItem, empty: Boolean): Unit = {
+                super.updateItem(item, empty)
+                if (empty || item == null) setText(null)
+                else setText(item.size)
+              }
+            }
+        }
+      }
+
+      comparator = (a: FileItem, b: FileItem) => {
+        val sa = if (a.file.isDirectory) Long.MinValue else a.file.length()
+        val sb = if (b.file.isDirectory) Long.MinValue else b.file.length()
+        java.lang.Long.compare(sa, sb)
+      }
     }
 
-    val dateCol = new TableColumn[FileItem, String] {
+    val dateCol = new TableColumn[FileItem, FileItem] {
       text = "Changed"
-      cellValueFactory = f => ReadOnlyObjectWrapper(f.value.date)
       prefWidth = 160
       resizable = false
+
+      cellValueFactory = f => ReadOnlyObjectWrapper(f.value)
+
+      cellFactory = { (_: TableColumn[FileItem, FileItem]) =>
+        new TableCell[FileItem, FileItem] {
+          override val delegate: JfxTableCell[FileItem, FileItem] =
+            new JfxTableCell[FileItem, FileItem]() {
+              override def updateItem(item: FileItem, empty: Boolean): Unit = {
+                super.updateItem(item, empty)
+                if (empty || item == null) setText(null)
+                else setText(item.date)
+              }
+            }
+        }
+      }
+
+      comparator = (a: FileItem, b: FileItem) =>
+        java.lang.Long.compare(a.file.lastModified(), b.file.lastModified())
     }
 
     columns ++= Seq(nameCol, extCol, sizeCol, dateCol)
+    columns.foreach(_.setReorderable(false))
 
     width.onChange { (_, _, newWidth) =>
       val totalFixed = extCol.width.value + sizeCol.width.value + dateCol.width.value + 2
@@ -189,7 +261,7 @@ object FileTable {
     def onDriveChange(@Observes event: OnDriveChangeLeft): Unit = {
       loadDirectory(event.file)
     }
-    
+
   }
 
   @ApplicationScoped
