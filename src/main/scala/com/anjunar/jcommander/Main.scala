@@ -100,40 +100,27 @@ object Main extends JFXApp3 {
       }
     }
 
-    def themedIcon(iconName: String, size: Int = 20): FontIcon = {
-      val icon = new FontIcon(iconName)
-      icon.setIconSize(size)
-      icon.setIconColor(if (darkMode.value) Color.White else Color.Black)
-
-      // reaktiv anpassen, wenn das Theme wechselt
-      darkMode.valueProperty.onChange { (_, _, isDark) =>
-        icon.setIconColor(if (isDark) Color.White else Color.Black)
-      }
-
-      icon
-    }
-
     Seq(leftTable, rightTable).foreach { table =>
 
       val contextMenu = new ContextMenu(
         new MenuItem("Rename") {
-          graphic = themedIcon("mdi2t-text-box-edit-outline")
+          graphic = Icons.themedIcon("mdi2t-text-box-edit-outline")
           onAction = _ => inject(classOf[RenameCommand]).execute()
         },
         new MenuItem("Copy") {
-          graphic = themedIcon("mdi2c-content-copy")
+          graphic = Icons.themedIcon("mdi2c-content-copy")
           onAction = _ => inject(classOf[CopyCommand]).execute()
         },
         new MenuItem("Move") {
-          graphic = themedIcon("mdi2f-file-move-outline")
+          graphic = Icons.themedIcon("mdi2f-file-move-outline")
           onAction = _ => inject(classOf[MoveCommand]).execute()
         },
         new MenuItem("Delete") {
-          graphic = themedIcon("mdi2d-delete-outline")
+          graphic = Icons.themedIcon("mdi2d-delete-outline")
           onAction = _ => inject(classOf[DeleteCommand]).execute()
         },
         new MenuItem("Make Directory") {
-          graphic = themedIcon("mdi2f-folder-plus-outline")
+          graphic = Icons.themedIcon("mdi2f-folder-plus-outline")
           onAction = _ => inject(classOf[MkDirCommand]).execute()
         }
       ) {

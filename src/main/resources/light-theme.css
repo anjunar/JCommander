@@ -102,3 +102,24 @@
 .scroll-bar .thumb:hover {
     -fx-background-color: #aaa;
 }
+
+.menu-bar {
+    -fx-background-color: transparent;
+}
+
+.menu {
+    -fx-background-color: transparent;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ddd;
+}
+
+.menu-item:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.menu:hover {
+    -fx-background-color: #e0e0e0;
+}
