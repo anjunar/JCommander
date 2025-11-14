@@ -10,11 +10,10 @@ import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.*
 import scala.jdk.CollectionConverters.*
 
-class FileWatcher(path: Path, table: FileTable) {
-
+class FileWatcher(val path: Path, table: FileTable) {
   private val log = Logger[FileWatcher]
   private val watcher = FileSystems.getDefault.newWatchService()
-  private val watchKey = path.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
+  path.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
 
   @volatile private var running = true
 
@@ -26,10 +25,9 @@ class FileWatcher(path: Path, table: FileTable) {
           val kind = event.kind()
           if (kind != StandardWatchEventKinds.OVERFLOW) {
             val ev = event.asInstanceOf[WatchEvent[Path]]
-            val changed = path.resolve(ev.context())
-
+            val changedFile = path.resolve(ev.context())
             Platform.runLater(() => {
-              table.loadDirectory(path.toFile)
+              table.updateFile(changedFile, kind)
             })
           }
         }
@@ -37,22 +35,11 @@ class FileWatcher(path: Path, table: FileTable) {
       }
     } catch {
       case _: InterruptedException =>
-        log.info("FileWatcher thread interrupted, stopping.")
-    } finally {
-      try watcher.close() catch { case _: Exception => () }
-    }
+        log.info("FileWatcher interrupted")
+    } finally watcher.close()
   }, s"watcher-${path.getFileName}")
 
   thread.setDaemon(true)
-
-  def start(): Unit = {
-    running = true
-    thread.start()
-  }
-
-  def stop(): Unit = {
-    running = false
-    thread.interrupt()
-    try watcher.close() catch { case _: Exception => () }
-  }
+  def start(): Unit = { running = true; thread.start() }
+  def stop(): Unit = { running = false; thread.interrupt() }
 }

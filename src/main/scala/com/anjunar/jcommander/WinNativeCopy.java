@@ -1,11 +1,17 @@
 package com.anjunar.jcommander;
 
+import java.io.IOException;
+
 public class WinNativeCopy {
 
     static {
-        System.loadLibrary("win_native_copy");
+        try {
+            NativeUtils.loadWinNativeCopy();
+        } catch (IOException e) {
+            throw new UnsatisfiedLinkError("Failed to load native library: " + e.getMessage());
+        }
     }
-
+    
     public static native void copyFiles(String[] sources, String targetDir, ProgressCallback callback, boolean overwrite);
     public static native void moveFiles(String[] sources, String targetDir, ProgressCallback callback, boolean overwrite);
     public static native void deleteFiles(String[] sources, ProgressCallback callback, boolean recycle);

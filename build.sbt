@@ -1,10 +1,11 @@
 import scala.collection.Seq
 
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version := "1.0.0"
 
 ThisBuild / scalaVersion := "3.3.7"
 
 lazy val root = (project in file("."))
+  .enablePlugins(JavaAppPackaging)
   .settings(
     name := "JCommander",
     libraryDependencies ++= Seq(
@@ -33,3 +34,13 @@ lazy val root = (project in file("."))
         .map(m => "org.openjfx" % s"javafx-$m" % "24" classifier osName)
     }
   )
+
+enablePlugins(JavaAppPackaging)
+
+lazy val jpackageSettings = Seq(
+  packageName := "JCommanderBSP",
+  packageVersion := "1.0.0",
+  mainClass := Some("com.anjunar.jcommander.Launcher")
+)
+
+lazy val rootSettings = jpackageSettings

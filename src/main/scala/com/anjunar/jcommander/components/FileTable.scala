@@ -16,9 +16,10 @@ import scalafx.embed.swing.SwingFXUtils
 import scalafx.scene.control.TableColumn.SortType
 import scalafx.scene.control.{TableCell, TableColumn, TableView}
 import scalafx.scene.image.ImageView
+import java.nio.file.StandardWatchEventKinds.*
 
 import java.io.File
-import java.nio.file.Files
+import java.nio.file.{Files, Path, WatchEvent}
 import java.text.SimpleDateFormat
 import scala.collection.mutable
 import scala.compiletime.uninitialized
@@ -207,6 +208,29 @@ abstract class FileTable extends Component[TableView[FileItem]] {
     })
   }
 
+  def updateFile(file: Path, kind: WatchEvent.Kind[?]): Unit = {
+    val itemOpt = node.items.value.find(_.file.toPath == file)
+    kind match {
+      case ENTRY_CREATE =>
+        if (itemOpt.isEmpty) node.items.value += createFileItem(file.toFile)
+      case ENTRY_DELETE =>
+        itemOpt.foreach(node.items.value.remove)
+      case ENTRY_MODIFY =>
+        itemOpt.foreach { old =>
+          val buffer = node.items.value
+          val index = buffer.indexOf(old)
+          if (index >= 0) buffer.update(index, createFileItem(file.toFile))
+        }
+    }
+  }
+
+  private def createFileItem(file: File): FileItem = {
+    val ext = if (file.isDirectory) "<DIR>" else fileExtension(file)
+    val size = formatSize(file)
+    val date = dateFormat.format(file.lastModified())
+    FileItem(file.getName, ext, size, date, file)
+  }
+
   def loadDirectory(dir: File): Unit = {
     directory = dir
     configuration.file = dir
@@ -225,10 +249,13 @@ abstract class FileTable extends Component[TableView[FileItem]] {
         FileItem(name, ext, size, date, f)
       }
 
-    currentWatcher.foreach(_.stop())
-    val watcher = new FileWatcher(dir.toPath, this)
-    watcher.start()
-    currentWatcher = Some(watcher)
+    // Watcher nur neu starten, wenn Pfad sich geändert hat
+    if (currentWatcher.isEmpty || directory.toPath != currentWatcher.get.path) {
+      currentWatcher.foreach(_.stop())
+      val watcher = new FileWatcher(dir.toPath, this)
+      watcher.start()
+      currentWatcher = Some(watcher)
+    }
 
     val buffer = ObservableBuffer.from(parent ++ fileItems)
     node.items = buffer
