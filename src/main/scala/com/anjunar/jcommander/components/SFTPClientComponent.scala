@@ -13,7 +13,7 @@ class SFTPClientComponent extends Component[ThemedDialog[FileSystemManager]] {
 
   val manager = new DefaultFileSystemManager()
   manager.addProvider("sftp", new SftpFileProvider())
-  manager.addProvider("file", new org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider())
+//  manager.addProvider("file", new org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider())
   manager.setCacheStrategy(org.apache.commons.vfs2.CacheStrategy.ON_CALL)
 
   var base: FileObject = _

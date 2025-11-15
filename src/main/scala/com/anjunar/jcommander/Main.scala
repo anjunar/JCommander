@@ -3,7 +3,7 @@ package com.anjunar.jcommander
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.components.*
 import com.anjunar.jcommander.CdiUtils.*
-import com.anjunar.jcommander.configuration.Configuration
+import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf}
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
@@ -61,7 +61,7 @@ object Main extends JFXApp3 {
 
     val fileUtils = inject(classOf[FileUtils])
 
-    val darkMode = inject(classOf[DarkModeComponent])
+    val darkMode = inject(classOf[DarkModeConf])
 
     val fileTableManager = inject(classOf[FileTableManager])
 

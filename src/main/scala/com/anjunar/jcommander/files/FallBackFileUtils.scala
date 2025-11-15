@@ -257,19 +257,16 @@ class FallBackFileUtils extends AbstractFileUtils {
           new Thread(task).start()
 
         } else {
-          val lockedDialog = new Dialog[ButtonType]() {
+          val lockedDialog = new ThemedDialog[ButtonType]() {
             title = "Locked Files Detected"
             headerText = "The following files are currently in use and cannot be processed:"
-            dialogPane().buttonTypes = Seq(ButtonType.OK)
+            dialogPane.buttonTypes = Seq(ButtonType.OK)
             val contentBox = new VBox(5)
             lockedFiles.foreach(f => contentBox.getChildren.add(new javafx.scene.control.Label(f.toString)))
-            dialogPane().content = contentBox
-            dialogPane().getStylesheets.add(
-              getClass.getResource(s"/${if darkMode.value then "dark" else "light"}-theme.css").toExternalForm
-            )
+            dialogPane.content = contentBox
           }
 
-          lockedDialog.showAndWait()
+          lockedDialog.showAndWaitDialog()
         }
       }
     }

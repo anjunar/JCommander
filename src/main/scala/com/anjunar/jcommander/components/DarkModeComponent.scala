@@ -7,7 +7,6 @@ import scalafx.beans.property.BooleanProperty
 import scalafx.scene.Node
 import scalafx.scene.control.{Button, Tooltip}
 
-@ApplicationScoped
 class DarkModeComponent extends Component[Button] {
 
   val configuration: DarkModeConf = inject(classOf[DarkModeConf])
@@ -21,6 +20,7 @@ class DarkModeComponent extends Component[Button] {
     onAction = _ => {
       valueProperty.value = !valueProperty.value
       configuration.value = valueProperty.value
+      configuration.valueProperty.value = valueProperty.value
       println(s"Dark Mode: ${configuration.value}")
     }
   }

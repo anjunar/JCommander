@@ -4,6 +4,7 @@ import com.anjunar.jcommander.CdiUtils.*
 import com.anjunar.jcommander.Icons
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.components.{DarkModeComponent, HeaderMenuBarComponent}
+import com.anjunar.jcommander.configuration.DarkModeConf
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Cursor
@@ -16,7 +17,7 @@ class TitleBar(stage: Stage) {
 
   private val headerMenuBar = new HeaderMenuBarComponent()
 
-  private val darkMode = inject(classOf[DarkModeComponent])
+  private val darkMode = inject(classOf[DarkModeConf])
 
   private var xOffset = 0.0
   private var yOffset = 0.0

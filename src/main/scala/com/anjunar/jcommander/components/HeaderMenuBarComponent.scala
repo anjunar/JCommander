@@ -9,8 +9,6 @@ import scalafx.scene.layout.{HBox, VBox}
 
 class HeaderMenuBarComponent extends Component[HBox] {
 
-  val darkMode = inject(classOf[DarkModeComponent])
-
   val node = new HBox {
     spacing = 10
     children = Seq(new MenuBar {

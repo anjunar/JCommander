@@ -24,7 +24,9 @@ class FileTableManager {
     left.node.requestFocus()
     source = table
 
-    table.loadDirectory(leftConf.file.getAbsolutePath)
+    if (table.isInstanceOf[LocalFileTableComponent]) {
+      table.loadDirectory(leftConf.file.getAbsolutePath)
+    }
 
     table.node.focusedProperty().addListener((_, _, newValue) => {
       if (newValue) {
@@ -43,7 +45,9 @@ class FileTableManager {
     right.node.requestFocus()
     source = table
 
-    table.loadDirectory(rightConf.file.getAbsolutePath)
+    if (table.isInstanceOf[LocalFileTableComponent]) {
+      table.loadDirectory(rightConf.file.getAbsolutePath)
+    }
 
     table.node.focusedProperty().addListener((_, _, newValue) => {
       if (newValue) {

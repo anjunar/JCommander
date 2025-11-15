@@ -10,7 +10,7 @@ object Icons {
 
   def themedIcon(iconName: String, size: Int = 20): FontIcon = {
     
-    val darkMode = inject(classOf[DarkModeComponent])
+    val darkMode = inject(classOf[DarkModeConf])
     
     val icon = new FontIcon(iconName)
     icon.setIconSize(size)

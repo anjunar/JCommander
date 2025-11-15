@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.*
-import com.anjunar.jcommander.configuration.TextEditorConf
+import com.anjunar.jcommander.configuration.{DarkModeConf, TextEditorConf}
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.CdiUtils.*
 import com.anjunar.jcommander.manager.FileTableManager
@@ -18,8 +18,6 @@ class ActionButtonsComponent extends Component[HBox] {
   val fileUtils: FileUtils = inject(classOf[FileUtils])
 
   val fileTableManager = inject(classOf[FileTableManager])
-
-  val toggleTheme: DarkModeComponent = inject(classOf[DarkModeComponent])
 
   val editorConfig: TextEditorConf = inject(classOf[TextEditorConf])
 
@@ -89,7 +87,7 @@ class ActionButtonsComponent extends Component[HBox] {
           inject(classOf[QuitCommand]).execute()
         }
       },
-      toggleTheme.node
+      new DarkModeComponent().node
     )
 
     buttons.foreach { b =>

@@ -60,8 +60,8 @@ class FilePaneComponent(position : String, newTable : AbstractFileTableComponent
           new Separator() { orientation = scalafx.geometry.Orientation.Vertical },
           new Button("SFTP") {
             onAction = _ => {
-              inject(classOf[SFTPClientComponent]).node.showAndWaitDialog().foreach( manager => {
-                table = new SFTPFileTableComponent()
+              new SFTPClientComponent().node.showAndWaitDialog().foreach(manager => {
+                table = new SFTPFileTableComponent(manager)
                 table.loadDirectory("sftp://patrick:cubase@patricks-mbp.fritz.box/")
                 newTable(table)
                 VBox.setVgrow(table.node, Priority.Always)

@@ -3,6 +3,7 @@ package com.anjunar.jcommander.ui
 import com.anjunar.jcommander.CdiUtils.*
 import com.anjunar.jcommander.Icons
 import com.anjunar.jcommander.components.DarkModeComponent
+import com.anjunar.jcommander.configuration.DarkModeConf
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Cursor
@@ -13,7 +14,7 @@ import scalafx.stage.Stage
 
 class MinimalTitleBar(stage: Stage, title: String = "") {
 
-  private val darkMode = inject(classOf[DarkModeComponent])
+  private val darkMode = inject(classOf[DarkModeConf])
   private val closeIcon = Icons.themedIcon("mdi2w-window-close")
 
   private var xOffset = 0.0

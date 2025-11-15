@@ -12,9 +12,7 @@ import scalafx.scene.control.TableView
 
 import java.awt.image.BufferedImage
 
-class SFTPFileTableComponent extends AbstractFileTableComponent {
-
-  private val client = inject(classOf[SFTPClientComponent])
+class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTableComponent {
 
   override def processNode(node: TableView[FileItem]): Unit = {
     node.onMouseClicked = e => {
@@ -54,7 +52,7 @@ class SFTPFileTableComponent extends AbstractFileTableComponent {
   override def getFileIcon(item: FileItem): BufferedImage = null
 
   override def loadDirectory(directory: String): Unit = {
-    val folder: FileObject = client.resolve(directory)
+    val folder: FileObject = manager.resolveFile(directory)
     if (folder == null || !folder.exists() || !folder.isFolder) {
       node.items.value.clear()
       return

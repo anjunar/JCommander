@@ -1,7 +1,8 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{DarkModeComponent, AbstractFileTableComponent}
+import com.anjunar.jcommander.components.{AbstractFileTableComponent, DarkModeComponent}
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.typesafe.scalalogging.Logger
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
@@ -18,8 +19,6 @@ abstract class AbstractFileUtils extends FileUtils {
   
   val log = Logger[AbstractFileUtils]
   
-  val darkMode = inject(classOf[DarkModeComponent])
-
   override def executeFile(file: String, workingDir : String, args: Seq[String]): Unit = {
     Future {
       try {
