@@ -93,7 +93,7 @@ class LocalFileTableComponent extends AbstractFileTableComponent {
     val ext = if (file.isDirectory) "<DIR>" else fileExtension(file)
     val size = formatSize(file)
     val date = dateFormat.format(file.lastModified())
-    FileItem(file.getName, ext, size, date, file.getAbsolutePath, file.isDirectory)
+    FileItem(file.getName, ext, size, file.length(), date, file.lastModified(), file.getAbsolutePath, file.isDirectory)
   }
 
   def loadDirectory(value: String): Unit = {
@@ -111,7 +111,7 @@ class LocalFileTableComponent extends AbstractFileTableComponent {
     }
 
     val files = Option(dir.listFiles()).getOrElse(Array.empty[File])
-    val parent = Option(dir.getParentFile).map(p => FileItem("..", "<UP-DIR>", "<UP-DIR>", "", p.getAbsolutePath, true)).toSeq
+    val parent = Option(dir.getParentFile).map(p => FileItem("..", "<UP-DIR>", "<UP-DIR>", 0,  "", 0, p.getAbsolutePath, true)).toSeq
     val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm")
 
     val fileItems = files.toSeq
@@ -121,7 +121,7 @@ class LocalFileTableComponent extends AbstractFileTableComponent {
         val ext = if (f.isDirectory) "<DIR>" else fileExtension(f)
         val size = if (f.isDirectory) "<DIR>" else formatSize(f)
         val date = sdf.format(f.lastModified())
-        FileItem(name, ext, size, date, f.getAbsolutePath, f.isDirectory)
+        FileItem(name, ext, size, f.length(), date, f.lastModified(), f.getAbsolutePath, f.isDirectory)
       }
 
     // Watcher nur neu starten, wenn Pfad sich geändert hat

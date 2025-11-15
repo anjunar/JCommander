@@ -161,8 +161,8 @@ abstract class AbstractFileTableComponent extends Component[TableView[FileItem]]
           else 0
 
         val dirFirst: Comparator[FileItem] = (a, b) =>
-          if (a.asJavaFile.isDirectory && !b.asJavaFile.isDirectory && !a.isUpDir && !b.isUpDir) -1
-          else if (!a.asJavaFile.isDirectory && b.asJavaFile.isDirectory && !a.isUpDir && !b.isUpDir) 1
+          if (a.isDir && !b.isDir && !a.isUpDir && !b.isUpDir) -1
+          else if (!a.isDir && b.isDir && !a.isUpDir && !b.isUpDir) 1
           else 0
 
         val secondary: Comparator[FileItem] = sortCol match {
@@ -174,21 +174,21 @@ abstract class AbstractFileTableComponent extends Component[TableView[FileItem]]
               }
             case "Extension" =>
               (a, b) => {
-                val ea = if (a.asJavaFile.isDirectory || a.isUpDir) "" else a.ext
-                val eb = if (b.asJavaFile.isDirectory || b.isUpDir) "" else b.ext
+                val ea = if (a.isDir || a.isUpDir) "" else a.ext
+                val eb = if (b.isDir || b.isUpDir) "" else b.ext
                 val r = ea.compareToIgnoreCase(eb)
                 if (sortType == javafx.scene.control.TableColumn.SortType.ASCENDING) r else -r
               }
             case "Size" =>
               (a, b) => {
-                val sa = if (a.asJavaFile.isDirectory || a.isUpDir) Long.MinValue else a.asJavaFile.length()
-                val sb = if (b.asJavaFile.isDirectory || b.isUpDir) Long.MinValue else b.asJavaFile.length()
+                val sa = if (a.isDir || a.isUpDir) Long.MinValue else a.sizeLong
+                val sb = if (b.isDir || b.isUpDir) Long.MinValue else b.sizeLong
                 val r = java.lang.Long.compare(sa, sb)
                 if (sortType == javafx.scene.control.TableColumn.SortType.ASCENDING) r else -r
               }
             case "Changed" =>
               (a, b) => {
-                val r = java.lang.Long.compare(a.asJavaFile.lastModified(), b.asJavaFile.lastModified())
+                val r = java.lang.Long.compare(a.dateLong, b.dateLong)
                 if (sortType == javafx.scene.control.TableColumn.SortType.ASCENDING) r else -r
               }
             case _ => (_: FileItem, _: FileItem) => 0

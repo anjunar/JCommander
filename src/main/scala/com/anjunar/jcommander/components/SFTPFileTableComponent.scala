@@ -8,9 +8,12 @@ import jakarta.enterprise.context.ApplicationScoped
 import javafx.scene.input.KeyCode
 import org.apache.commons.vfs2.*
 import scalafx.Includes.jfxMouseEvent2sfx
+import scalafx.scene.control.TableColumn.SortType
 import scalafx.scene.control.TableView
+import scalafx.Includes.*
 
 import java.awt.image.BufferedImage
+import scala.collection.immutable.Seq
 
 class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTableComponent {
 
@@ -60,28 +63,41 @@ class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTa
 
     val children = folder.getChildren.toSeq
 
-    val items = children.map { entry =>
-      val name = entry.getName.getBaseName
-      val isDir = entry.getType == FileType.FOLDER
-
-      val size =
-        if (isDir) "<DIR>"
-        else formatSize(entry.getContent.getSize)
-
-      val date = formatDate(entry.getContent.getLastModifiedTime)
-
-      FileItem(
-        name = name,
-        ext = getExtension(name),
-        size = size,
-        date = date,
-        file = entry.getName.getURI,
-        isDir = isDir
-      )
-    }
+    val items = if (folder.getParent == null) then
+      children.map { createFileItem(_) }
+    else
+      Seq(createFileItem(folder.getParent, true)) ++ children.map { createFileItem(_) }
 
     node.items.value.clear()
     node.items.value.addAll(items*)
+
+    node.sortOrder.clear()
+    node.sortOrder += node.columns.find(_.text.value == "Name").get
+    node.columns.find(_.text.value == "Name").get.sortType = SortType.Ascending
+    node.sort()
+
+  }
+
+  private def createFileItem(entry: FileObject, upDir: Boolean = false) = {
+    val name = entry.getName.getBaseName
+    val isDir = entry.getType == FileType.FOLDER
+
+    val size =
+      if (isDir) "<DIR>"
+      else formatSize(entry.getContent.getSize)
+
+    val date = formatDate(entry.getContent.getLastModifiedTime)
+
+    FileItem(
+      name = if upDir then ".." else name,
+      ext = getExtension(name),
+      size = size,
+      sizeLong = if isDir then 0 else entry.getContent.getSize,
+      date = date,
+      dateLong = entry.getContent.getLastModifiedTime,
+      file = entry.getName.getURI,
+      isDir = isDir
+    )
   }
 
   def getExtension(name: String): String =
