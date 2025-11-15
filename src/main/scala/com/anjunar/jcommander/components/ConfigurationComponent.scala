@@ -11,7 +11,6 @@ import scalafx.scene.control.{Label, ListView}
 import scalafx.scene.layout.{BorderPane, Priority, Region, StackPane, VBox}
 import scalafx.stage.{Stage, StageStyle}
 
-@ApplicationScoped
 class ConfigurationComponent extends Component[Stage] {
 
   val modules = injectInstance(classOf[ConfigModule])

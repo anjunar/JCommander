@@ -1,30 +1,18 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.files.{FileItem, FileUtils, FileWatcher}
-import com.anjunar.jcommander.CdiUtils.*
-import com.anjunar.jcommander.configuration.FileTableConf
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.enterprise.event.Observes
-import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
-import javafx.scene.control.{TableRow, TableCell as JfxTableCell}
+import com.anjunar.jcommander.files.FileItem
+import javafx.scene.control.TableCell as JfxTableCell
 import scalafx.Includes.*
-import scalafx.application.Platform
 import scalafx.beans.property.ReadOnlyObjectWrapper
-import scalafx.collections.ObservableBuffer
 import scalafx.embed.swing.SwingFXUtils
-import scalafx.scene.control.TableColumn.SortType
 import scalafx.scene.control.{TableCell, TableColumn, TableView}
 import scalafx.scene.image.ImageView
 
 import java.awt.image.BufferedImage
-import java.nio.file.StandardWatchEventKinds.*
-import java.io.File
-import java.nio.file.{Files, Path, WatchEvent}
 import java.text.SimpleDateFormat
 import java.util.Comparator
 import scala.collection.mutable
 import scala.compiletime.uninitialized
-import scala.jdk.CollectionConverters.*
 
 abstract class AbstractFileTableComponent extends Component[TableView[FileItem]] {
 
@@ -34,8 +22,8 @@ abstract class AbstractFileTableComponent extends Component[TableView[FileItem]]
   var directory: String = uninitialized
 
   val activeTable = new TableView[FileItem]()
-  
-  def processNode(node: TableView[FileItem]) : Unit
+
+  def processNode(node: TableView[FileItem]): Unit
 
   val node: TableView[FileItem] = {
     val newNode = new TableView[FileItem] {
@@ -215,13 +203,13 @@ abstract class AbstractFileTableComponent extends Component[TableView[FileItem]]
       })
 
     }
-    
+
     processNode(newNode)
-    
+
     newNode
   }
 
-  def getFileIcon(item: FileItem) : BufferedImage
+  def getFileIcon(item: FileItem): BufferedImage
 
   def loadDirectory(directory: String): Unit
 

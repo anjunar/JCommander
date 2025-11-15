@@ -12,11 +12,10 @@ import scalafx.stage.StageStyle
 import scalafx.Includes.*
 import scalafx.scene.image.Image
 
-class PrimaryStageComponent(newLeftTable : AbstractFileTableComponent => Unit,
-                            newRightTable : AbstractFileTableComponent => Unit) extends Component[JFXApp3.PrimaryStage] {
+class PrimaryStageComponent extends Component[JFXApp3.PrimaryStage] {
 
   val primaryStageConf: PrimaryStageConf = inject(classOf[PrimaryStageConf])
-  val rootPane: RootPaneComponent = new RootPaneComponent(newLeftTable, newRightTable)
+  val rootPane: RootPaneComponent = new RootPaneComponent()
 
   override val node: JFXApp3.PrimaryStage = new JFXApp3.PrimaryStage {
     title = "JCommander File Manager"

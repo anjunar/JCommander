@@ -9,7 +9,6 @@ import org.apache.commons.vfs2.{FileObject, FileSystemManager}
 import scalafx.scene.control.{Button, Label, PasswordField, TextField}
 import scalafx.scene.layout.{HBox, Priority, VBox}
 
-@ApplicationScoped
 class SFTPClientComponent extends Component[ThemedDialog[FileSystemManager]] {
 
   val manager = new DefaultFileSystemManager()

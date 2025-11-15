@@ -7,7 +7,6 @@ import jakarta.enterprise.context.ApplicationScoped
 import scalafx.scene.control.*
 import scalafx.scene.layout.{HBox, VBox}
 
-@ApplicationScoped
 class HeaderMenuBarComponent extends Component[HBox] {
 
   val darkMode = inject(classOf[DarkModeComponent])

@@ -14,7 +14,7 @@ import scalafx.stage.Stage
 
 class TitleBar(stage: Stage) {
 
-  private val headerMenuBar = inject(classOf[HeaderMenuBarComponent])
+  private val headerMenuBar = new HeaderMenuBarComponent()
 
   private val darkMode = inject(classOf[DarkModeComponent])
 

@@ -5,13 +5,11 @@ import jakarta.enterprise.context.ApplicationScoped
 import scalafx.geometry.Insets
 import scalafx.scene.layout.BorderPane
 
-@ApplicationScoped
-class RootPaneComponent(newLeftTable : AbstractFileTableComponent => Unit, 
-                        newRightTable : AbstractFileTableComponent => Unit) extends Component[BorderPane] {
+class RootPaneComponent extends Component[BorderPane] {
   
-  val actionButtons = inject(classOf[ActionButtonsComponent])
+  val actionButtons = new ActionButtonsComponent()
   
-  val splitPane = new SplitPaneComponent(newLeftTable, newRightTable)
+  val splitPane = new SplitPaneComponent
 
   override val node: BorderPane = new BorderPane {
     padding = Insets(1, 1, 1, 1)

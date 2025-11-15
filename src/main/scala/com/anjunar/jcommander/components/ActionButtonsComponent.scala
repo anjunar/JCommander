@@ -11,7 +11,6 @@ import javafx.event.EventHandler
 import scalafx.scene.control.Button
 import scalafx.scene.layout.{HBox, Priority}
 
-@ApplicationScoped
 class ActionButtonsComponent extends Component[HBox] {
 
   val log = Logger[ActionButtonsComponent]

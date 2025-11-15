@@ -65,16 +65,9 @@ object Main extends JFXApp3 {
 
     val fileTableManager = inject(classOf[FileTableManager])
 
-    val actionButtons = inject(classOf[ActionButtonsComponent])
+    val actionButtons = new ActionButtonsComponent()
 
-    stage = new PrimaryStageComponent(
-      newLeftTable => {
-        fileTableManager.loadLeft(newLeftTable)
-      },
-      newRightTable => {
-        fileTableManager.loadRight(newRightTable)
-      }
-    ).node
+    stage = new PrimaryStageComponent().node
 
     val lightCSS = getClass.getResource("/light-theme.css").toExternalForm
     val darkCSS = getClass.getResource("/dark-theme.css").toExternalForm
