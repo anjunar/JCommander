@@ -84,6 +84,24 @@ class WinFileUtils extends AbstractFileUtils {
     )
   }
 
+  private def formatEta(seconds: Int): String = {
+    if (seconds <= 0) "Calculating..."
+    else if (seconds < 60) s"$seconds sec remaining"
+    else {
+      val minutes = seconds / 60
+      val sec = seconds % 60
+      if (minutes < 60) {
+        if (sec == 0) s"$minutes min remaining"
+        else s"$minutes min $sec sec remaining"
+      } else {
+        val hours = minutes / 60
+        val min = minutes % 60
+        if (min == 0) s"$hours h remaining"
+        else s"$hours h $min min remaining"
+      }
+    }
+  }
+
   def processFiles(
                     strategy: WinFileStrategy,
                     confirmTitle: String,
@@ -144,17 +162,19 @@ class WinFileUtils extends AbstractFileUtils {
                   case WinNativeCopy.ProgressEvent.Type.UPDATE =>
                     updateProgress(event.percent, 1.0)
 
+                    if (isDelete) {
+                      Platform.runLater {
+                        fileLabel.text = event.source
+                      }
+                    }
+
                     val elapsed = java.time.Duration.between(startTime, Instant.now()).toMillis
                     val eta = if (event.percent > 0) (elapsed / event.percent) - elapsed else 0
                     val etaSec = (eta / 1000).toInt
 
-                    val etaText =
-                      if (etaSec > 0) f"$etaSec sec remaining"
-                      else "Calculating..."
-
                     Platform.runLater {
                       progressLabel.text =
-                        f"${(event.percent * 100).toInt}%% copied  –  ($etaText)"
+                        f"${(event.percent * 100).toInt}%% copied  –  (${formatEta(etaSec)})"
                     }
 
                   case WinNativeCopy.ProgressEvent.Type.PRE_COPY =>
