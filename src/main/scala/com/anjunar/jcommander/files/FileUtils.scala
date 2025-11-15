@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.FileTableComponent
+import com.anjunar.jcommander.components.AbstractFileTableComponent
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 
 import java.awt.image.BufferedImage
@@ -8,23 +8,23 @@ import java.io.File
 
 trait FileUtils {
   
-  def fileContext(files: Seq[File]) : Unit
+  def fileContext(files: Seq[String]) : Unit
   
-  def getFileIcon(file : File, large : Boolean) : BufferedImage
+  def getFileIcon(file : String, large : Boolean) : BufferedImage
 
-  def executeFile(file : File, workingDir : File, args : Seq[String]) : Unit
+  def executeFile(file : String, workingDir : String, args : Seq[String]) : Unit
   
-  def console(workingDir : File) : Unit
+  def console(workingDir : String) : Unit
   
-  def executeFile(file : File) : Unit
+  def executeFile(file : String) : Unit
 
-  def mkDir(activeTable: FileTableComponent): Unit
+  def mkDir(activeTable: AbstractFileTableComponent): Unit
 
-  def renameFile(activeTable: FileTableComponent): Unit
+  def renameFile(activeTable: AbstractFileTableComponent): Unit
 
-  def copyFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit
+  def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit
 
-  def moveFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit
+  def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit
 
-  def deleteFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit
+  def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit
 }

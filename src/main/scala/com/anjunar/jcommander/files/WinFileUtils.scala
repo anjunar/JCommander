@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.FileTableComponent
+import com.anjunar.jcommander.components.AbstractFileTableComponent
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.{OSType, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
@@ -23,26 +23,26 @@ class WinFileUtils extends AbstractFileUtils {
 
   override val log = Logger[WinFileUtils]
 
-  override def fileContext(files: Seq[File]): Unit = {
-    WinNativeCopy.fileContext(files.map(_.getAbsolutePath).toArray, true)
+  override def fileContext(files: Seq[String]): Unit = {
+    WinNativeCopy.fileContext(files.toArray, true)
   }
 
-  override def console(workingDir: File): Unit = {
+  override def console(workingDir: String): Unit = {
     new ProcessBuilder(
       "cmd.exe", "/c", "start", "powershell",
       "-NoExit", "-Command",
-      s"Set-Location '${workingDir.getAbsolutePath}'"
-    ).directory(workingDir).start()
+      s"Set-Location '${workingDir}'"
+    ).directory(new File(workingDir)).start()
   }
 
-  override def getFileIcon(file: File, large: Boolean): BufferedImage = {
-    val bytes = WinNativeCopy.getFileIcon(file.getAbsolutePath, large)
+  override def getFileIcon(file: String, large: Boolean): BufferedImage = {
+    val bytes = WinNativeCopy.getFileIcon(file, large)
     ImageIO.read(new ByteArrayInputStream(bytes))
   }
 
-  override def executeFile(file: File): Unit = WinNativeCopy.executeFile(file.getAbsolutePath)
+  override def executeFile(file: String): Unit = WinNativeCopy.executeFile(file)
 
-  override def copyFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
+  override def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.copyFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback, overwrite)
@@ -56,7 +56,7 @@ class WinFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def moveFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
+  override def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.moveFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback, overwrite)
@@ -70,7 +70,7 @@ class WinFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def deleteFiles(activeTable: FileTableComponent, otherTable: FileTableComponent): Unit = {
+  override def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.deleteFiles(paths.map(_.toAbsolutePath.toString).toArray, progressCallback, recycle)
@@ -108,8 +108,8 @@ class WinFileUtils extends AbstractFileUtils {
                     confirmHeader: String,
                     progressText: String,
                     isDelete: Boolean,
-                    activeTable: FileTableComponent,
-                    otherTable: FileTableComponent
+                    activeTable: AbstractFileTableComponent,
+                    otherTable: AbstractFileTableComponent
                   ): Unit = {
 
     val replaceExistingBox = new CheckBox("Replace existing files") {
@@ -140,8 +140,8 @@ class WinFileUtils extends AbstractFileUtils {
         val overwriteExisting = replaceExistingBox.selected.value
         val moveToRecycleBin = moveToRecycleBinBox.selected.value
 
-        val selectedFiles = activeTable.node.selectionModel.value.getSelectedItems.asScala.map(_.file.toPath).toSeq
-        val targetDir = otherTable.directory.toPath
+        val selectedFiles = activeTable.node.selectionModel.value.getSelectedItems.asScala.map(_.asJavaFile.toPath).toSeq
+        val targetDir = Path.of(otherTable.directory)
 
         val cancelledFlag = new AtomicBoolean(false)
 

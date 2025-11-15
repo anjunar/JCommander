@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{DarkModeComponent, FileTableComponent}
+import com.anjunar.jcommander.components.{DarkModeComponent, AbstractFileTableComponent}
 import com.anjunar.jcommander.CdiUtils.*
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.typesafe.scalalogging.Logger
@@ -20,12 +20,12 @@ abstract class AbstractFileUtils extends FileUtils {
   
   val darkMode = inject(classOf[DarkModeComponent])
 
-  override def executeFile(file: File, workingDir : File, args: Seq[String]): Unit = {
+  override def executeFile(file: String, workingDir : String, args: Seq[String]): Unit = {
     Future {
       try {
-        val pb = new ProcessBuilder(Seq(file.getAbsolutePath) ++ args *)
+        val pb = new ProcessBuilder(Seq(file) ++ args *)
         if (workingDir != null) 
-          pb.directory(workingDir)
+          pb.directory(new File(workingDir))
         val p = pb.start()
         val code = p.waitFor()
       } catch {
@@ -34,7 +34,7 @@ abstract class AbstractFileUtils extends FileUtils {
     }
   }
 
-  def mkDir(activeTable: FileTableComponent): Unit = {
+  def mkDir(activeTable: AbstractFileTableComponent): Unit = {
     val textField: TextField = new TextField {
       promptText = "Directory Name"
     }
@@ -51,12 +51,12 @@ abstract class AbstractFileUtils extends FileUtils {
     mkDirDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
-        Files.createDirectory(activeTable.directory.toPath.resolve(newFileName))
+        Files.createDirectory(new File(activeTable.directory).toPath.resolve(newFileName))
       }
     }
   }
 
-  def renameFile(activeTable: FileTableComponent): Unit = {
+  def renameFile(activeTable: AbstractFileTableComponent): Unit = {
     val textField: TextField = new TextField {
       text = activeTable.node.selectionModel.value.getSelectedItem.name
     }
@@ -73,7 +73,7 @@ abstract class AbstractFileUtils extends FileUtils {
     renameDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
-        val oldPath = activeTable.node.selectionModel.value.getSelectedItems.head.file.toPath
+        val oldPath = activeTable.node.selectionModel.value.getSelectedItems.head.asJavaFile.toPath
         val newPath = oldPath.getParent.resolve(newFileName)
         Files.move(oldPath, newPath)
       }

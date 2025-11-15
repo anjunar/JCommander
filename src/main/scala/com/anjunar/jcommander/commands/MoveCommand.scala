@@ -7,7 +7,7 @@ class MoveCommand extends AbstractFileCommand {
 
   override def execute(): Unit = {
     if (canExecute) {
-      fileUtils.moveFiles(activeTable.active, activeTable.inActive)
+      fileUtils.moveFiles(fileTableManager.source, fileTableManager.target)
     }
   }
   

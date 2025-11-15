@@ -1,0 +1,53 @@
+package com.anjunar.jcommander.manager
+
+import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent}
+import jakarta.enterprise.context.ApplicationScoped
+
+import scala.compiletime.uninitialized
+
+@ApplicationScoped
+class FileTableManager {
+
+  var source : AbstractFileTableComponent = uninitialized
+  var target : AbstractFileTableComponent = uninitialized
+
+  var left : AbstractFileTableComponent = new LocalFileTableComponent()
+  var right : AbstractFileTableComponent = new LocalFileTableComponent()
+
+  def loadLeft(table : AbstractFileTableComponent): Unit = {
+    left = table
+    left.node.requestFocus()
+    source = table
+
+    table.node.focusedProperty().addListener((_, _, newValue) => {
+      if (newValue) {
+        val source = this.source
+        val target = this.target
+
+        if (source != table)
+        this.source = table
+        this.target = source
+      }
+    })
+  }
+
+  def loadRight(table: AbstractFileTableComponent): Unit = {
+    right = table
+    right.node.requestFocus()
+    source = table
+
+    table.node.focusedProperty().addListener((_, _, newValue) => {
+      if (newValue) {
+        val source = this.source
+        val target = this.target
+
+        if (source != table) {
+          this.source = target
+          this.target = source
+        }
+      }
+    })
+  }
+
+}

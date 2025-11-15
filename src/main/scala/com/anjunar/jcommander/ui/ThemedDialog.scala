@@ -87,7 +87,7 @@ abstract class ThemedDialog[T] extends Stage {
   var defaultResult: T = null.asInstanceOf[T]
 
   private val _result = new ObjectProperty[Option[T]](this, "result", None)
-
+  protected def setResult(value: T): Unit = _result.value = Some(value)
   def result: Option[T] = _result()
 
   def closeWithResult(value: T): Unit = {

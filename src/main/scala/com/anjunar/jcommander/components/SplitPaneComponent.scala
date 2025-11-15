@@ -5,12 +5,13 @@ import jakarta.enterprise.context.ApplicationScoped
 import scalafx.scene.control.SplitPane
 
 @ApplicationScoped
-class SplitPaneComponent extends Component[SplitPane] {
+class SplitPaneComponent(newLeftTable : AbstractFileTableComponent => Unit, 
+                         newRightTable : AbstractFileTableComponent => Unit) extends Component[SplitPane] {
 
-  val leftPane = inject(classOf[FilePaneComponent.Left])
-  val rightPane = inject(classOf[FilePaneComponent.Right])
-
-  override lazy val node: SplitPane = new SplitPane {
+  val leftPane = new FilePaneComponent("left", newLeftTable)
+  val rightPane = new FilePaneComponent("right", newRightTable)
+  
+  override val node: SplitPane = new SplitPane {
     items.addAll(leftPane.node, rightPane.node)
     setDividerPosition(0, 0.5)
   }

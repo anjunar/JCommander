@@ -17,7 +17,7 @@ class ConfigurationComponent extends Component[Stage] {
   val modules = injectInstance(classOf[ConfigModule])
   val darkMode = inject(classOf[DarkModeComponent])
 
-  override lazy val node: Stage = new Stage {
+  override val node: Stage = new Stage {
     title = "Configuration"
     width = 800
     height = 600

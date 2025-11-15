@@ -6,13 +6,14 @@ import scalafx.geometry.Insets
 import scalafx.scene.layout.BorderPane
 
 @ApplicationScoped
-class RootPaneComponent extends Component[BorderPane] {
+class RootPaneComponent(newLeftTable : AbstractFileTableComponent => Unit, 
+                        newRightTable : AbstractFileTableComponent => Unit) extends Component[BorderPane] {
   
   val actionButtons = inject(classOf[ActionButtonsComponent])
   
-  val splitPane = inject(classOf[SplitPaneComponent])
+  val splitPane = new SplitPaneComponent(newLeftTable, newRightTable)
 
-  override lazy val node: BorderPane = new BorderPane {
+  override val node: BorderPane = new BorderPane {
     padding = Insets(1, 1, 1, 1)
     center = splitPane.node
     bottom = actionButtons.node

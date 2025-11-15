@@ -2,6 +2,7 @@ package com.anjunar.jcommander.commands
 
 import com.anjunar.jcommander.configuration.TextEditorConf
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.manager.FileTableManager
 import jakarta.enterprise.context.Dependent
 
 import java.io.File
@@ -13,7 +14,7 @@ class EditCommand extends AbstractFileCommand {
 
   override def execute(): Unit = {
     if (canExecute) {
-      fileUtils.executeFile(new File(configuration.executable), null, Seq(activeTable.active.node.selectionModel.value.getSelectedItem.file.getAbsolutePath))
+      fileUtils.executeFile(configuration.executable, null, Seq(fileTableManager.source.node.selectionModel.value.getSelectedItem.file))
     }
   }
   

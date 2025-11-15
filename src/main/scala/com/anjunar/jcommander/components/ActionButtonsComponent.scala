@@ -1,9 +1,10 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.*
-import com.anjunar.jcommander.configuration.{ActiveTable, TextEditorConf}
+import com.anjunar.jcommander.configuration.TextEditorConf
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.manager.FileTableManager
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.event.EventHandler
@@ -17,13 +18,13 @@ class ActionButtonsComponent extends Component[HBox] {
 
   val fileUtils: FileUtils = inject(classOf[FileUtils])
 
-  val activeTable: ActiveTable = inject(classOf[ActiveTable])
+  val fileTableManager = inject(classOf[FileTableManager])
 
   val toggleTheme: DarkModeComponent = inject(classOf[DarkModeComponent])
 
   val editorConfig: TextEditorConf = inject(classOf[TextEditorConf])
 
-  lazy val node = new HBox {
+  val node = new HBox {
     spacing = 2
     fillHeight = true
     maxWidth = Double.MaxValue

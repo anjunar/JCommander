@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.FileTableComponent
+import com.anjunar.jcommander.components.LocalFileTableComponent
 import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
 import scalafx.scene.control.TableView
@@ -10,7 +10,7 @@ import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.*
 import scala.jdk.CollectionConverters.*
 
-class FileWatcher(val path: Path, table: FileTableComponent) {
+class FileWatcher(val path: Path, table: LocalFileTableComponent) {
   private val log = Logger[FileWatcher]
   private val watcher = FileSystems.getDefault.newWatchService()
   path.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)

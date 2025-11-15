@@ -16,7 +16,7 @@ class DarkModeComponent extends Component[Button] {
 
   val valueProperty = BooleanProperty(configuration.value)
 
-  lazy val node: Button = new Button(if (value) then "Dark Mode" else "Light Mode") {
+  val node: Button = new Button(if (value) then "Dark Mode" else "Light Mode") {
     tooltip = new Tooltip(if (value) then "Dark Mode" else "Light Mode")
     onAction = _ => {
       valueProperty.value = !valueProperty.value

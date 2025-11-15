@@ -12,7 +12,7 @@ class HeaderMenuBarComponent extends Component[HBox] {
 
   val darkMode = inject(classOf[DarkModeComponent])
 
-  lazy val node = new HBox {
+  val node = new HBox {
     spacing = 10
     children = Seq(new MenuBar {
       val fileMenu = new Menu("File") {

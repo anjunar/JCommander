@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters.*
 
-abstract class DriveButtonsComponent extends Component[HBox] {
+class DriveButtonsComponent(change : File => Unit) extends Component[HBox] {
 
   private val running = new AtomicBoolean(true)
   private var lastDrives: Set[String] = currentDriveNames
@@ -28,16 +28,14 @@ abstract class DriveButtonsComponent extends Component[HBox] {
 
   val selectedLabel = new Label("Kein Laufwerk ausgewählt")
 
-  def onDriveChange(file : File) : Unit
-
-  lazy val node = new HBox {
+  val node = new HBox {
     spacing = 10
   }
 
   val home = new Button("Home") {
     style = "-fx-background-color: transparent; -fx-text-fill: -fx-text-base-color;"
     onAction = _ => {
-      onDriveChange(new File(System.getProperty("user.home")))
+      change(new File(System.getProperty("user.home")))
     }
   }
 
@@ -74,7 +72,7 @@ abstract class DriveButtonsComponent extends Component[HBox] {
             try {
               val rootStore = java.nio.file.Files.getFileStore(root)
               if (rootStore == store) {
-                onDriveChange(root.toFile)
+                change(root.toFile)
               }
             } catch {
               case _: Exception =>
@@ -90,30 +88,4 @@ abstract class DriveButtonsComponent extends Component[HBox] {
   def stop(): Unit = {
     running.set(false)
   }
-}
-
-object DriveButtonsComponent {
-
-  case class OnDriveChangeLeft(file : File)
-
-  case class OnDriveChangeRight(file : File)
-  
-  @ApplicationScoped
-  class Left extends DriveButtonsComponent {
-
-    var beanManager: BeanManager = inject(classOf[BeanManager])
-
-    override def onDriveChange(file: File): Unit = beanManager.getEvent.fire(OnDriveChangeLeft(file))
-    
-  }
-
-  @ApplicationScoped
-  class Right extends DriveButtonsComponent {
-
-    var beanManager: BeanManager = inject(classOf[BeanManager])
-    
-    override def onDriveChange(file: File): Unit = beanManager.getEvent.fire(OnDriveChangeRight(file))
-    
-  }
-
 }
