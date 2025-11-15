@@ -17,6 +17,7 @@ public class WinNativeCopy {
     public static native void deleteFiles(String[] sources, ProgressCallback callback, boolean recycle);
     public static native void executeFile(String path);
     public static native byte[] getFileIcon(String path, boolean large);
+    public static native void fileContext(String path, boolean darkMode);
 
     public interface ProgressCallback {
         void onProgress(ProgressEvent event);

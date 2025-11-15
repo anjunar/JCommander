@@ -2,13 +2,14 @@ package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.ui.ThemedDialog
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.scene.control.*
-import scalafx.scene.layout.HBox
+import scalafx.scene.layout.{HBox, VBox}
 
 @ApplicationScoped
 class HeaderMenuBarComponent extends Component[HBox] {
-  
+
   val darkMode = inject(classOf[DarkModeComponent])
 
   lazy val node = new HBox {
@@ -55,13 +56,16 @@ class HeaderMenuBarComponent extends Component[HBox] {
       val helpMenu = new Menu("Help") {
         items = List(
           new MenuItem("About...") {
-            onAction = _ => new Alert(Alert.AlertType.Information) {
+            onAction = _ => new ThemedDialog[Unit] {
               title = "About JCommander"
-              headerText = "JCommander"
-              contentText = "A File-Commander with ScalaFX."
-              dialogPane().getStylesheets.add(
-                getClass.getResource(s"/${if (darkMode.value) "dark" else "light"}-theme.css").toExternalForm
-              )
+              headerText = "JCommander written with Scala FX"
+              dialogPane.content = new VBox {
+                spacing = 10
+                children = Seq(
+                  new Label("Version: 1.0.0"),
+                  new Label("Author: Patrick Bittner")
+                )
+              }
             }.showAndWait()
           }
         )

@@ -23,6 +23,10 @@ class WinFileUtils extends AbstractFileUtils {
 
   override val log = Logger[WinFileUtils]
 
+  override def fileContext(file: File): Unit = {
+    WinNativeCopy.fileContext(file.getAbsolutePath, true)
+  }
+
   override def console(workingDir: File): Unit = {
     new ProcessBuilder(
       "cmd.exe", "/c", "start", "powershell",

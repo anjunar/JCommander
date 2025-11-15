@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.*
-import com.anjunar.jcommander.configuration.TextEditorConf
+import com.anjunar.jcommander.configuration.{ActiveTable, TextEditorConf}
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.CdiUtils.*
 import com.typesafe.scalalogging.Logger
@@ -17,7 +17,7 @@ class ActionButtonsComponent extends Component[HBox] {
 
   val fileUtils: FileUtils = inject(classOf[FileUtils])
 
-  val activeTable: ActiveTableComponent = inject(classOf[ActiveTableComponent])
+  val activeTable: ActiveTable = inject(classOf[ActiveTable])
 
   val toggleTheme: DarkModeComponent = inject(classOf[DarkModeComponent])
 

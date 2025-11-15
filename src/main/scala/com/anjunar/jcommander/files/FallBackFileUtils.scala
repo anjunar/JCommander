@@ -25,6 +25,8 @@ class FallBackFileUtils extends AbstractFileUtils {
 
   override val log: Logger = Logger[FallBackFileUtils]
 
+  override def fileContext(file: File): Unit = ???
+
   override def console(workingDir: File): Unit = ???
 
   override def getFileIcon(file: File, large: Boolean): BufferedImage = ???

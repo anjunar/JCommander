@@ -3,7 +3,7 @@ package com.anjunar.jcommander
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.components.*
 import com.anjunar.jcommander.CdiUtils.*
-import com.anjunar.jcommander.configuration.Configuration
+import com.anjunar.jcommander.configuration.{ActiveTable, Configuration}
 import com.anjunar.jcommander.files.FileUtils
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
 import com.anjunar.scala.universe.introspector.BeanIntrospector
@@ -65,7 +65,7 @@ object Main extends JFXApp3 {
     val leftTable = inject(classOf[FileTableComponent.Left])
     val rightTable = inject(classOf[FileTableComponent.Right])
 
-    val activeTable = inject(classOf[ActiveTableComponent])
+    val activeTable = inject(classOf[ActiveTable])
 
     leftTable.node.requestFocus()
 
@@ -102,40 +102,11 @@ object Main extends JFXApp3 {
     }
 
     Seq(leftTable, rightTable).foreach { table =>
-
-      val contextMenu = new ContextMenu(
-        new MenuItem("Rename") {
-          graphic = Icons.themedIcon("mdi2t-text-box-edit-outline")
-          onAction = _ => inject(classOf[RenameCommand]).execute()
-        },
-        new MenuItem("Copy") {
-          graphic = Icons.themedIcon("mdi2c-content-copy")
-          onAction = _ => inject(classOf[CopyCommand]).execute()
-        },
-        new MenuItem("Move") {
-          graphic = Icons.themedIcon("mdi2f-file-move-outline")
-          onAction = _ => inject(classOf[MoveCommand]).execute()
-        },
-        new MenuItem("Delete") {
-          graphic = Icons.themedIcon("mdi2d-delete-outline")
-          onAction = _ => inject(classOf[DeleteCommand]).execute()
-        },
-        new MenuItem("Make Directory") {
-          graphic = Icons.themedIcon("mdi2f-folder-plus-outline")
-          onAction = _ => inject(classOf[MkDirCommand]).execute()
-        }
-      ) {
-        style = "-fx-padding: 8 12 8 12;"
-      }
-      
-      contextMenu.setAutoHide(true)
-
       table.node.onMouseClicked = e => {
         activeTable.setActive(table)
-        contextMenu.hide()
-
+      
         if (e.button == MouseButton.Secondary) {
-          contextMenu.show(table.node, e.screenX, e.screenY)
+          fileUtils.fileContext(table.node.selectionModel.value.getSelectedItem.file)
           e.consume()
         } else if (e.clickCount == 2) {
           onFileEnter()

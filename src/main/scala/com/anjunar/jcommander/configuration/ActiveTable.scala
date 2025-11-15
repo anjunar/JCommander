@@ -1,13 +1,14 @@
-package com.anjunar.jcommander.components
+package com.anjunar.jcommander.configuration
 
 import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.components.FileTableComponent
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
 
 import java.nio.file.{FileStore, FileSystems}
 
 @ApplicationScoped
-class ActiveTableComponent {
+class ActiveTable {
 
   val leftTable: FileTableComponent.Left = inject(classOf[FileTableComponent.Left])
   val rightTable: FileTableComponent.Right = inject(classOf[FileTableComponent.Right])

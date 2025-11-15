@@ -6,7 +6,7 @@ import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, ButtonType, Label}
-import scalafx.scene.layout.{HBox, Pane, Priority, VBox}
+import scalafx.scene.layout.{BorderPane, HBox, Pane, Priority, VBox}
 import scalafx.stage.{Modality, Stage, StageStyle}
 
 abstract class ThemedDialog[T] extends Stage {
@@ -33,7 +33,12 @@ abstract class ThemedDialog[T] extends Stage {
 
   val root = new VBox {
     style = "-fx-border-color: #444; -fx-border-width: 1;"
-    children = Seq(titleBar.node, headerLabel, contentPane, buttonBox)
+    children = Seq(titleBar.node, new BorderPane {
+      styleClass = Seq("dialog-pane")
+      top = headerLabel
+      center = contentPane
+      bottom = buttonBox
+    })
     VBox.setVgrow(contentPane, Priority.Always)
   }
 
