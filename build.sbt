@@ -1,10 +1,10 @@
-import com.typesafe.sbt.packager.Keys
-
 import scala.collection.Seq
 
 ThisBuild / version := "1.0.0"
 
 ThisBuild / scalaVersion := "3.3.7"
+
+ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging, UniversalPlugin, JlinkPlugin, JDKPackagerPlugin)
@@ -100,7 +100,10 @@ jpackage := {
     "--main-jar", mainJar.getName,
     "--main-class", "com.anjunar.jcommander.Launcher",
     "--dest", outputDir.getAbsolutePath,
-    "--icon", "src/main/resources/icon.ico"
+    "--icon", "src/main/resources/icon.ico",
+    "--win-menu",
+    "--win-shortcut",
+    "--win-dir-chooser"
   )
 
   log.info("Running: " + cmd.mkString(" "))

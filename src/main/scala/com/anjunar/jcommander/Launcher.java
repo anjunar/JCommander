@@ -10,9 +10,12 @@ import java.util.stream.Stream;
 
 public class Launcher {
     static void main(String[] args) throws Exception {
-        File distDir = new File("app/lib");
+        File distDir = new File("lib");
         if (!distDir.exists() || !distDir.isDirectory()) {
-            throw new RuntimeException("Dist-Verzeichnis nicht gefunden: " + distDir.getAbsolutePath());
+            distDir = new File("app/lib");
+            if (!distDir.exists() || !distDir.isDirectory()) {
+                throw new RuntimeException("Dist-Directory not found: " + distDir.getAbsolutePath());
+            }
         }
 
         URL[] urls = Stream.of(Objects.requireNonNull(distDir.listFiles()))
