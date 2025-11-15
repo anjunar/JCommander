@@ -23,7 +23,6 @@ import java.io.File
 import java.nio.file.StandardWatchEventKinds.*
 import java.nio.file.{Files, Path, WatchEvent}
 import java.text.SimpleDateFormat
-import scala.compiletime.uninitialized
 
 class LocalFileTableComponent extends AbstractFileTableComponent {
 
@@ -33,17 +32,6 @@ class LocalFileTableComponent extends AbstractFileTableComponent {
   var currentWatcher: Option[FileWatcher] = None
 
   override def processNode(node: TableView[FileItem]): Unit = {
-    def onFileEnter(): Unit = {
-      val selected = node.selectionModel().getSelectedItem
-      if (selected != null) {
-        if (selected.isDir) {
-          loadDirectory(selected.file)
-        } else {
-          fileUtils.executeFile(selected.file)
-        }
-      }
-    }
-
     node.onMouseClicked = e => {
       if (e.button == MouseButton.Secondary) {
         fileUtils.fileContext(node.selectionModel.value.getSelectedItems.map(item => item.file).toSeq)
@@ -68,6 +56,17 @@ class LocalFileTableComponent extends AbstractFileTableComponent {
         case KeyCode.F8 => inject(classOf[DeleteCommand]).execute()
         case KeyCode.F10 => inject(classOf[QuitCommand]).execute()
         case _ =>
+      }
+    }
+  }
+
+  def onFileEnter(): Unit = {
+    val selected = node.selectionModel().getSelectedItem
+    if (selected != null) {
+      if (selected.isDir) {
+        loadDirectory(selected.file)
+      } else {
+        fileUtils.executeFile(selected.file)
       }
     }
   }

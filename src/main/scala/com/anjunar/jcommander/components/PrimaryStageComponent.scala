@@ -23,6 +23,9 @@ class PrimaryStageComponent extends Component[JFXApp3.PrimaryStage] {
     height = primaryStageConf.height
     icons += new Image(getClass.getResourceAsStream("/icon.ico"))
 
+    width.onChange { (_, _, newValue) => primaryStageConf.width = newValue.doubleValue }
+    height.onChange { (_, _, newValue) => primaryStageConf.height = newValue.doubleValue }
+
     val titleBar = new TitleBar(this)
 
     val container: VBox = new VBox {

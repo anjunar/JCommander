@@ -2,12 +2,16 @@ package com.anjunar.jcommander.manager
 
 import com.anjunar.jcommander.CdiUtils.*
 import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent}
+import com.anjunar.jcommander.configuration.FileTableConf
 import jakarta.enterprise.context.ApplicationScoped
 
 import scala.compiletime.uninitialized
 
 @ApplicationScoped
 class FileTableManager {
+
+  val leftConf = inject(classOf[FileTableConf.Left])
+  val rightConf = inject(classOf[FileTableConf.Right])
 
   var source : AbstractFileTableComponent = uninitialized
   var target : AbstractFileTableComponent = uninitialized
@@ -19,6 +23,8 @@ class FileTableManager {
     left = table
     left.node.requestFocus()
     source = table
+
+    table.loadDirectory(leftConf.file.getAbsolutePath)
 
     table.node.focusedProperty().addListener((_, _, newValue) => {
       if (newValue) {
@@ -36,6 +42,8 @@ class FileTableManager {
     right = table
     right.node.requestFocus()
     source = table
+
+    table.loadDirectory(rightConf.file.getAbsolutePath)
 
     table.node.focusedProperty().addListener((_, _, newValue) => {
       if (newValue) {
