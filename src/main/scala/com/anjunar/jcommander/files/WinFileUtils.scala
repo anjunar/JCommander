@@ -23,8 +23,8 @@ class WinFileUtils extends AbstractFileUtils {
 
   override val log = Logger[WinFileUtils]
 
-  override def fileContext(file: File): Unit = {
-    WinNativeCopy.fileContext(file.getAbsolutePath, true)
+  override def fileContext(files: Seq[File]): Unit = {
+    WinNativeCopy.fileContext(files.map(_.getAbsolutePath).toArray, true)
   }
 
   override def console(workingDir: File): Unit = {

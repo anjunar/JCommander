@@ -106,7 +106,7 @@ object Main extends JFXApp3 {
         activeTable.setActive(table)
       
         if (e.button == MouseButton.Secondary) {
-          fileUtils.fileContext(table.node.selectionModel.value.getSelectedItem.file)
+          fileUtils.fileContext(table.node.selectionModel.value.getSelectedItems.map(item => item.file).toSeq)
           e.consume()
         } else if (e.clickCount == 2) {
           onFileEnter()

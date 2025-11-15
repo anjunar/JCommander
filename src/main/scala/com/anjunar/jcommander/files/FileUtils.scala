@@ -8,7 +8,7 @@ import java.io.File
 
 trait FileUtils {
   
-  def fileContext(file : File) : Unit
+  def fileContext(files: Seq[File]) : Unit
   
   def getFileIcon(file : File, large : Boolean) : BufferedImage
 
