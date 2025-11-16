@@ -105,6 +105,8 @@ class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTa
             })
           }
       }
+
+      onDirectoryChanged.foreach(f => Platform.runLater(() => f(this.directory)))
     }
 
   }

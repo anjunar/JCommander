@@ -5,49 +5,43 @@ import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.utils.FileSystemManagerBuilder
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.scene.control
-import org.apache.commons.vfs2.FileSystemManager
+import org.apache.commons.vfs2.{FileObject, FileSystemManager}
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Separator, TableView}
 import scalafx.scene.layout.{HBox, Priority, VBox}
-
-import java.io.File
 import scalafx.application.Platform
 
-class FilePaneComponent(position : String, newTable : AbstractFileTableComponent => Unit ) extends Component[VBox] {
+class FilePaneComponent(position: String, newTable: AbstractFileTableComponent => Unit) extends Component[VBox] {
 
   val fileTableManager = inject(classOf[FileTableManager])
 
-  val driveButtons : DriveButtonsComponent = new DriveButtonsComponent(drive => {
-    table match {
-      case local: LocalFileTableComponent => local.loadDirectory(drive.getAbsolutePath)
-      case _ =>
-        table = new LocalFileTableComponent(FileSystemManagerBuilder.build())
-        table.loadDirectory(drive.getAbsolutePath)
-        newTable(table)
-        VBox.setVgrow(table.node, Priority.Always)
-        node.children.set(1, table.node)
+  var table: AbstractFileTableComponent =
+    new LocalFileTableComponent(FileSystemManagerBuilder.build())
 
-        table.node.items.onChange {
-          if (table.directory != null)
-            Platform.runLater(() => updateBreadcrumb(table.directory))
-        }
-    }
-  })
-
-  var table: AbstractFileTableComponent = new LocalFileTableComponent(FileSystemManagerBuilder.build())
+  table.onDirectoryChanged = Some(dir => Platform.runLater(() => updateBreadcrumb(dir)))
 
   position match {
-    case "left" => fileTableManager.loadLeft(table)
+    case "left"  => fileTableManager.loadLeft(table)
     case "right" => fileTableManager.loadRight(table, true)
   }
 
+  val driveButtons: DriveButtonsComponent =
+    new DriveButtonsComponent(drive => {
+      table match {
+        case local: LocalFileTableComponent =>
+          local.loadDirectory(drive.getAbsolutePath)
+        case _ =>
+          table = new LocalFileTableComponent(FileSystemManagerBuilder.build())
+          table.onDirectoryChanged = Some(dir => Platform.runLater(() => updateBreadcrumb(dir)))
+          table.loadDirectory(drive.getAbsolutePath)
+          newTable(table)
+          VBox.setVgrow(table.node, Priority.Always)
+          node.children.set(1, table.node)
+      }
+    })
+
   val breadcrumbBox = new HBox {
     spacing = 5
-
-    table.node.items.onChange {
-      if (table.directory != null)
-        Platform.runLater(() => updateBreadcrumb(table.directory))
-    }
   }
 
   val node: VBox = new VBox {
@@ -58,24 +52,20 @@ class FilePaneComponent(position : String, newTable : AbstractFileTableComponent
         spacing = 5
         children = Seq(
           driveButtons.node,
-          new Separator() { orientation = scalafx.geometry.Orientation.Vertical },
+          new Separator { orientation = scalafx.geometry.Orientation.Vertical },
           new Button("SFTP") {
             onAction = _ => {
-              new SFTPClientComponent().node.showAndWaitDialog().foreach(manager => {
+              new SFTPClientComponent().node.showAndWaitDialog().foreach { manager =>
                 table = new SFTPFileTableComponent(manager)
+                table.onDirectoryChanged = Some(dir => updateBreadcrumb(dir))
                 table.loadDirectory("sftp://patrick:cubase@patricks-mbp.fritz.box/")
                 newTable(table)
                 VBox.setVgrow(table.node, Priority.Always)
                 node.children.set(1, table.node)
-
-                table.node.items.onChange {
-                  if (table.directory != null)
-                    Platform.runLater(() => updateBreadcrumb(table.directory))
-                }
-              })
+              }
             }
           },
-          new Separator() { orientation = scalafx.geometry.Orientation.Vertical },
+          new Separator { orientation = scalafx.geometry.Orientation.Vertical },
           breadcrumbBox
         )
       },
@@ -88,14 +78,18 @@ class FilePaneComponent(position : String, newTable : AbstractFileTableComponent
 
   def updateBreadcrumb(dir: String): Unit = {
     breadcrumbBox.children.clear()
+    val current: FileObject = table.manager.resolveFile(dir)
+    val parts = getVfsPathParts(current)
 
-    val parts = getPathParts(new File(dir))
-    for ((part, idx) <- parts.zipWithIndex) {
-      val btn = new Button(part.getName match {
-        case "" => part.getAbsolutePath // Root anzeigen, z. B. "C:\"
-        case n  => n
-      }) {
-        onAction = _ => table.loadDirectory(part.getAbsolutePath)
+    for (fileObj <- parts) {
+      val label =
+        if (fileObj.getName.getBaseName.isEmpty)
+          fileObj.getName.getRootURI
+        else
+          fileObj.getName.getBaseName
+
+      val btn = new Button(label) {
+        onAction = _ => table.loadDirectory(fileObj.getName.getURI)
         style = "-fx-background-color: transparent; -fx-text-fill: -fx-text-base-color; -fx-underline: true;"
       }
 
@@ -103,14 +97,15 @@ class FilePaneComponent(position : String, newTable : AbstractFileTableComponent
     }
   }
 
-  private def getPathParts(dir: File): Seq[File] = {
-    var parts = List(dir)
-    var parent = dir.getParentFile
+  private def getVfsPathParts(file: FileObject): Seq[FileObject] = {
+    var parts = List(file)
+    var parent = file.getParent
+
     while (parent != null) {
       parts = parent :: parts
-      parent = parent.getParentFile
+      parent = parent.getParent
     }
+
     parts
   }
-
 }

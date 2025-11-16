@@ -24,6 +24,8 @@ abstract class AbstractFileTableComponent(val manager : FileSystemManager) exten
 
   val activeTable = new TableView[FileItem]()
 
+  var onDirectoryChanged: Option[String => Unit] = None
+
   def processNode(node: TableView[FileItem]): Unit
 
   val node: TableView[FileItem] = {

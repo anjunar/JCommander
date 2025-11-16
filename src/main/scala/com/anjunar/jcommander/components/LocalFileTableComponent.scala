@@ -162,6 +162,8 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
           }
       }
     }
+
+    onDirectoryChanged.foreach(f => Platform.runLater(() => f(this.directory)))
   }
 
   def formatSize(file: File): String =
