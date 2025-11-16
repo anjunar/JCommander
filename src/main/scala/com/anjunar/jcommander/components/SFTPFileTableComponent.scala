@@ -106,9 +106,10 @@ class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTa
           }
       }
 
-      onDirectoryChanged.foreach(f => Platform.runLater(() => f(this.directory)))
+      
     }
-
+    
+    onDirectoryChanged.foreach(f => Platform.runLater(() => f(this.directory)))
   }
 
   private def createFileItem(entry: FileObject, upDir: Boolean = false) = {

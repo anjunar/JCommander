@@ -98,7 +98,12 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
   }
 
   def loadDirectory(value: String): Unit = {
-    val dir = new File(value)
+    val dir = if (value.startsWith("file:///" )) {
+      File(value.replaceFirst("file:///", ""))
+    } else {
+      File(value)
+    }
+
     directory = dir.getAbsolutePath
     
     if (fileTableManager.left == this) {

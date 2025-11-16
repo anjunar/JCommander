@@ -36,12 +36,16 @@ class FilePaneComponent(position: String, newTable: AbstractFileTableComponent =
           table.loadDirectory(drive.getAbsolutePath)
           newTable(table)
           VBox.setVgrow(table.node, Priority.Always)
-          node.children.set(1, table.node)
+          node.children.set(2, table.node)
       }
     })
 
   val breadcrumbBox = new HBox {
-    spacing = 5
+    style = "-fx-background-color: -fx-table-cell-border-color; -fx-padding: 0; -fx-alignment: CENTER_LEFT;"
+    minHeight = 14
+    prefHeight = 14
+    maxHeight = 14
+    spacing = 2
   }
 
   val node: VBox = new VBox {
@@ -61,14 +65,15 @@ class FilePaneComponent(position: String, newTable: AbstractFileTableComponent =
                 table.loadDirectory("sftp://patrick:cubase@patricks-mbp.fritz.box/")
                 newTable(table)
                 VBox.setVgrow(table.node, Priority.Always)
-                node.children.set(1, table.node)
+                node.children.set(2, table.node)
               }
             }
           },
           new Separator { orientation = scalafx.geometry.Orientation.Vertical },
-          breadcrumbBox
+
         )
       },
+      breadcrumbBox,
       table.node
     )
     VBox.setVgrow(table.node, Priority.Always)
@@ -84,13 +89,21 @@ class FilePaneComponent(position: String, newTable: AbstractFileTableComponent =
     for (fileObj <- parts) {
       val label =
         if (fileObj.getName.getBaseName.isEmpty)
-          fileObj.getName.getRootURI
+          fileObj.getName.getRoot.getFriendlyURI
         else
           fileObj.getName.getBaseName
 
-      val btn = new Button(label) {
+      val btn = new Button(label.replaceFirst("file:///", "") + " /") {
+        style =
+          "-fx-background-color: transparent;" +
+            "-fx-border-width: 0;" +
+            "-fx-padding: 0;" +
+            "-fx-text-fill: -fx-text-base-color;" +
+            "-fx-opacity: 0.85;"
+        minHeight = 14
+        prefHeight = 14
+        maxHeight = 14
         onAction = _ => table.loadDirectory(fileObj.getName.getURI)
-        style = "-fx-background-color: transparent; -fx-text-fill: -fx-text-base-color; -fx-underline: true;"
       }
 
       breadcrumbBox.children += btn
