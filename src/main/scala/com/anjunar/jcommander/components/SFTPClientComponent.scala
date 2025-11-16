@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.ui.ThemedDialog
+import com.anjunar.jcommander.utils.FileSystemManagerBuilder
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.concurrent.Task
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager
@@ -11,10 +12,7 @@ import scalafx.scene.layout.{HBox, Priority, VBox}
 
 class SFTPClientComponent extends Component[ThemedDialog[FileSystemManager]] {
 
-  val manager = new DefaultFileSystemManager()
-  manager.addProvider("sftp", new SftpFileProvider())
-//  manager.addProvider("file", new org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider())
-  manager.setCacheStrategy(org.apache.commons.vfs2.CacheStrategy.ON_CALL)
+  val manager = FileSystemManagerBuilder.build()
 
   var base: FileObject = _
 
@@ -65,7 +63,6 @@ class SFTPClientComponent extends Component[ThemedDialog[FileSystemManager]] {
 
       val task = new Task[FileSystemManager] {
         override def call(): FileSystemManager = {
-          manager.init()
           val uri = s"sftp://$user:$pass@$host:$port/"
           val remoteFile = manager.resolveFile(uri)
           if (!remoteFile.exists()) throw new Exception("Connection failed or directory empty")

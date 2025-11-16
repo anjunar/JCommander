@@ -1,6 +1,7 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.utils
 
 import jakarta.enterprise.inject.spi.CDI
+
 import scala.jdk.CollectionConverters.*
 
 object CdiUtils {

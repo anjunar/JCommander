@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.CdiUtils.inject
+import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.files.FileItem
 import jakarta.annotation.PostConstruct
@@ -15,7 +15,7 @@ import scalafx.Includes.*
 import java.awt.image.BufferedImage
 import scala.collection.immutable.Seq
 
-class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTableComponent {
+class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTableComponent(manager) {
 
   override def processNode(node: TableView[FileItem]): Unit = {
     node.onMouseClicked = e => {
@@ -61,6 +61,8 @@ class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTa
       return
     }
 
+    this.directory = folder.getName.getURI
+
     val children = folder.getChildren.toSeq
 
     val items = if (folder.getParent == null) then
@@ -96,7 +98,8 @@ class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTa
       date = date,
       dateLong = entry.getContent.getLastModifiedTime,
       file = entry.getName.getURI,
-      isDir = isDir
+      isDir = isDir,
+      parent = if (entry.getParent == null) then null else entry.getParent.getName.getURI
     )
   }
 

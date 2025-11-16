@@ -2,7 +2,7 @@ package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.configuration.PrimaryStageConf
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.{Resizable, TitleBar}
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.application.JFXApp3

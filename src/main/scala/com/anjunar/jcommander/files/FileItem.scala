@@ -15,12 +15,9 @@ case class FileItem(name: String,
                     dateLong: Long,
                     file: String,
                     isDir : Boolean,
+                    parent : String,
                     isUpDir : Boolean = false,
-                    icon: SimpleObjectProperty[BufferedImage] = new SimpleObjectProperty[BufferedImage](null)) {
-
-  lazy val asJavaFile = new File(file)
-
-}
+                    icon: SimpleObjectProperty[BufferedImage] = new SimpleObjectProperty[BufferedImage](null))
 
 
 

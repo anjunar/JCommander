@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.OSType
+import com.anjunar.jcommander.utils.OSType
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.inject.Produces
 

@@ -1,9 +1,10 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.{DarkModeComponent, AbstractFileTableComponent}
-import com.anjunar.jcommander.{Main, OSType, WinNativeCopy}
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.{Main, WinNativeCopy}
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.ThemedDialog
+import com.anjunar.jcommander.utils.OSType
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.concurrent
@@ -124,10 +125,6 @@ class FallBackFileUtils extends AbstractFileUtils {
       selected = true
     }
 
-    val copyAttributesExistingBox = new CheckBox("Copying Attributes") {
-      selected = false
-    }
-
     val checkForLockedFilesBox = new CheckBox("Check for locked Files") {
       selected = false
     }
@@ -137,11 +134,7 @@ class FallBackFileUtils extends AbstractFileUtils {
       headerText = confirmTitle
       dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
       if (!isDelete) {
-        if (OSType.osName == "win") {
-          dialogPane.content = new VBox(10, replaceExistingBox)
-        } else {
-          dialogPane.content = new VBox(10, replaceExistingBox, copyAttributesExistingBox)
-        }
+        dialogPane.content = new VBox(10, replaceExistingBox)
       } else {
         dialogPane.content = new VBox(10, checkForLockedFilesBox)
       }
@@ -153,14 +146,13 @@ class FallBackFileUtils extends AbstractFileUtils {
       if (result == ButtonType.OK) {
 
         val replaceExisting = replaceExistingBox.selected.value
-        val copyAttributes = copyAttributesExistingBox.selected.value
         val checkForLockedFiles = checkForLockedFilesBox.selected.value
 
         val lockedFiles = new ListBuffer[Path]
         val selectedItems = activeTable.node.selectionModel.value.getSelectedItems
 
         val allFiles = selectedItems.stream().flatMap { fileItem =>
-          val path = fileItem.asJavaFile.toPath
+          val path = Path.of(fileItem.file)
           if (Files.isDirectory(path))
             Files.walk(path).peek(path => {
               if (checkForLockedFiles && isFileLocked(path)) {
@@ -182,7 +174,7 @@ class FallBackFileUtils extends AbstractFileUtils {
           val task = new concurrent.Task[Unit]() {
             override def call(): Unit = {
               val total = allFiles.size
-              val baseSource = selectedItems.head.asJavaFile.toPath.getParent
+              val baseSource = selectedItems.head.parent
               val targetRoot = Path.of(otherTable.directory)
 
               var totalBytesCopied: Long = 0
@@ -192,14 +184,14 @@ class FallBackFileUtils extends AbstractFileUtils {
               allFiles.zipWithIndex.foreach { case (path, i) =>
                 if (isCancelled) return
 
-                val relative = baseSource.relativize(path)
+                val relative = Path.of(baseSource).relativize(path)
                 val target = targetRoot.resolve(relative)
                 Files.createDirectories(target.getParent)
 
                 try {
                   var fileProgress = 0.0
 
-                  strategy.process(path, target, replaceExisting, copyAttributes, progress => {
+                  strategy.process(path, target, replaceExisting, false, progress => {
                     fileProgress = progress
                     val globalProgress = (i + fileProgress) / total
                     updateProgress(globalProgress, 1.0)

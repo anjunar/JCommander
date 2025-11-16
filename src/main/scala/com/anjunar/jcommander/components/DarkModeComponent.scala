@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf, PrimaryStageConf}
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.beans.property.BooleanProperty
 import scalafx.scene.Node

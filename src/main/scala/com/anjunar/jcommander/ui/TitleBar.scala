@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.ui
 
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.Icons
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.components.{DarkModeComponent, HeaderMenuBarComponent}

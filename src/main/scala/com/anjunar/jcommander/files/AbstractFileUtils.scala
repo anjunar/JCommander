@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.{AbstractFileTableComponent, DarkModeComponent}
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.typesafe.scalalogging.Logger
@@ -11,7 +11,7 @@ import scalafx.scene.control.*
 import scalafx.scene.layout.VBox
 
 import java.io.File
-import java.nio.file.Files
+import java.nio.file.{Files, Path}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -72,9 +72,9 @@ abstract class AbstractFileUtils extends FileUtils {
     renameDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
-        val oldPath = activeTable.node.selectionModel.value.getSelectedItems.head.asJavaFile.toPath
-        val newPath = oldPath.getParent.resolve(newFileName)
-        Files.move(oldPath, newPath)
+        val oldPath = activeTable.node.selectionModel.value.getSelectedItems.head
+        val newPath = Path.of(oldPath.parent).resolve(newFileName)
+        Files.move(Path.of(oldPath.file), newPath)
       }
     }
   }

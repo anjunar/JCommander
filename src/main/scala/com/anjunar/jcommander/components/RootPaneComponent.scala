@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.geometry.Insets
 import scalafx.scene.layout.BorderPane

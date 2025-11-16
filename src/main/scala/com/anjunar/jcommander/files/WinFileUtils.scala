@@ -2,7 +2,8 @@ package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.AbstractFileTableComponent
 import com.anjunar.jcommander.ui.ThemedDialog
-import com.anjunar.jcommander.{OSType, WinNativeCopy}
+import com.anjunar.jcommander.WinNativeCopy
+import com.anjunar.jcommander.utils.OSType
 import com.typesafe.scalalogging.Logger
 import javafx.concurrent
 import scalafx.Includes.jfxDialogPane2sfx
@@ -140,8 +141,8 @@ class WinFileUtils extends AbstractFileUtils {
         val overwriteExisting = replaceExistingBox.selected.value
         val moveToRecycleBin = moveToRecycleBinBox.selected.value
 
-        val selectedFiles = activeTable.node.selectionModel.value.getSelectedItems.asScala.map(_.asJavaFile.toPath).toSeq
-        val targetDir = Path.of(otherTable.directory)
+        val selectedFiles = activeTable.node.selectionModel.value.getSelectedItems.asScala.map(item => Path.of(item.file)).toSeq
+        val targetDir = if isDelete then Path.of(activeTable.directory) else Path.of(otherTable.directory)
 
         val cancelledFlag = new AtomicBoolean(false)
 

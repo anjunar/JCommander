@@ -1,4 +1,4 @@
-package com.anjunar.jcommander;
+package com.anjunar.jcommander.utils;
 
 import java.io.*;
 import java.nio.file.Files;

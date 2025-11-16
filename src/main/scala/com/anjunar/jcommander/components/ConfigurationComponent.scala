@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.components.config.ConfigModule
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.MinimalTitleBar
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.Includes.jfxMultipleSelectionModel2sfx

@@ -2,6 +2,7 @@ package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.files.FileItem
 import javafx.scene.control.TableCell as JfxTableCell
+import org.apache.commons.vfs2.FileSystemManager
 import scalafx.Includes.*
 import scalafx.beans.property.ReadOnlyObjectWrapper
 import scalafx.embed.swing.SwingFXUtils
@@ -14,7 +15,7 @@ import java.util.Comparator
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 
-abstract class AbstractFileTableComponent extends Component[TableView[FileItem]] {
+abstract class AbstractFileTableComponent(val manager : FileSystemManager) extends Component[TableView[FileItem]] {
 
   val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm")
   val lastSelections = mutable.Map[String, String]()
@@ -85,7 +86,7 @@ abstract class AbstractFileTableComponent extends Component[TableView[FileItem]]
                 override def updateItem(item: FileItem, empty: Boolean): Unit = {
                   super.updateItem(item, empty)
                   if (empty || item == null) setText(null)
-                  else setText(if (item.asJavaFile.isDirectory) "<DIR>" else item.ext)
+                  else setText(if (item.isDir) "<DIR>" else item.ext)
                 }
               }
           }
@@ -145,8 +146,8 @@ abstract class AbstractFileTableComponent extends Component[TableView[FileItem]]
       }
 
       selectionModel().selectedItemProperty().onChange { (_, _, newItem) =>
-        if (newItem != null && newItem.file != null && newItem.asJavaFile.getParent != null) {
-          lastSelections.update(newItem.asJavaFile.getParent, newItem.name)
+        if (newItem != null && newItem.file != null && newItem.parent != null) {
+          lastSelections.update(newItem.parent, newItem.name)
         }
       }
 
@@ -212,5 +213,6 @@ abstract class AbstractFileTableComponent extends Component[TableView[FileItem]]
   def getFileIcon(item: FileItem): BufferedImage
 
   def loadDirectory(directory: String): Unit
-
+  
+  override def toString = s"AbstractFileTableComponent($directory)"
 }

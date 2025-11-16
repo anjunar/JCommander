@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.objectmapper
 
 import com.anjunar.jcommander.configuration.{PrimaryStageConf, TextEditorConf}
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.databind.{BeanProperty, DeserializationContext, InjectableValues, ObjectMapper}
 

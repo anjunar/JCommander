@@ -1,7 +1,8 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.CdiUtils.*
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.manager.FileTableManager
+import com.anjunar.jcommander.utils.FileSystemManagerBuilder
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.scene.control
 import org.apache.commons.vfs2.FileSystemManager
@@ -20,7 +21,7 @@ class FilePaneComponent(position : String, newTable : AbstractFileTableComponent
     table match {
       case local: LocalFileTableComponent => local.loadDirectory(drive.getAbsolutePath)
       case _ =>
-        table = new LocalFileTableComponent
+        table = new LocalFileTableComponent(FileSystemManagerBuilder.build())
         table.loadDirectory(drive.getAbsolutePath)
         newTable(table)
         VBox.setVgrow(table.node, Priority.Always)
@@ -33,11 +34,11 @@ class FilePaneComponent(position : String, newTable : AbstractFileTableComponent
     }
   })
 
-  var table: AbstractFileTableComponent = new LocalFileTableComponent
+  var table: AbstractFileTableComponent = new LocalFileTableComponent(FileSystemManagerBuilder.build())
 
   position match {
     case "left" => fileTableManager.loadLeft(table)
-    case "right" => fileTableManager.loadRight(table)
+    case "right" => fileTableManager.loadRight(table, true)
   }
 
   val breadcrumbBox = new HBox {

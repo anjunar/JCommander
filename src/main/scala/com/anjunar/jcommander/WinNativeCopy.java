@@ -1,5 +1,7 @@
 package com.anjunar.jcommander;
 
+import com.anjunar.jcommander.utils.NativeUtils;
+
 import java.io.IOException;
 
 public class WinNativeCopy {

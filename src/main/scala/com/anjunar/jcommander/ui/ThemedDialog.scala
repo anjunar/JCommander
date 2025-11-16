@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.ui
 
-import com.anjunar.jcommander.CdiUtils.inject
+import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.configuration.DarkModeConf
 import scalafx.beans.property.{ObjectProperty, StringProperty}
