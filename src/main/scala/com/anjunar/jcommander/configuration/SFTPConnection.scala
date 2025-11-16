@@ -2,6 +2,8 @@ package com.anjunar.jcommander.configuration
 
 class SFTPConnection {
 
+  var connectionType : String = "sftp"
+
   var host: String = "127.0.0.1"
   
   var port: Int = 22
@@ -14,8 +16,9 @@ class SFTPConnection {
 
 object SFTPConnection {
   
-  def apply(host : String, port : Int, username : String, password : String): SFTPConnection = {
+  def apply(connectionType : String, host : String, port : Int, username : String, password : String): SFTPConnection = {
     val newConnection = new SFTPConnection()
+    newConnection.connectionType = connectionType
     newConnection.host = host
     newConnection.port = port
     newConnection.username = username

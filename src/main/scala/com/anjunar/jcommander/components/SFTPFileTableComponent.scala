@@ -120,7 +120,13 @@ class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTa
       if (isDir) "<DIR>"
       else formatSize(entry.getContent.getSize)
 
-    val date = formatDate(entry.getContent.getLastModifiedTime)
+    val lastModifiedTime = try {
+      entry.getContent.getLastModifiedTime
+    } catch {
+      case ex : Exception => System.currentTimeMillis()
+    }
+
+    val date = formatDate(lastModifiedTime)
 
     FileItem(
       name = if upDir then ".." else name,
@@ -128,7 +134,7 @@ class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTa
       size = size,
       sizeLong = if isDir then 0 else entry.getContent.getSize,
       date = date,
-      dateLong = entry.getContent.getLastModifiedTime,
+      dateLong = lastModifiedTime,
       file = entry.getName.getURI,
       isDir = isDir,
       parent = if (entry.getParent == null) then null else entry.getParent.getName.getURI

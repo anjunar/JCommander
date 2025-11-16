@@ -7,11 +7,13 @@ import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.FileSystemManagerBuilder
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.typesafe.scalalogging.Logger
+import javafx.beans.value.ChangeListener
 import javafx.concurrent.Task
 import javafx.scene.control
 import javafx.scene.input.MouseButton
 import javafx.util.Callback
-import org.apache.commons.vfs2.{FileObject, FileSystemManager}
+import org.apache.commons.vfs2.FileSystemManager
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.control.*
 import scalafx.scene.layout.*
@@ -20,33 +22,42 @@ import java.nio.file.{Files, Paths}
 
 class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
 
-  val manager = FileSystemManagerBuilder.build()
-  var base: FileObject = _
+  val log = Logger[SFTPClientComponent]
 
-  val keyPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "master.key")
-  val passPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "passwords.json")
-  val connPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "connections.json")
+  private val manager = FileSystemManagerBuilder.build()
 
-  val store = new PasswordStore(passPath, keyPath)
-  val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
+  private val keyPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "master.key")
+  private val passPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "passwords.json")
+  private val connPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "connections.json")
 
-  def resolve(path: String): FileObject =
-    manager.resolveFile(base, path)
+  private val store = new PasswordStore(passPath, keyPath)
+  private val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
 
-  def loadConnections(): ObservableBuffer[SFTPConnection] = {
+  private def loadConnections(): ObservableBuffer[SFTPConnection] = {
     if (!Files.exists(connPath)) return ObservableBuffer.empty[SFTPConnection]
     val json = mapper.readValue(connPath.toFile, classOf[Array[SFTPConnection]])
     ObservableBuffer(json.toSeq: _*)
   }
 
-  def saveConnections(conns: Seq[SFTPConnection]): Unit = {
+  private def saveConnections(conns: Seq[SFTPConnection]): Unit = {
     Files.createDirectories(connPath.getParent)
     mapper.writerWithDefaultPrettyPrinter().writeValue(connPath.toFile, conns.toArray)
   }
 
   override val node: ThemedDialog[Connection] = new ThemedDialog[Connection] {
 
-    val connections = loadConnections()
+    private val connections = loadConnections()
+
+    private val connectionType = new ComboBox[String] {
+      items.value.addAll("ftp", "sftp")
+      selectionModel.value.select("ftp")
+      value.onChange { (_, oldValue, newValue) =>
+        newValue match {
+          case "ftp" => portField.text.value = "21"
+          case "sftp" => portField.text.value = "22"
+        }
+      }
+    }
 
     private val hostField = new TextField {
       promptText = "Host"
@@ -73,7 +84,7 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
             override def updateItem(item: SFTPConnection, empty: Boolean): Unit = {
               super.updateItem(item, empty)
               if (empty || item == null) setText(null)
-              else setText(s"${item.host}:${item.port} – ${item.username}")
+              else setText(s"${item.connectionType}:///${item.host}:${item.port} – ${item.username}")
             }
           }
       }
@@ -100,12 +111,13 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
       val port = try portField.text.value.toInt catch {
         case _: Throwable => 22
       }
+      val connType = connectionType.value.value
       val user = userField.text.value
       val pass = passField.text.value
 
       if (pass != null && pass.nonEmpty) store.savePassword(host, pass)
 
-      val entry = SFTPConnection(host, port, user, null)
+      val entry = SFTPConnection(connType, host, port, user, null)
       val existing = connections.filterNot(_.host == host)
       connections.setAll((existing.toSeq :+ entry): _*)
       saveConnections(connections.toSeq)
@@ -124,6 +136,7 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
       children = Seq(
         new VBox(10) {
           children = Seq(
+            connectionType,
             hostField,
             portField,
             userField,
@@ -144,6 +157,7 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
       val port = try portField.text.value.toInt catch {
         case _: Throwable => 22
       }
+      val connType = connectionType.value.value
       val user = userField.text.value
       val pass = passField.text.value
 
@@ -155,7 +169,7 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
 
       val task = new Task[Connection] {
         override def call(): Connection = {
-          val uri = s"sftp://$user:$pass@$host:$port/"
+          val uri = s"$connType://$user:$pass@$host:$port/"
           val remoteFile = manager.resolveFile(uri)
           if (!remoteFile.exists()) throw new Exception("Connection failed or directory empty")
           Connection(uri, manager)
@@ -170,6 +184,7 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
 
       task.setOnFailed(_ => {
         statusLabel.text = s"Error: ${task.getException.getMessage}"
+        log.error(task.getException.getMessage, task.getException)
       })
 
       new Thread(task).start()

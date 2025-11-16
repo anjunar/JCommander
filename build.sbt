@@ -21,13 +21,13 @@ lazy val root = (project in file("."))
       "com.fasterxml.jackson.core" % "jackson-core" % "2.20.1",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.20.1",
       "org.scalafx" %% "scalafx" % "24.0.2-R36",
-      "xerces" % "xercesImpl" % "2.12.2",
       "com.jcraft" % "jsch" % "0.1.55",
+      "commons-net" % "commons-net" % "3.12.0",
       "org.apache.commons" % "commons-vfs2" % "2.10.0",
       "org.apache.commons" % "commons-compress" % "1.28.0",
       "org.kordamp.ikonli" % "ikonli-javafx" % "12.4.0",
       "org.kordamp.ikonli" % "ikonli-materialdesign2-pack" % "12.4.0",
-      "io.methvin" % "directory-watcher" % "0.19.1"
+      "net.java.dev.jna" % "jna" % "5.18.1"
     ),
     libraryDependencies ++= {
       lazy val osName = System.getProperty("os.name") match {
