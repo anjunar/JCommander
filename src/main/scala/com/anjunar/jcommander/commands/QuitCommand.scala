@@ -24,8 +24,8 @@ class QuitCommand extends Command {
         .writerWithDefaultPrettyPrinter()
         .writeValueAsString(configuration)
 
-      val homeDir = System.getProperty("user.home")
-      val configDir = new File(homeDir, ".jcommander")
+      val localAppData = sys.env("LOCALAPPDATA")
+      val configDir = new File(localAppData, "jcommander")
       val configFile = new File(configDir, "configuration.json")
 
       if (!configDir.exists()) {

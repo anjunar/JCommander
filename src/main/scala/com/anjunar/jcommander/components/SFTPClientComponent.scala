@@ -1,5 +1,6 @@
 package com.anjunar.jcommander.components
 
+import com.anjunar.jcommander.components.SFTPClientComponent.Connection
 import com.anjunar.jcommander.configuration.SFTPConnection
 import com.anjunar.jcommander.security.PasswordStore
 import com.anjunar.jcommander.ui.ThemedDialog
@@ -17,7 +18,7 @@ import scalafx.scene.layout.*
 
 import java.nio.file.{Files, Paths}
 
-class SFTPClientComponent extends Component[ThemedDialog[FileSystemManager]] {
+class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
 
   val manager = FileSystemManagerBuilder.build()
   var base: FileObject = _
@@ -43,7 +44,7 @@ class SFTPClientComponent extends Component[ThemedDialog[FileSystemManager]] {
     mapper.writerWithDefaultPrettyPrinter().writeValue(connPath.toFile, conns.toArray)
   }
 
-  override val node: ThemedDialog[FileSystemManager] = new ThemedDialog[FileSystemManager] {
+  override val node: ThemedDialog[Connection] = new ThemedDialog[Connection] {
 
     val connections = loadConnections()
 
@@ -152,12 +153,12 @@ class SFTPClientComponent extends Component[ThemedDialog[FileSystemManager]] {
 
       if (pass != null && pass.nonEmpty) store.savePassword(host, pass)
 
-      val task = new Task[FileSystemManager] {
-        override def call(): FileSystemManager = {
+      val task = new Task[Connection] {
+        override def call(): Connection = {
           val uri = s"sftp://$user:$pass@$host:$port/"
           val remoteFile = manager.resolveFile(uri)
           if (!remoteFile.exists()) throw new Exception("Connection failed or directory empty")
-          manager
+          Connection(uri, manager)
         }
       }
 
@@ -174,4 +175,10 @@ class SFTPClientComponent extends Component[ThemedDialog[FileSystemManager]] {
       new Thread(task).start()
     })
   }
+}
+
+object SFTPClientComponent {
+
+  case class Connection(url : String, manager : FileSystemManager)
+
 }
