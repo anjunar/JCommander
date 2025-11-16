@@ -205,6 +205,13 @@ abstract class AbstractFileTableComponent(val manager : FileSystemManager) exten
 
     }
 
+    newNode.sceneProperty().onChange { (_, _, newScene) =>
+      if (newScene == null) {
+        try manager.close()
+        catch case ex: Exception => ex.printStackTrace()
+      }
+    }
+
     processNode(newNode)
 
     newNode
@@ -213,6 +220,6 @@ abstract class AbstractFileTableComponent(val manager : FileSystemManager) exten
   def getFileIcon(item: FileItem): BufferedImage
 
   def loadDirectory(directory: String): Unit
-  
+
   override def toString = s"AbstractFileTableComponent($directory)"
 }

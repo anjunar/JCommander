@@ -133,13 +133,13 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
       currentWatcher = Some(watcher)
     }
 
-    val buffer = ObservableBuffer.from(parent ++ fileItems)
-    node.items = buffer
-
     node.sortOrder.clear()
     node.sortOrder += node.columns.find(_.text.value == "Name").get
     node.columns.find(_.text.value == "Name").get.sortType = SortType.Ascending
     node.sort() // ← Einmalig, sicher!
+
+    val buffer = ObservableBuffer.from(parent ++ fileItems)
+    node.items = buffer
 
     lastSelections.get(dir.getAbsolutePath).foreach { lastName =>
       buffer.indexWhere(_.name == lastName) match {

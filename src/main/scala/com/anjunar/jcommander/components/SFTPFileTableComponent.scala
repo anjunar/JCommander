@@ -5,12 +5,16 @@ import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.files.FileItem
 import jakarta.annotation.PostConstruct
 import jakarta.enterprise.context.ApplicationScoped
+import javafx.scene.control.TableRow
+import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
 import javafx.scene.input.KeyCode
 import org.apache.commons.vfs2.*
 import scalafx.Includes.jfxMouseEvent2sfx
 import scalafx.scene.control.TableColumn.SortType
 import scalafx.scene.control.TableView
 import scalafx.Includes.*
+import scalafx.application.Platform
+import scalafx.collections.ObservableBuffer
 
 import java.awt.image.BufferedImage
 import scala.collection.immutable.Seq
@@ -77,6 +81,31 @@ class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTa
     node.sortOrder += node.columns.find(_.text.value == "Name").get
     node.columns.find(_.text.value == "Name").get.sortType = SortType.Ascending
     node.sort()
+
+    val buffer = ObservableBuffer.from(items)
+    node.items = buffer
+
+    lastSelections.get(this.directory).foreach { lastName =>
+      buffer.indexWhere(_.name == lastName) match {
+        case -1 => ()
+        case index =>
+          val item = buffer(index)
+          node.selectionModel().select(item)
+
+          Platform.runLater { () =>
+            val jTable = node.delegate
+            jTable.scrollTo(math.max(0, index - 5))
+
+            if (index >= 0) Platform.runLater(() => {
+              val skin = jTable.getSkin.asInstanceOf[TableViewSkin[FileItem]]
+              val flow = skin.getChildren.get(1).asInstanceOf[VirtualFlow[TableRow[FileItem]]]
+              val visibleCount = flow.getLastVisibleCell.getIndex - flow.getFirstVisibleCell.getIndex
+              val targetIndex = math.max(0, index - visibleCount / 2)
+              jTable.scrollTo(targetIndex)
+            })
+          }
+      }
+    }
 
   }
 
