@@ -87,8 +87,10 @@ class FileTableManager {
     
     if (loadAsTarget) {
       target = table
+      source = right
     } else {
       source = table
+      target = right
     }
 
     if (table.isInstanceOf[LocalFileTableComponent])
@@ -126,8 +128,10 @@ class FileTableManager {
     
     if (loadAsTarget) {
       target = table
+      source = left
     } else {
       source = table
+      target = left
     }
     
     if (table.isInstanceOf[LocalFileTableComponent])

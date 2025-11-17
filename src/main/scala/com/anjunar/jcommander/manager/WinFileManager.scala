@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.manager
 
-import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent, SFTPFileTableComponent}
+import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent, VFS2FileTableComponent}
 import com.anjunar.jcommander.files.{FileUtils, StreamFileUtils, WinFileUtils}
 import jakarta.enterprise.context.ApplicationScoped
 
@@ -42,18 +42,18 @@ class WinFileManager extends FileManager {
 
   override def mkDir(activeTable: AbstractFileTableComponent): Unit = activeTable match {
     case source: LocalFileTableComponent => winFileUtils.mkDir(source)
-    case source: SFTPFileTableComponent => streamFiles.mkDir(source)
+    case source: VFS2FileTableComponent => streamFiles.mkDir(source)
   }
 
   override def renameFile(activeTable: AbstractFileTableComponent): Unit = {
     activeTable match {
       case source: LocalFileTableComponent => winFileUtils.renameFile(source)
-      case source: SFTPFileTableComponent => streamFiles.renameFile(source)
+      case source: VFS2FileTableComponent => streamFiles.renameFile(source)
     }
   }
 
   override def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
-    if (activeTable.isInstanceOf[SFTPFileTableComponent] || otherTable.isInstanceOf[SFTPFileTableComponent]) {
+    if (activeTable.isInstanceOf[VFS2FileTableComponent] || otherTable.isInstanceOf[VFS2FileTableComponent]) {
       streamFiles.copyFiles(activeTable, otherTable)
     } else {
       winFileUtils.copyFiles(activeTable, otherTable)
@@ -61,7 +61,7 @@ class WinFileManager extends FileManager {
   }
 
   override def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
-    if (activeTable.isInstanceOf[SFTPFileTableComponent] || otherTable.isInstanceOf[SFTPFileTableComponent]) {
+    if (activeTable.isInstanceOf[VFS2FileTableComponent] || otherTable.isInstanceOf[VFS2FileTableComponent]) {
       streamFiles.moveFiles(activeTable, otherTable)
     } else {
       winFileUtils.moveFiles(activeTable, otherTable)
@@ -70,7 +70,7 @@ class WinFileManager extends FileManager {
 
   override def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = activeTable match {
     case source: LocalFileTableComponent => winFileUtils.deleteFiles(source, otherTable)
-    case source: SFTPFileTableComponent => streamFiles.deleteFiles(source, otherTable)
+    case source: VFS2FileTableComponent => streamFiles.deleteFiles(source, otherTable)
   }
 
 }

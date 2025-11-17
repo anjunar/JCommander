@@ -11,7 +11,7 @@ import jakarta.enterprise.event.Observes
 import javafx.scene.control.TableRow
 import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
 import javafx.scene.input.KeyCode
-import org.apache.commons.vfs2.FileSystemManager
+import org.apache.commons.vfs2.{FileObject, FileSystemManager}
 import scalafx.Includes.*
 import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
@@ -31,6 +31,8 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
   val fileUtils: FileUtils = inject(classOf[FileUtils])
   
   var currentWatcher: Option[FileWatcher] = None
+
+  override def resolveDirectory: FileObject = manager.toFileObject(Path.of(directory))
 
   override def processNode(node: TableView[FileItem]): Unit = {
     node.onMouseClicked = e => {

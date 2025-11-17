@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent, SFTPFileTableComponent}
+import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent, VFS2FileTableComponent}
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.{ProgressListener, VFSUtils}
 import org.apache.commons.vfs2.FileObject
@@ -80,19 +80,10 @@ class StreamFileUtils extends FileUtils {
                    activeTable: AbstractFileTableComponent,
                    otherTable: AbstractFileTableComponent): Unit = {
 
-    val replaceExistingBox = new CheckBox("Replace existing files") {
-      selected = true
-    }
-    val checkForLockedFilesBox = new CheckBox("Check for locked Files") {
-      selected = false
-    }
-
     val confirmDialog = new ThemedDialog[ButtonType]() {
       title = confirmTitle
       headerText = confirmHeader
       dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      if (!isDelete) dialogPane.content = new VBox(10, replaceExistingBox)
-      else dialogPane.content = new VBox(10, checkForLockedFilesBox)
     }
 
     confirmDialog.resultConverter = btn => btn
@@ -100,19 +91,17 @@ class StreamFileUtils extends FileUtils {
     confirmDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
 
-        val replaceExisting = replaceExistingBox.selected.value
-        val checkForLockedFiles = checkForLockedFilesBox.selected.value
-
         val progressBar = new ProgressBar {
-          prefWidth = 350
+          prefWidth = Double.MaxValue
         }
         val progressLabel = new Label("0 MB (0 MB/s)")
+        val fileLabel = new Label("...Calculating")
 
         val task = new concurrent.Task[Unit]() {
           override def call(): Unit = {
             val selectedItems = activeTable.node.selectionModel.value.getSelectedItems
             val sources = selectedItems.stream().map(item => activeTable.manager.resolveFile(item.file)).toList.asScala.toSeq
-            val target = otherTable.manager.resolveFile(otherTable.directory)
+            val target = otherTable.resolveDirectory
 
             @volatile var lastTimeNs: Long = System.nanoTime()
             @volatile var lastBytes: Long = 0L
@@ -139,6 +128,7 @@ class StreamFileUtils extends FileUtils {
 
                 Platform.runLater {
                   progressLabel.text = f"${bytesMb}%.2f MB (${speedMb}%.2f MB/s)"
+                  fileLabel.text = file.getPublicURIString
                 }
               }
             }
@@ -156,7 +146,10 @@ class StreamFileUtils extends FileUtils {
 
         val progressDialog = new ThemedDialog[Unit]() {
           title = progressText
-          dialogPane.content = new VBox(10, progressBar, progressLabel)
+          width = 1000
+          dialogPane.content = new VBox(10, progressBar, progressLabel, fileLabel) {
+            prefWidth = Double.MaxValue
+          }
           dialogPane.buttonTypes = Seq(ButtonType.Cancel)
         }
 

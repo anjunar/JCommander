@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.components.SFTPClientComponent.Connection
+import com.anjunar.jcommander.components.VFS2ClientComponent.Connection
 import com.anjunar.jcommander.configuration.SFTPConnection
 import com.anjunar.jcommander.security.PasswordStore
 import com.anjunar.jcommander.ui.ThemedDialog
@@ -20,9 +20,9 @@ import scalafx.scene.layout.*
 
 import java.nio.file.{Files, Paths}
 
-class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
+class VFS2ClientComponent extends Component[ThemedDialog[Connection]] {
 
-  val log = Logger[SFTPClientComponent]
+  val log = Logger[VFS2ClientComponent]
 
   private val manager = FileSystemManagerBuilder.build()
 
@@ -91,12 +91,13 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
     }
 
 
-    title = "SFTP Client"
+    title = "VFS2 Client"
 
     listView.setOnMouseClicked { e =>
       if (e.getButton == MouseButton.PRIMARY && e.getClickCount == 2) {
         val sel = listView.selectionModel().getSelectedItem
         if (sel != null) {
+          connectionType.selectionModel.value.select(sel.connectionType)
           hostField.text = sel.host
           portField.text = sel.port.toString
           userField.text = sel.username
@@ -131,24 +132,28 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
       }
     })
 
-    dialogPane.content = new HBox {
-      spacing = 10
+    dialogPane.content = new VBox {
       children = Seq(
-        new VBox(10) {
+        new HBox {
+          spacing = 10
           children = Seq(
-            connectionType,
-            hostField,
-            portField,
-            userField,
-            passField,
-            new HBox(10) {
-              children = Seq(connectButton, saveButton, deleteButton)
+            new VBox(10) {
+              children = Seq(
+                connectionType,
+                hostField,
+                portField,
+                userField,
+                passField,
+                new HBox(10) {
+                  children = Seq(connectButton, saveButton, deleteButton)
+                }
+              )
+              VBox.setVgrow(statusLabel, Priority.Always)
             },
-            statusLabel
+            listView
           )
-          VBox.setVgrow(statusLabel, Priority.Always)
         },
-        listView
+        statusLabel
       )
     }
 
@@ -192,7 +197,7 @@ class SFTPClientComponent extends Component[ThemedDialog[Connection]] {
   }
 }
 
-object SFTPClientComponent {
+object VFS2ClientComponent {
 
   case class Connection(url : String, manager : FileSystemManager)
 

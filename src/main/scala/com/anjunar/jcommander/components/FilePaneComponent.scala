@@ -57,10 +57,10 @@ class FilePaneComponent(position: String, newTable: AbstractFileTableComponent =
         children = Seq(
           driveButtons.node,
           new Separator { orientation = scalafx.geometry.Orientation.Vertical },
-          new Button("SFTP") {
+          new Button("VFS2") {
             onAction = _ => {
-              new SFTPClientComponent().node.showAndWaitDialog().foreach { connection =>
-                table = new SFTPFileTableComponent(connection.manager)
+              new VFS2ClientComponent().node.showAndWaitDialog().foreach { connection =>
+                table = new VFS2FileTableComponent(connection.manager)
                 table.onDirectoryChanged = Some(dir => updateBreadcrumb(dir))
                 table.loadDirectory(connection.url)
                 newTable(table)

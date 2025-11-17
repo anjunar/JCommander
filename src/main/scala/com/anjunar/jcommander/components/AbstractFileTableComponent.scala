@@ -2,7 +2,7 @@ package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.files.FileItem
 import javafx.scene.control.TableCell as JfxTableCell
-import org.apache.commons.vfs2.FileSystemManager
+import org.apache.commons.vfs2.{FileObject, FileSystemManager}
 import scalafx.Includes.*
 import scalafx.beans.property.ReadOnlyObjectWrapper
 import scalafx.embed.swing.SwingFXUtils
@@ -27,6 +27,8 @@ abstract class AbstractFileTableComponent(val manager : FileSystemManager) exten
   var onDirectoryChanged: Option[String => Unit] = None
 
   def processNode(node: TableView[FileItem]): Unit
+
+  def resolveDirectory : FileObject
 
   val node: TableView[FileItem] = {
     val newNode = new TableView[FileItem] {
@@ -209,8 +211,11 @@ abstract class AbstractFileTableComponent(val manager : FileSystemManager) exten
 
     newNode.sceneProperty().onChange { (_, _, newScene) =>
       if (newScene == null) {
-        try manager.close()
-        catch case ex: Exception => ex.printStackTrace()
+        try {
+          println(directory)
+          manager.close()
+        } catch case ex: Exception =>
+          ex.printStackTrace()
       }
     }
 

@@ -19,7 +19,9 @@ import scalafx.collections.ObservableBuffer
 import java.awt.image.BufferedImage
 import scala.collection.immutable.Seq
 
-class SFTPFileTableComponent(manager : FileSystemManager) extends AbstractFileTableComponent(manager) {
+class VFS2FileTableComponent(manager : FileSystemManager) extends AbstractFileTableComponent(manager) {
+
+  override def resolveDirectory: FileObject = manager.resolveFile(directory)
 
   override def processNode(node: TableView[FileItem]): Unit = {
     node.onMouseClicked = e => {
