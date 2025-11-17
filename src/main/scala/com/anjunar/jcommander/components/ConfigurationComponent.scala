@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.components.config.ConfigModule
+import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.MinimalTitleBar
 import jakarta.enterprise.context.ApplicationScoped
@@ -14,7 +15,7 @@ import scalafx.stage.{Stage, StageStyle}
 class ConfigurationComponent extends Component[Stage] {
 
   val modules = injectInstance(classOf[ConfigModule])
-  val darkMode = inject(classOf[DarkModeComponent])
+  val darkMode = inject(classOf[DarkModeConf])
 
   override val node: Stage = new Stage {
     title = "Configuration"

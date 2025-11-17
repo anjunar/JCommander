@@ -4,7 +4,7 @@ import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.configuration.FileTableConf
 import com.anjunar.jcommander.files.{FileItem, FileUtils, FileWatcher}
-import com.anjunar.jcommander.manager.FileTableManager
+import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
 import jakarta.annotation.PostConstruct
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat
 class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileTableComponent(manager) {
 
   val fileTableManager: FileTableManager = inject(classOf[FileTableManager])
-  val fileUtils: FileUtils = inject(classOf[FileUtils])
+  val fileUtils: FileManager = inject(classOf[FileManager])
   
   var currentWatcher: Option[FileWatcher] = None
 
@@ -37,7 +37,7 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
   override def processNode(node: TableView[FileItem]): Unit = {
     node.onMouseClicked = e => {
       if (e.button == MouseButton.Secondary) {
-        fileUtils.fileContext(node.selectionModel.value.getSelectedItems.map(item => item.file).toSeq)
+        fileUtils.fileContext(this)
         e.consume()
       } else if (e.clickCount == 2) {
         onFileEnter()
@@ -69,7 +69,7 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
       if (selected.isDir) {
         loadDirectory(selected.file)
       } else {
-        fileUtils.executeFile(selected.file)
+        fileUtils.executeFile(this)
       }
     }
   }

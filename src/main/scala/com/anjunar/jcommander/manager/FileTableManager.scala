@@ -13,31 +13,17 @@ import scala.compiletime.uninitialized
 @ApplicationScoped
 class FileTableManager {
 
-  val leftConf = inject(classOf[FileTableConf.Left])
-  val rightConf = inject(classOf[FileTableConf.Right])
-
-  var _source: AbstractFileTableComponent = uninitialized
-  var _target: AbstractFileTableComponent = uninitialized
-
-  def source = _source
-  def target = _target
-  def source_=(value: AbstractFileTableComponent): Unit = _source = {
-    println(s"Source changed to ${value}")
-    value
-  }
-  def target_=(value: AbstractFileTableComponent): Unit = _target = {
-    println(s"Target changed to ${value}")
-    value
-  }
+  var source: AbstractFileTableComponent = uninitialized
+  var target: AbstractFileTableComponent = uninitialized
 
   var left: AbstractFileTableComponent = uninitialized
   var right: AbstractFileTableComponent = uninitialized
 
-  var leftFocusListener: ChangeListener[java.lang.Boolean] = uninitialized
-  var rightFocusListener: ChangeListener[java.lang.Boolean] = uninitialized
+  private var leftFocusListener: ChangeListener[java.lang.Boolean] = uninitialized
+  private var rightFocusListener: ChangeListener[java.lang.Boolean] = uninitialized
 
-  var leftKeyHandler: EventHandler[KeyEvent] = uninitialized
-  var rightKeyHandler: EventHandler[KeyEvent] = uninitialized
+  private var leftKeyHandler: EventHandler[KeyEvent] = uninitialized
+  private var rightKeyHandler: EventHandler[KeyEvent] = uninitialized
 
 
   private def createTabSwitchHandler: EventHandler[KeyEvent] = {
@@ -93,9 +79,6 @@ class FileTableManager {
       target = right
     }
 
-    if (table.isInstanceOf[LocalFileTableComponent])
-      table.loadDirectory(leftConf.file.getAbsolutePath)
-
     leftFocusListener = (o, old, newValue) => {
       if (newValue) {
         val currentSource = FileTableManager.this.source
@@ -134,9 +117,6 @@ class FileTableManager {
       target = left
     }
     
-    if (table.isInstanceOf[LocalFileTableComponent])
-      table.loadDirectory(rightConf.file.getAbsolutePath)
-
     rightFocusListener = (o, old, newValue) => {
       if (newValue) {
         val currentSource = FileTableManager.this.source

@@ -8,7 +8,7 @@ trait FileManager {
 
   def fileContext(activeTable: AbstractFileTableComponent): Unit
 
-  def getFileIcon(activeTable: AbstractFileTableComponent): BufferedImage
+  def getFileIcon(file : String, large : Boolean): BufferedImage
 
   def executeFile(file: String, workingDir : String, args: Seq[String]): Unit
 

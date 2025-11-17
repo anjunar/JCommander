@@ -19,12 +19,7 @@ class WinFileManager extends FileManager {
     )
   }
 
-  override def getFileIcon(activeTable: AbstractFileTableComponent): BufferedImage = activeTable match {
-    case source: LocalFileTableComponent => winFileUtils.getFileIcon(
-      source.node.selectionModel.value.getSelectedItem.file,
-      false
-    )
-  }
+  override def getFileIcon(file : String, large : Boolean): BufferedImage = winFileUtils.getFileIcon(file, large)
 
   override def executeFile(file: String, workingDir : String, args: Seq[String]): Unit = {
     winFileUtils.executeFile(file, workingDir, args)

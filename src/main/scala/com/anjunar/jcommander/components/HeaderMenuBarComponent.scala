@@ -21,7 +21,7 @@ class HeaderMenuBarComponent extends Component[HBox] {
             onAction = _ => println("Öffnen gewählt")
           },
           new MenuItem("Configuration") {
-            onAction = _ => inject(classOf[ConfigurationComponent]).node.showAndWait()
+            onAction = _ => new ConfigurationComponent().node.showAndWait()
           },
         new SeparatorMenuItem,
           new MenuItem("Exit") {
