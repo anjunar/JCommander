@@ -5,9 +5,10 @@ import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.{ProgressListener, VFSUtils}
 import org.apache.commons.vfs2.FileObject
 import scalafx.event.ActionEvent
-import scalafx.scene.control.{ButtonType, CheckBox, Label, ProgressBar}
+import scalafx.scene.control.{ButtonType, CheckBox, Label, ProgressBar, TextField}
 import scalafx.scene.layout.VBox
 import javafx.concurrent
+import scalafx.Includes.observableList2ObservableBuffer
 import scalafx.application.Platform
 
 import java.awt.image.BufferedImage
@@ -16,19 +17,69 @@ import scala.jdk.CollectionConverters.*
 
 class StreamFileUtils extends FileUtils {
 
-  override def fileContext(files: Seq[String]): Unit = ???
+  override def fileContext(files: Seq[String]): Unit = throw new NotImplementedError("Will not be implemented in Future")
 
-  override def getFileIcon(file: String, large: Boolean): BufferedImage = ???
+  override def getFileIcon(file: String, large: Boolean): BufferedImage = throw new NotImplementedError("Will not be implemented in Future")
 
-  override def executeFile(file: String, workingDir: String, args: Seq[String]): Unit = ???
+  override def executeFile(file: String, workingDir: String, args: Seq[String]): Unit = throw new NotImplementedError("Will not be implemented in Future")
 
-  override def console(workingDir: String): Unit = ???
+  override def console(workingDir: String): Unit = throw new NotImplementedError("Will not be implemented in Future")
 
-  override def executeFile(file: String): Unit = ???
+  override def executeFile(file: String): Unit = throw new NotImplementedError("Will not be implemented in Future")
 
-  override def mkDir(activeTable: AbstractFileTableComponent): Unit = ???
+  override def mkDir(activeTable: AbstractFileTableComponent): Unit = {
+    val textField: TextField = new TextField {
+      promptText = "Directory Name"
+    }
 
-  override def renameFile(activeTable: AbstractFileTableComponent): Unit = ???
+    val mkDirDialog = new ThemedDialog[ButtonType]() {
+      title = "Create Directory"
+      headerText = "Create Directory"
+      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+      dialogPane.content = new VBox(10, textField)
+    }
+
+    mkDirDialog.resultConverter = btn => btn
+
+    mkDirDialog.showAndWaitDialog().foreach { result =>
+      if (result == ButtonType.OK) {
+        val newFileName = textField.text.value
+        activeTable.resolveDirectory
+          .resolveFile(newFileName)
+          .createFolder()
+      }
+    }
+  }
+
+  override def renameFile(activeTable: AbstractFileTableComponent): Unit = {
+    val textField = new TextField {
+      text = activeTable.node.selectionModel.value.getSelectedItem.name
+    }
+
+    val renameDialog = new ThemedDialog[ButtonType]() {
+      title = "Rename File"
+      headerText = "Rename File"
+      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+      dialogPane.content = new VBox(10, textField)
+    }
+
+    renameDialog.resultConverter = btn => btn
+
+    renameDialog.showAndWaitDialog().foreach { result =>
+      if (result == ButtonType.OK) {
+        val selected = activeTable.node.selectionModel.value.getSelectedItems.head
+        val oldFile = activeTable.manager.resolveFile(selected.file)
+
+        val parent = Option(oldFile.getParent).getOrElse {
+          val parentName = oldFile.getName.getParent
+          activeTable.manager.resolveFile(parentName.getBaseName)
+        }
+
+        val newFile = parent.resolveFile(textField.text.value)
+        oldFile.moveTo(newFile)
+      }
+    }
+  }
 
   override def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
     processFiles(
