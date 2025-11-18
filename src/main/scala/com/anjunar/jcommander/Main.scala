@@ -32,8 +32,7 @@ object Main extends JFXApp3 {
 
     val objectMapper = ObjectMapperBuilder.build()
 
-    val localAppDir = sys.env("LOCALAPPDATA")
-    val configDir = new File(localAppDir, "jcommander")
+    val configDir = ConfigDir.path()
     val configFile = new File(configDir, "configuration.json")
 
     def loadConfiguration(target: AnyRef, source: AnyRef, clazz: Class[? <: AnyRef]): Unit = {

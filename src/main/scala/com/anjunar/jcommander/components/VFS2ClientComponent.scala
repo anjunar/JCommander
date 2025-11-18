@@ -1,5 +1,6 @@
 package com.anjunar.jcommander.components
 
+import com.anjunar.jcommander.ConfigDir
 import com.anjunar.jcommander.components.VFS2ClientComponent.Connection
 import com.anjunar.jcommander.configuration.SFTPConnection
 import com.anjunar.jcommander.security.PasswordStore
@@ -18,6 +19,7 @@ import scalafx.collections.ObservableBuffer
 import scalafx.scene.control.*
 import scalafx.scene.layout.*
 
+import java.io.File
 import java.nio.file.{Files, Paths}
 
 class VFS2ClientComponent extends Component[ThemedDialog[Connection]] {
@@ -26,22 +28,24 @@ class VFS2ClientComponent extends Component[ThemedDialog[Connection]] {
 
   private val manager = FileSystemManagerBuilder.build()
 
-  private val keyPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "master.key")
-  private val passPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "passwords.json")
-  private val connPath = Paths.get(sys.env("LOCALAPPDATA"), "jcommander", "connections.json")
+  private val configDir = ConfigDir.path()
 
-  private val store = new PasswordStore(passPath, keyPath)
+  private val keyPath = new File(configDir, "master.key")
+  private val passPath = new File(configDir, "passwords.json")
+  private val connPath = new File(configDir, "connections.json")
+
+  private val store = new PasswordStore(passPath.toPath, keyPath.toPath)
   private val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
 
   private def loadConnections(): ObservableBuffer[SFTPConnection] = {
-    if (!Files.exists(connPath)) return ObservableBuffer.empty[SFTPConnection]
-    val json = mapper.readValue(connPath.toFile, classOf[Array[SFTPConnection]])
+    if (!Files.exists(connPath.toPath)) return ObservableBuffer.empty[SFTPConnection]
+    val json = mapper.readValue(connPath, classOf[Array[SFTPConnection]])
     ObservableBuffer(json.toSeq: _*)
   }
 
   private def saveConnections(conns: Seq[SFTPConnection]): Unit = {
-    Files.createDirectories(connPath.getParent)
-    mapper.writerWithDefaultPrettyPrinter().writeValue(connPath.toFile, conns.toArray)
+    Files.createDirectories(connPath.toPath.getParent)
+    mapper.writerWithDefaultPrettyPrinter().writeValue(connPath, conns.toArray)
   }
 
   override val node: ThemedDialog[Connection] = new ThemedDialog[Connection] {

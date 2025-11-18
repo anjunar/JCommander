@@ -10,6 +10,8 @@ import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Separator, TableView}
 import scalafx.scene.layout.{HBox, Priority, VBox}
 
+import java.io.File
+
 class FilePaneComponent(position: String, newTable: AbstractFileTableComponent => Unit) extends Component[VBox] {
 
   var table: AbstractFileTableComponent = new LocalFileTableComponent(FileSystemManagerBuilder.build())
@@ -31,7 +33,7 @@ class FilePaneComponent(position: String, newTable: AbstractFileTableComponent =
   }
 
   val driveButtons: DriveButtonsComponent =
-    new DriveButtonsComponent(drive => {
+    new DriveButtonsComponent((drive : File) => {
       table match {
         case local: LocalFileTableComponent =>
           local.loadDirectory(drive.getAbsolutePath)
@@ -44,7 +46,7 @@ class FilePaneComponent(position: String, newTable: AbstractFileTableComponent =
           node.children.set(2, table.node)
       }
     }, unmounted => {
-      if (unmounted.getAbsolutePath.startsWith(table.directory.substring(0, 2))) {
+      if (unmounted.file.getAbsolutePath.startsWith(table.directory.substring(0, 2))) {
         Platform.runLater({
           table = new LocalFileTableComponent(FileSystemManagerBuilder.build())
           table.onDirectoryChanged = Some(dir => Platform.runLater(() => updateBreadcrumb(dir)))

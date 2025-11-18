@@ -1,5 +1,6 @@
 package com.anjunar.jcommander.commands
 
+import com.anjunar.jcommander.ConfigDir
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.configuration.Configuration
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
@@ -24,8 +25,7 @@ class QuitCommand extends Command {
         .writerWithDefaultPrettyPrinter()
         .writeValueAsString(configuration)
 
-      val localAppData = sys.env("LOCALAPPDATA")
-      val configDir = new File(localAppData, "jcommander")
+      val configDir = ConfigDir.path()
       val configFile = new File(configDir, "configuration.json")
 
       if (!configDir.exists()) {

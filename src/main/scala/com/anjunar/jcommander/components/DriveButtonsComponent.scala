@@ -1,39 +1,30 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.manager.FileManager
+import com.anjunar.jcommander.manager.{Drive, DriveDetectionService, FileManager}
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
-import jakarta.enterprise.context.{ApplicationScoped, Dependent}
-import jakarta.enterprise.event.Event
-import jakarta.enterprise.inject.spi.BeanManager
-import jakarta.inject.Inject
 import scalafx.application.Platform
 import scalafx.embed.swing.SwingFXUtils
 import scalafx.scene.Node
 import scalafx.scene.control.{Button, Label}
-import scalafx.scene.layout.HBox
-import scalafx.Includes.*
 import scalafx.scene.image.ImageView
+import scalafx.scene.layout.HBox
 
-import java.io.File
-import java.nio.file.{FileStore, FileSystems}
+import java.io.{BufferedReader, File, InputStreamReader}
+import java.nio.file.{FileStore, FileSystems, Files}
 import java.util.concurrent.atomic.AtomicBoolean
-import scala.collection.mutable
-import scala.compiletime.uninitialized
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.io.Source
 import scala.jdk.CollectionConverters.*
 
-class DriveButtonsComponent(change : File => Unit, unmount : File => Unit) extends Component[HBox] {
+class DriveButtonsComponent(change: File => Unit, unmount: Drive => Unit) extends Component[HBox] {
 
   private val log = Logger[DriveButtonsComponent]
-
-  private var lastDrives: Set[File] = currentDriveNames
-
   private val running = new AtomicBoolean(true)
   private val fileUtils = inject(classOf[FileManager])
-
   private val pollIntervalMillis = 3000
+  private val driveService = new DriveDetectionService
 
   val selectedLabel = new Label("Kein Laufwerk ausgewählt")
 
@@ -43,65 +34,63 @@ class DriveButtonsComponent(change : File => Unit, unmount : File => Unit) exten
   }
 
   val home = new Button("Home") {
-    graphic = new ImageView(
-      SwingFXUtils.toFXImage(
+    graphic = new ImageView {
+      fitWidth = 16
+      fitHeight = 16
+      preserveRatio = true
+      image = SwingFXUtils.toFXImage(
         fileUtils.getFileIcon(new File(System.getProperty("user.home")).getAbsolutePath, false),
         null
       )
-    )
+    }
     style = "-fx-background-color: transparent;" +
       "-fx-border-color: transparent;" +
       "-fx-padding: 0;" +
       "-fx-focus-color: transparent;" +
       "-fx-faint-focus-color: transparent;"
-
-    onAction = _ => {
-      change(new File(System.getProperty("user.home")))
-    }
+    onAction = _ => change(new File(System.getProperty("user.home")))
   }
+
+  private var lastDrives: Seq[Drive] = driveService.listDrives()
 
   refreshButtons()
 
+  // ------------------------------
+  // Watcher-Thread
+  // ------------------------------
   private val watcherThread = Future {
     while (running.get()) {
       try {
         Thread.sleep(pollIntervalMillis)
-        val now = currentDriveNames
+        val now = driveService.listDrives()
         if (now != lastDrives) {
-
           val difference = lastDrives.diff(now)
-
-          difference.foreach(file => {
-            unmount(file)
-          })
-
+          difference.foreach(unmount)
           lastDrives = now
           Platform.runLater(() => refreshButtons())
         }
       } catch {
-        case ex : Exception => log.error(ex.getMessage, ex)
+        case ex: Exception => log.error(ex.getMessage, ex)
       }
     }
   }
 
-  private def currentDriveNames: Set[File] =
-    FileSystems.getDefault.getFileStores.iterator().asScala.map(getFileStore).toSet
-
   private def refreshButtons(): Unit = {
-    val stores = FileSystems.getDefault.getFileStores.iterator().asScala.toSeq
     node.children.clear()
-
-    val buttons : Seq[Node] = stores.map { store =>
-      val name = Option(store.name()).getOrElse("Unbenannt")
-      val root = getFileStore(store)
-      val displayName = if (name.nonEmpty) name else store.toString
-      new Button(displayName) {
-        graphic = new ImageView(
-          SwingFXUtils.toFXImage(
-            fileUtils.getFileIcon(root.getAbsolutePath, false),
+    val drives = driveService.listDrives().sortBy(_.file.getAbsolutePath)
+    
+    val buttons: Seq[Node] = drives.map { drive =>
+      val name = drive.name
+      new Button(name) {
+        graphic = new ImageView {
+          fitWidth = 16
+          fitHeight = 16
+          preserveRatio = true
+          image = SwingFXUtils.toFXImage(
+            fileUtils.getFileIcon(drive.file.getAbsolutePath, false),
             null
           )
-        )
+        }
         style =
           "-fx-background-color: transparent;" +
             "-fx-border-color: transparent;" +
@@ -109,8 +98,16 @@ class DriveButtonsComponent(change : File => Unit, unmount : File => Unit) exten
             "-fx-focus-color: transparent;" +
             "-fx-faint-focus-color: transparent;"
         onAction = _ => {
-          selectedLabel.text = s"Ausgewählt: $displayName"
-          change(root)
+          if (drive.mounted) change(drive.file)
+          else {
+            driveService.mountDrive(drive) match {
+              case Some(updated) =>
+                change(updated.file)
+                refreshButtons()
+              case None =>
+                selectedLabel.text = s"Mount fehlgeschlagen: ${drive.device.getOrElse(drive.name)}"
+            }
+          }
         }
       }
     }
@@ -118,23 +115,5 @@ class DriveButtonsComponent(change : File => Unit, unmount : File => Unit) exten
     node.children = Seq(home) ++ buttons
   }
 
-  private def getFileStore(store: FileStore): File = {
-    val roots = FileSystems.getDefault.getRootDirectories.iterator()
-    while (roots.hasNext) {
-      val root = roots.next()
-      try {
-        val rootStore = java.nio.file.Files.getFileStore(root)
-        if (rootStore == store) {
-          return root.toFile
-        }
-      } catch {
-        case _: Exception => return null
-      }
-    }
-    null
-  }
-
-  def stop(): Unit = {
-    running.set(false)
-  }
+  def stop(): Unit = running.set(false)
 }

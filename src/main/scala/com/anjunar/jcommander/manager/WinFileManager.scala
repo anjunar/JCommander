@@ -7,7 +7,6 @@ import jakarta.enterprise.context.ApplicationScoped
 import java.awt.image.BufferedImage
 import scala.jdk.CollectionConverters.*
 
-@ApplicationScoped
 class WinFileManager extends FileManager {
 
   val winFileUtils: FileUtils = new WinFileUtils()

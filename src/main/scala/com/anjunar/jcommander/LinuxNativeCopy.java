@@ -4,11 +4,11 @@ import com.anjunar.jcommander.utils.NativeUtils;
 
 import java.io.IOException;
 
-public class WinNativeCopy {
+public class LinuxNativeCopy {
 
     static {
         try {
-            NativeUtils.loadWinNativeCopy("win_native_copy.dll");
+            NativeUtils.loadWinNativeCopy("linux_native_copy.so");
         } catch (IOException e) {
             throw new UnsatisfiedLinkError("Failed to load native library: " + e.getMessage());
         }
