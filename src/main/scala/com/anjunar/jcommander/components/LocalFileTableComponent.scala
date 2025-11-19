@@ -5,6 +5,7 @@ import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.configuration.FileTableConf
 import com.anjunar.jcommander.files.{FileItem, FileUtils, FileWatcher}
 import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
+import com.anjunar.jcommander.utils.OSType
 import jakarta.annotation.PostConstruct
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
@@ -32,7 +33,12 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
   
   var currentWatcher: Option[FileWatcher] = None
 
-  override def resolveDirectory: FileObject = manager.toFileObject(Path.of(directory))
+  override def resolveDirectory: FileObject =
+    manager.toFileObject(Path.of(normalize(directory)))
+
+  private def normalize(path: String): String =
+    if (path.startsWith("file:")) path.stripPrefix("file:") else path
+
 
   override def processNode(node: TableView[FileItem]): Unit = {
     node.onMouseClicked = e => {
@@ -100,14 +106,10 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
   }
 
   def loadDirectory(value: String): Unit = {
-    val dir = if (value.startsWith("file:///" )) {
-      File(value.replaceFirst("file:///", ""))
-    } else {
-      File(value)
-    }
-
+    val clean = normalize(value)
+    val dir = File(clean)
     directory = dir.getAbsolutePath
-    
+
     if (fileTableManager.left == this) {
       val configuration = inject(classOf[FileTableConf.Left])
       configuration.file = dir  

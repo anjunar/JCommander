@@ -105,7 +105,7 @@ class DriveButtonsComponent(change: File => Unit, unmount: Drive => Unit) extend
                 change(updated.file)
                 refreshButtons()
               case None =>
-                selectedLabel.text = s"Mount fehlgeschlagen: ${drive.device.getOrElse(drive.name)}"
+                selectedLabel.text = s"Mount error: ${drive.device.getOrElse(drive.name)}"
             }
           }
         }

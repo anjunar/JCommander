@@ -9,39 +9,39 @@ import scala.jdk.CollectionConverters.*
 
 class WinFileManager extends FileManager {
 
-  val winFileUtils: FileUtils = new WinFileUtils()
+  val fileUtils: FileUtils = new WinFileUtils()
   val streamFiles = new StreamFileUtils()
 
   override def fileContext(activeTable: AbstractFileTableComponent): Unit = activeTable match {
-    case source: LocalFileTableComponent => winFileUtils.fileContext(
+    case source: LocalFileTableComponent => fileUtils.fileContext(
       source.node.items.value.asScala.map(_.file).toSeq
     )
   }
 
-  override def getFileIcon(file : String, large : Boolean): BufferedImage = winFileUtils.getFileIcon(file, large)
+  override def getFileIcon(file : String, large : Boolean): BufferedImage = fileUtils.getFileIcon(file, large)
 
   override def executeFile(file: String, workingDir : String, args: Seq[String]): Unit = {
-    winFileUtils.executeFile(file, workingDir, args)
+    fileUtils.executeFile(file, workingDir, args)
   }
 
   override def console(activeTable: AbstractFileTableComponent): Unit = activeTable match {
-    case source: LocalFileTableComponent => winFileUtils.console(source.directory)
+    case source: LocalFileTableComponent => fileUtils.console(source.directory)
   }
 
   override def executeFile(activeTable: AbstractFileTableComponent): Unit = activeTable match {
-    case source: LocalFileTableComponent => winFileUtils.executeFile(
+    case source: LocalFileTableComponent => fileUtils.executeFile(
       source.node.selectionModel.value.getSelectedItem.file
     )
   }
 
   override def mkDir(activeTable: AbstractFileTableComponent): Unit = activeTable match {
-    case source: LocalFileTableComponent => winFileUtils.mkDir(source)
+    case source: LocalFileTableComponent => fileUtils.mkDir(source)
     case source: VFS2FileTableComponent => streamFiles.mkDir(source)
   }
 
   override def renameFile(activeTable: AbstractFileTableComponent): Unit = {
     activeTable match {
-      case source: LocalFileTableComponent => winFileUtils.renameFile(source)
+      case source: LocalFileTableComponent => fileUtils.renameFile(source)
       case source: VFS2FileTableComponent => streamFiles.renameFile(source)
     }
   }
@@ -50,7 +50,7 @@ class WinFileManager extends FileManager {
     if (activeTable.isInstanceOf[VFS2FileTableComponent] || otherTable.isInstanceOf[VFS2FileTableComponent]) {
       streamFiles.copyFiles(activeTable, otherTable)
     } else {
-      winFileUtils.copyFiles(activeTable, otherTable)
+      fileUtils.copyFiles(activeTable, otherTable)
     }
   }
 
@@ -58,12 +58,12 @@ class WinFileManager extends FileManager {
     if (activeTable.isInstanceOf[VFS2FileTableComponent] || otherTable.isInstanceOf[VFS2FileTableComponent]) {
       streamFiles.moveFiles(activeTable, otherTable)
     } else {
-      winFileUtils.moveFiles(activeTable, otherTable)
+      fileUtils.moveFiles(activeTable, otherTable)
     }
   }
 
   override def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = activeTable match {
-    case source: LocalFileTableComponent => winFileUtils.deleteFiles(source, otherTable)
+    case source: LocalFileTableComponent => fileUtils.deleteFiles(source, otherTable)
     case source: VFS2FileTableComponent => streamFiles.deleteFiles(source, otherTable)
   }
 
