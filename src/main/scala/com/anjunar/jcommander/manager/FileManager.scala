@@ -1,12 +1,13 @@
 package com.anjunar.jcommander.manager
 
 import com.anjunar.jcommander.components.AbstractFileTableComponent
+import scalafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage
 
 trait FileManager {
 
-  def fileContext(activeTable: AbstractFileTableComponent): Unit
+  def fileContext(activeTable: AbstractFileTableComponent, event: MouseEvent): Unit
 
   def getFileIcon(file : String, large : Boolean): BufferedImage
 

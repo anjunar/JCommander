@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{DarkModeComponent, AbstractFileTableComponent}
+import com.anjunar.jcommander.components.{AbstractFileTableComponent, DarkModeComponent}
 import com.anjunar.jcommander.{Main, WinNativeCopy}
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.ThemedDialog
@@ -13,6 +13,7 @@ import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control.*
+import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.VBox
 
 import java.awt.image.BufferedImage
@@ -26,7 +27,7 @@ class FallBackFileUtils extends AbstractFileUtils {
 
   override val log: Logger = Logger[FallBackFileUtils]
 
-  override def fileContext(files: Seq[String]): Unit = ???
+  override def fileContext(files: Seq[String], event: MouseEvent): Unit = ???
 
   override def console(workingDir: String): Unit = ???
 

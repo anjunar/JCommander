@@ -43,7 +43,7 @@ class LocalFileTableComponent(manager : FileSystemManager) extends AbstractFileT
   override def processNode(node: TableView[FileItem]): Unit = {
     node.onMouseClicked = e => {
       if (e.button == MouseButton.Secondary) {
-        fileUtils.fileContext(this)
+        fileUtils.fileContext(this, e)
         e.consume()
       } else if (e.clickCount == 2) {
         onFileEnter()

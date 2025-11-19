@@ -2,7 +2,7 @@ package com.anjunar.jcommander.manager
 
 import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent, VFS2FileTableComponent}
 import com.anjunar.jcommander.files.{FileUtils, StreamFileUtils, WinFileUtils}
-import jakarta.enterprise.context.ApplicationScoped
+import scalafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage
 import scala.jdk.CollectionConverters.*
@@ -12,10 +12,8 @@ class WinFileManager extends FileManager {
   val fileUtils: FileUtils = new WinFileUtils()
   val streamFiles = new StreamFileUtils()
 
-  override def fileContext(activeTable: AbstractFileTableComponent): Unit = activeTable match {
-    case source: LocalFileTableComponent => fileUtils.fileContext(
-      source.node.items.value.asScala.map(_.file).toSeq
-    )
+  override def fileContext(activeTable: AbstractFileTableComponent, event: MouseEvent): Unit = activeTable match {
+    case source: LocalFileTableComponent => fileUtils.fileContext(source.node.selectionModel.value.getSelectedItems.asScala.map(_.file).toSeq, event)
   }
 
   override def getFileIcon(file : String, large : Boolean): BufferedImage = fileUtils.getFileIcon(file, large)

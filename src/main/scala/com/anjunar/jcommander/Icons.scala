@@ -1,6 +1,5 @@
 package com.anjunar.jcommander
 
-import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.configuration.DarkModeConf
 import org.kordamp.ikonli.javafx.FontIcon
 import scalafx.scene.paint.Color

@@ -10,6 +10,7 @@ import scalafx.scene.layout.VBox
 import javafx.concurrent
 import scalafx.Includes.observableList2ObservableBuffer
 import scalafx.application.Platform
+import scalafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage
 import java.nio.file.Files
@@ -17,7 +18,7 @@ import scala.jdk.CollectionConverters.*
 
 class StreamFileUtils extends FileUtils {
 
-  override def fileContext(files: Seq[String]): Unit = throw new NotImplementedError("Will not be implemented in Future")
+  override def fileContext(files: Seq[String], event: MouseEvent): Unit = throw new NotImplementedError("Will not be implemented in Future")
 
   override def getFileIcon(file: String, large: Boolean): BufferedImage = throw new NotImplementedError("Will not be implemented in Future")
 

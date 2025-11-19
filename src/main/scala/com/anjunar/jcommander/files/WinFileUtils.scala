@@ -10,6 +10,7 @@ import scalafx.Includes.jfxDialogPane2sfx
 import scalafx.application.Platform
 import scalafx.event.ActionEvent
 import scalafx.scene.control.*
+import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{Pane, VBox}
 
 import java.awt.image.BufferedImage
@@ -24,7 +25,7 @@ class WinFileUtils extends AbstractFileUtils {
 
   override val log = Logger[WinFileUtils]
 
-  override def fileContext(files: Seq[String]): Unit = {
+  override def fileContext(files: Seq[String], event: MouseEvent): Unit = {
     WinNativeCopy.fileContext(files.toArray, true)
   }
 

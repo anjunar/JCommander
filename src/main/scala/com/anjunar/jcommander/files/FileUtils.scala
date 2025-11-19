@@ -2,13 +2,14 @@ package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.AbstractFileTableComponent
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
+import scalafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage
 import java.io.File
 
 trait FileUtils {
   
-  def fileContext(files: Seq[String]) : Unit
+  def fileContext(files: Seq[String], event: MouseEvent): Unit
   
   def getFileIcon(file : String, large : Boolean) : BufferedImage
 

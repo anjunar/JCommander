@@ -2,9 +2,9 @@ package com.anjunar.jcommander.manager
 
 import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent, VFS2FileTableComponent}
 import com.anjunar.jcommander.files.{LinuxFileUtils, StreamFileUtils}
+import scalafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage
-
 import scala.jdk.CollectionConverters.*
 
 class LinuxFileManager extends FileManager {
@@ -12,9 +12,10 @@ class LinuxFileManager extends FileManager {
   val fileUtils = new LinuxFileUtils()
   val streamFiles = new StreamFileUtils()
 
-  override def fileContext(activeTable: AbstractFileTableComponent): Unit = activeTable match {
+  override def fileContext(activeTable: AbstractFileTableComponent, event: MouseEvent): Unit = activeTable match {
     case source: LocalFileTableComponent => fileUtils.fileContext(
-      source.node.items.value.asScala.map(_.file).toSeq
+      source.node.selectionModel.value.getSelectedItems.asScala.map(_.file).toSeq,
+      event
     )
   }
 
