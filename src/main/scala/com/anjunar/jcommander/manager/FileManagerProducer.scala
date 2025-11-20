@@ -11,7 +11,7 @@ class FileManagerProducer {
   def produces() : FileManager = {
     OSType.osName match {
       case "linux" => new LinuxFileManager()
-      case "mac" => new LinuxFileManager()
+      case "mac" => new OSXFileManager()
       case "win" => new WinFileManager()
     }
   }
