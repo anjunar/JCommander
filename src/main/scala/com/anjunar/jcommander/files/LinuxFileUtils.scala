@@ -1,21 +1,23 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.{Icons, LinuxNativeCopy}
+import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.components.AbstractFileTableComponent
 import com.anjunar.jcommander.ui.ThemedDialog
+import com.anjunar.jcommander.utils.CdiUtils.inject
+import com.anjunar.jcommander.{Icons, LinuxNativeCopy}
 import javafx.concurrent
+import scalafx.Includes.*
 import scalafx.application.Platform
 import scalafx.event.ActionEvent
-import scalafx.geometry.Pos
-import scalafx.scene.control.{Button, ButtonType, CheckBox, ContextMenu, Label, MenuItem, ProgressBar, SeparatorMenuItem, TextField}
-import scalafx.scene.layout.{HBox, VBox}
-import scalafx.Includes.*
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
+import scalafx.scene.control.*
 import scalafx.scene.input.MouseEvent
+import scalafx.scene.layout.{GridPane, HBox, VBox}
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayInputStream, File}
-import java.nio.file.attribute.PosixFilePermissions
+import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermissions}
 import java.nio.file.{Files, Path, Paths}
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
@@ -37,7 +39,8 @@ class LinuxFileUtils extends AbstractFileUtils {
       case _ => Seq("x-terminal-emulator")
     }
     new Thread(() => {
-      cmd.!; ()
+      cmd.!;
+      ()
     }).start()
   }
 
@@ -95,56 +98,151 @@ class LinuxFileUtils extends AbstractFileUtils {
       onAction = _ => action
   }
 
+  def ctxSubMenu(text: String, iconName: String, items: Seq[MenuItem]): Menu = {
+    val icon = Icons.themedIcon(iconName, 18)
+    val lbl = new Label(text) {
+      style = "-fx-font-size: 13px;"
+    }
+
+    val box = new HBox(10, icon, lbl) {
+      alignment = Pos.CenterLeft
+      style = "-fx-padding: 6 4 6 4;"
+    }
+
+    val m = new Menu()
+    m.setGraphic(box)
+    m.getItems.addAll(items.map(_.delegate): _*)
+    m
+  }
+
   override def fileContext(files: Seq[String], event: MouseEvent): Unit = {
     if (files.isEmpty) return
-    if (contextMenuOpen) return // verhindert mehrfaches Öffnen
+    if (contextMenuOpen) return
 
     val single = files.size == 1
+    val fHead = files.head
+    val parentDir = Path.of(fHead).getParent.toString
 
     val menu = new ContextMenu()
-    menu.getItems.addAll(
+
+    val openWithApps = Seq("subl", "code", "gedit", "nano", "vim", "xdg-open")
+    val openWithMenu = ctxSubMenu(
+      "Open With…",
+      "mdi2o-open-in-new",
+      openWithApps.map(app =>
+        ctxItem(app, "mdi2a-application") {
+          new Thread(() => {
+            Seq(app, fHead).!
+            ()
+          }).start()
+        }
+      )
+    )
+
+    val compressMenu = ctxSubMenu(
+      "Compress",
+      "mdi2z-zip-box",
+      Seq(
+        ctxItem("Create tar.gz", "mdi2f-folder-download") {
+          new Thread(() => {
+            val dir = new File(files.head).getParent
+            val names = files.map(f => new File(f).getName)
+            val cmd = Seq("tar", "-czf", s"$dir/archive.tar.gz", "-C", dir) ++ names
+            cmd.!
+            ()
+          }).start()
+        },
+        ctxItem("Create zip", "mdi2z-zip-box") {
+          new Thread(() => {
+            val dir = new File(files.head).getParent
+            val names = files.map(f => new File(f).getName)
+            val cmd = Seq("zip", "-j", s"$dir/archive.zip") ++ names.map(n => s"$dir/$n")
+            cmd.!
+            ()
+          }).start()
+        }
+      )
+    )
+
+    val executeItem =
       ctxItem("Execute", "mdi2p-play") {
-        if single then executeFile(files.head)
-      },
-      ctxItem("Open With…", "mdi2o-open-in-new") {
-        showOpenWithDialog(files)
-      },
-      new SeparatorMenuItem,
+        if single then executeFile(fHead)
+      }
+
+    val copyItem =
       ctxItem("Copy", "mdi2c-content-copy") {
         FileClipboard.copyMany(files)
-      },
+      }
+
+    val pasteItem =
       ctxItem("Paste", "mdi2c-content-paste") {
-        val dir = Path.of(files.head).getParent.toString
-        FileClipboard.pasteToDirectory(dir)
-      },
-      ctxItem("Rename", "mdi2r-rename-box") {
-        if single then showRenameDialog(files)
-      },
+        FileClipboard.pasteToDirectory(parentDir)
+      }
+
+    val renameItem =
+      if single then
+        ctxItem("Rename", "mdi2r-rename-box") {
+          val command = inject(classOf[RenameCommand])
+          command.execute()
+        }
+      else null
+
+    val duplicateItem =
       ctxItem("Duplicate", "mdi2c-content-copy") {
-        duplicateFiles(files)
-      },
+        new Thread(() => duplicateFiles(files)).start()
+      }
+
+    val deleteItem =
       ctxItem("Delete", "mdi2d-delete") {
-        deleteFiles(files)
-      },
-      new SeparatorMenuItem,
-      ctxItem("Compress", "mdi2z-zip-box") {
-        showCompressDialog(files)
-      },
-      ctxItem("Extract", "mdi2f-folder-open") {
-        extractFiles(files)
-      },
-      ctxItem("Create Symlink", "mdi2l-link") {
-        createSymlink(files)
-      },
-      new SeparatorMenuItem,
+        val command = inject(classOf[DeleteCommand])
+        command.execute()
+      }
+
+    val extractItem =
+      ctxItem("Extract here", "mdi2f-folder-open") {
+        new Thread(() => extractFiles(files)).start()
+      }
+
+    val symlinkItem =
+      ctxItem("Create symlink", "mdi2l-link") {
+        new Thread(() => createSymlink(files)).start()
+      }
+
+    val terminalItem =
       ctxItem("Open Terminal Here", "mdi2c-console") {
-        openTerminalHere(Path.of(files.head).getParent.toString)
-      },
+        new Thread(() => console(Paths.get(files.head).getParent.toAbsolutePath.toString)).start()
+      }
+
+    val propertiesItem =
       ctxItem("Properties", "mdi2c-cog") {
         showPropertiesDialog(files)
       }
-    )
 
+
+    // --- BUILD MENU ---
+    val items = Seq(
+      executeItem,
+      openWithMenu,
+      new SeparatorMenuItem(),
+      copyItem,
+      pasteItem,
+      renameItem,
+      duplicateItem,
+      deleteItem,
+      new SeparatorMenuItem(),
+      compressMenu,
+      extractItem,
+      symlinkItem,
+      new SeparatorMenuItem(),
+      terminalItem,
+      propertiesItem
+    ).filter(_ != null)
+
+    menu.getItems.addAll(items.map(_.delegate): _*)
+
+
+
+    // --- SHOW MENU ---
     Platform.runLater {
       val node = event.source.asInstanceOf[javafx.scene.Node]
       val scene = node.getScene
@@ -153,9 +251,7 @@ class LinuxFileUtils extends AbstractFileUtils {
 
       val closer = new javafx.event.EventHandler[javafx.scene.input.MouseEvent] {
         override def handle(ev: javafx.scene.input.MouseEvent): Unit = {
-          if (ev.isPrimaryButtonDown) {
-            menu.hide()
-          }
+          if (ev.isPrimaryButtonDown) menu.hide()
         }
       }
 
@@ -169,6 +265,7 @@ class LinuxFileUtils extends AbstractFileUtils {
       menu.show(node, event.getScreenX, event.getScreenY)
     }
   }
+
 
   def showOpenWithDialog(files: Seq[String]): Unit = {
     val apps = Seq("subl", "code", "gedit", "nano", "vim", "xdg-open")
@@ -197,34 +294,6 @@ class LinuxFileUtils extends AbstractFileUtils {
     dlg.showAndWaitDialog()
   }
 
-  def showRenameDialog(files: Seq[String]): Unit = {
-    if (files.size != 1) return
-    val f = files.head
-    val name = new TextField {
-      text = Path.of(f).getFileName.toString
-    }
-    val apply = new Button("Rename")
-
-    val dlg = new ThemedDialog[Unit] {
-      title = "Rename"
-      headerText = f
-      dialogPane.buttonTypes = Seq(ButtonType.Close)
-      dialogPane.content = new VBox(10, name, apply)
-    }
-
-    apply.onAction = _ => {
-      new Thread(() => {
-        val parent = Path.of(f).getParent.toString
-        val target = parent + "/" + name.text.value
-        Seq("mv", f, target).!
-        ()
-      }).start()
-      dlg.close()
-    }
-
-    dlg.showAndWaitDialog()
-  }
-
   def duplicateFiles(files: Seq[String]): Unit =
     new Thread(() => {
       files.foreach { p =>
@@ -234,40 +303,6 @@ class LinuxFileUtils extends AbstractFileUtils {
       }
       ()
     }).start()
-
-  def deleteFiles(files: Seq[String]): Unit =
-    new Thread(() => {
-      (Seq("pkexec", "rm", "-r") ++ files).!;()
-    }).start()
-
-  def showCompressDialog(files: Seq[String]): Unit = {
-    val tarBtn = new Button("tar.gz")
-    val zipBtn = new Button("Zip")
-    val box = new VBox(10, tarBtn, zipBtn)
-
-    val dlg = new ThemedDialog[Unit] {
-      title = "Compress"
-      headerText = s"${files.size} files"
-      dialogPane.buttonTypes = Seq(ButtonType.Close)
-      dialogPane.content = box
-    }
-
-    tarBtn.onAction = _ => {
-      new Thread(() => {
-        (Seq("tar", "-czf", "archive.tar.gz") ++ files).!; ()
-      }).start()
-      dlg.close()
-    }
-
-    zipBtn.onAction = _ => {
-      new Thread(() => {
-        (Seq("zip", "-r", "archive.zip") ++ files).!; ()
-      }).start()
-      dlg.close()
-    }
-
-    dlg.showAndWaitDialog()
-  }
 
   def extractFiles(files: Seq[String]): Unit =
     new Thread(() => {
@@ -288,13 +323,6 @@ class LinuxFileUtils extends AbstractFileUtils {
       ()
     }).start()
 
-  def openTerminalHere(dir: String): Unit = {
-    new Thread(() => {
-      Seq("gnome-terminal", "--working-directory", dir).!
-      ()
-    }).start()
-  }
-
   def readPermissions(path: String): String = {
     val perms = Files.getPosixFilePermissions(Paths.get(path))
     PosixFilePermissions.toString(perms)
@@ -313,24 +341,67 @@ class LinuxFileUtils extends AbstractFileUtils {
   def showPropertiesDialog(files: Seq[String]): Unit = {
     val label = if (files.size == 1) new File(files.head).getName else s"${files.size} files"
 
-    val ownerR = new CheckBox("Owner Read")
-    val ownerW = new CheckBox("Owner Write")
-    val ownerX = new CheckBox("Owner Exec")
+    val ownerR = new CheckBox("r")
+    val ownerW = new CheckBox("w")
+    val ownerX = new CheckBox("x")
 
-    val groupR = new CheckBox("Group Read")
-    val groupW = new CheckBox("Group Write")
-    val groupX = new CheckBox("Group Exec")
+    val groupR = new CheckBox("r")
+    val groupW = new CheckBox("w")
+    val groupX = new CheckBox("x")
 
-    val otherR = new CheckBox("Other Read")
-    val otherW = new CheckBox("Other Write")
-    val otherX = new CheckBox("Other Exec")
+    val otherR = new CheckBox("r")
+    val otherW = new CheckBox("w")
+    val otherX = new CheckBox("x")
 
     val octal = new TextField {
-      text = "755"
+      text = ""
     }
+    val ownerField = new TextField {
+      promptText = "owner"
+    }
+    val groupField = new TextField {
+      promptText = "group"
+    }
+    val recursive = new CheckBox("Apply to subdirectories")
     val apply = new Button("Apply")
 
+    def readAllPermissions(files: Seq[String]): Seq[String] = files.map(readPermissions)
+
+    def setState(cb: CheckBox, values: Seq[Boolean]): Unit = {
+      cb.allowIndeterminate = true
+      if (values.forall(_ == true)) {
+        cb.indeterminate = false
+        cb.selected = true
+      } else if (values.forall(_ == false)) {
+        cb.indeterminate = false
+        cb.selected = false
+      } else {
+        cb.indeterminate = true
+      }
+    }
+
+    def applyMixedPermissions(perms: Seq[String]): Unit = {
+      def col(i: Int): Seq[Boolean] = perms.map(_.charAt(i) != '-')
+
+      setState(ownerR, col(0))
+      setState(ownerW, col(1))
+      setState(ownerX, col(2))
+      setState(groupR, col(3))
+      setState(groupW, col(4))
+      setState(groupX, col(5))
+      setState(otherR, col(6))
+      setState(otherW, col(7))
+      setState(otherX, col(8))
+    }
+
     def applyPermissionsToChecks(perm: String): Unit = {
+      Seq(ownerR, ownerW, ownerX,
+        groupR, groupW, groupX,
+        otherR, otherW, otherX).foreach { cb =>
+        cb.allowIndeterminate = true
+        cb.indeterminate = false
+      }
+
       ownerR.selected = perm.charAt(0) == 'r'
       ownerW.selected = perm.charAt(1) == 'w'
       ownerX.selected = perm.charAt(2) == 'x'
@@ -342,20 +413,69 @@ class LinuxFileUtils extends AbstractFileUtils {
       otherR.selected = perm.charAt(6) == 'r'
       otherW.selected = perm.charAt(7) == 'w'
       otherX.selected = perm.charAt(8) == 'x'
+
+      updateFromChecks()
     }
 
     if (files.size == 1) {
-      try {
-        val permStr = readPermissions(files.head) // rwxr-xr--
-        val oct = rwxToOctal(permStr) // 754
-        octal.text = oct
-        applyPermissionsToChecks(permStr)
-      } catch {
-        case e: Throwable => println("Could not read permissions: " + e.getMessage)
+      val p = readPermissions(files.head)
+      applyPermissionsToChecks(p)
+      octal.text = rwxToOctal(p)
+      val path = Paths.get(files.head)
+      val attrs = Files.readAttributes(path, classOf[PosixFileAttributes])
+      ownerField.text = attrs.owner().getName
+      groupField.text = attrs.group().getName
+    } else {
+      val perms = readAllPermissions(files)
+      applyMixedPermissions(perms)
+
+      val owners = files.map { f =>
+        val p = Paths.get(f)
+        val attrs = Files.readAttributes(p, classOf[PosixFileAttributes])
+        attrs.owner().getName
+      }
+
+      val groups = files.map { f =>
+        val p = Paths.get(f)
+        val attrs = Files.readAttributes(p, classOf[PosixFileAttributes])
+        attrs.group().getName
+      }
+
+      if (owners.distinct.size == 1)
+        ownerField.text = owners.head
+      else
+        ownerField.text = ""
+
+      if (groups.distinct.size == 1)
+        groupField.text = groups.head
+      else
+        groupField.text = ""
+
+      octal.text = ""
+    }
+
+    def installMixedFix(cb: CheckBox): Unit = {
+      cb.onAction = _ => {
+        if (cb.indeterminate()) {
+          cb.indeterminate = false
+          cb.selected = true
+        }
+        updateFromChecks()
       }
     }
 
+    Seq(ownerR, ownerW, ownerX,
+      groupR, groupW, groupX,
+      otherR, otherW, otherX).foreach(installMixedFix)
+
     def updateFromChecks(): Unit = {
+      if (Seq(ownerR, ownerW, ownerX,
+        groupR, groupW, groupX,
+        otherR, otherW, otherX).exists(_.indeterminate())) {
+        octal.text = ""
+        return
+      }
+
       val o = (ownerR.selected(), ownerW.selected(), ownerX.selected()) match {
         case (true, true, true) => 7
         case (true, true, false) => 6
@@ -392,46 +512,96 @@ class LinuxFileUtils extends AbstractFileUtils {
       octal.text = s"$o$g$ot"
     }
 
-    def updateChecksFromOctal(): Unit = {
+    octal.text.onChange { (_, _, _) =>
       if (octal.text.value.matches("[0-7]{3}")) {
         val o = octal.text.value.charAt(0) - '0'
         val g = octal.text.value.charAt(1) - '0'
         val ot = octal.text.value.charAt(2) - '0'
 
+        ownerR.indeterminate = false
+        ownerW.indeterminate = false
+        ownerX.indeterminate = false
+        groupR.indeterminate = false
+        groupW.indeterminate = false
+        groupX.indeterminate = false
+        otherR.indeterminate = false
+        otherW.indeterminate = false
+        otherX.indeterminate = false
+
         ownerR.selected = (o & 4) != 0
         ownerW.selected = (o & 2) != 0
         ownerX.selected = (o & 1) != 0
-
         groupR.selected = (g & 4) != 0
         groupW.selected = (g & 2) != 0
         groupX.selected = (g & 1) != 0
-
         otherR.selected = (ot & 4) != 0
         otherW.selected = (ot & 2) != 0
         otherX.selected = (ot & 1) != 0
       }
     }
 
-    Seq(
-      ownerR, ownerW, ownerX,
-      groupR, groupW, groupX,
-      otherR, otherW, otherX
-    ).foreach(_.selected.onChange { (_, _, _) =>
-      updateFromChecks()
-    })
+    def computeFinalMode(old: String): String = {
+      def bit(cbR: CheckBox, cbW: CheckBox, cbX: CheckBox, base: String): String = {
+        val r = if (cbR.indeterminate()) base.charAt(0) else if (cbR.selected()) 'r' else '-'
+        val w = if (cbW.indeterminate()) base.charAt(1) else if (cbW.selected()) 'w' else '-'
+        val x = if (cbX.indeterminate()) base.charAt(2) else if (cbX.selected()) 'x' else '-'
+        s"$r$w$x"
+      }
 
-    octal.text.onChange { (_, _, _) =>
-      updateChecksFromOctal()
+      bit(ownerR, ownerW, ownerX, old.substring(0, 3)) +
+        bit(groupR, groupW, groupX, old.substring(3, 6)) +
+        bit(otherR, otherW, otherX, old.substring(6, 9))
     }
 
+    def showError(msg: String): Unit = {
+      val d = new ThemedDialog[Unit] {
+        title = "Error"
+        headerText = "Wrong input"
+        dialogPane.buttonTypes = Seq(ButtonType.OK)
+        dialogPane.content = new VBox {
+          children = Seq(new Label(msg))
+        }
+      }
+      d.showAndWaitDialog()
+    }
+
+    def validateOwner(n: String): Boolean = if (n.trim.isEmpty) true else Seq("id", "-u", n.trim).! == 0
+
+    def validateGroup(n: String): Boolean = if (n.trim.isEmpty) true else Seq("getent", "group", n.trim).! == 0
+
+    val ownerBox = new HBox(5, ownerR, ownerW, ownerX)
+    val groupBox = new HBox(5, groupR, groupW, groupX)
+    val otherBox = new HBox(5, otherR, otherW, otherX)
+
+    val permGrid = new GridPane
+    permGrid.hgap = 10
+    permGrid.vgap = 6
+    permGrid.add(new Label("Owner"), 0, 0)
+    permGrid.add(ownerBox, 1, 0)
+    permGrid.add(new Label("Group"), 0, 1)
+    permGrid.add(groupBox, 1, 1)
+    permGrid.add(new Label("Other"), 0, 2)
+    permGrid.add(otherBox, 1, 2)
+
+    val ogGrid = new GridPane
+    ogGrid.hgap = 10
+    ogGrid.vgap = 6
+    ogGrid.add(new Label("Owner"), 0, 0)
+    ogGrid.add(ownerField, 1, 0)
+    ogGrid.add(new Label("Group"), 0, 1)
+    ogGrid.add(groupField, 1, 1)
+
     val box = new VBox(10,
-      new Label(label),
-      new Label("Owner"), ownerR, ownerW, ownerX,
-      new Label("Group"), groupR, groupW, groupX,
-      new Label("Other"), otherR, otherW, otherX,
-      new Label("Octal"), octal,
+      new Label("Rights"),
+      permGrid,
+      new Label("Octal"),
+      octal,
+      new Label("Owner and Groups"),
+      ogGrid,
+      recursive,
       apply
     )
+    box.padding = Insets(10)
 
     val dlg = new ThemedDialog[Unit] {
       title = "Properties"
@@ -441,12 +611,50 @@ class LinuxFileUtils extends AbstractFileUtils {
     }
 
     apply.onAction = _ => {
+      if (octal.text.value.nonEmpty && !octal.text.value.matches("[0-7]{3}")) {
+        showError("Octal-Value is wrong")
+        return
+      }
+
+      val ownerName = ownerField.text.value.trim
+      val groupName = groupField.text.value.trim
+
+      if (!validateOwner(ownerName)) {
+        showError("Owner does not exist.")
+        return
+      }
+
+      if (!validateGroup(groupName)) {
+        showError("Group does not exist.")
+        return
+      }
+
       new Thread(() => {
         files.foreach { f =>
-          Seq("pkexec", "chmod", octal.text.value, f).!
+          val current = readPermissions(f)
+          val newPerm = computeFinalMode(current)
+          val newOct = rwxToOctal(newPerm)
+
+          if (recursive.selected())
+            Seq("pkexec", "chmod", "-R", newOct, f).!
+          else
+            Seq("pkexec", "chmod", newOct, f).!
+
+          if (ownerName.nonEmpty || groupName.nonEmpty) {
+            val spec =
+              if (ownerName.nonEmpty && groupName.nonEmpty) s"$ownerName:$groupName"
+              else if (ownerName.nonEmpty) ownerName
+              else ":" + groupName
+
+            if (recursive.selected())
+              Seq("pkexec", "chown", "-R", spec, f).!
+            else
+              Seq("pkexec", "chown", spec, f).!
+          }
         }
         ()
       }).start()
+
       dlg.close()
     }
 
