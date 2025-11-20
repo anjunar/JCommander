@@ -14,8 +14,10 @@ class DriveDetectionService {
     val os = System.getProperty("os.name").toLowerCase
     if (os.contains("linux")) linuxDrives()
     else if (os.contains("win")) windowsDrives()
+    else if (os.contains("mac")) macDrives()
     else genericOshiDrives()
   }
+
 
   def mountDrive(drive: Drive): Option[Drive] = {
     val os = System.getProperty("os.name").toLowerCase
@@ -128,6 +130,39 @@ class DriveDetectionService {
         Seq.empty
     }
   }
+
+  private def macDrives(): Seq[Drive] = {
+    val si = new SystemInfo()
+    val fs = si.getOperatingSystem.getFileSystem
+
+    fs.getFileStores.asScala.toSeq.flatMap { store =>
+      val mount = Option(store.getMount).getOrElse("").trim
+      val typeName = Option(store.getType).getOrElse("").toLowerCase
+
+      if (mount.isEmpty) None
+      else if (!mount.startsWith("/Volumes/")) None
+      else if (mount == "/Volumes") None
+      else if (mount.contains("Preboot")) None
+      else if (mount.contains("Update")) None
+      else if (mount.contains("VM")) None
+      else if (mount.contains("Recovery")) None
+      else if (mount.contains("Data")) None
+      else if (mount.contains("com.apple")) None
+      else {
+        Some(
+          Drive(
+            name = mount.replace("/Volumes/", ""),
+            file = new File(mount),
+            mounted = true,
+            mountable = false,
+            device = None,
+            fsType = Some(typeName)
+          )
+        )
+      }
+    }
+  }
+
 
   private def mountDevice(dev: String): Option[String] = {
     try {
