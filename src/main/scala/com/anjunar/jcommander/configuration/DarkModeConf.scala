@@ -11,7 +11,7 @@ class DarkModeConf {
 
   @JsonProperty("value")
   @BeanProperty  
-  var value : Boolean = true
+  var value : Boolean = false
   
   val valueProperty = new BooleanProperty {}
 

@@ -74,3 +74,12 @@
 .menu:hover {
     -fx-background-color: #3a3a3a;
 }
+
+.main-title-bar .title-button {
+    -fx-background-color: transparent;
+    -fx-border : 0;
+}
+
+.main-title-bar .title-button:hover {
+    -fx-background-color: #555555
+}

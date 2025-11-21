@@ -1,9 +1,8 @@
 package com.anjunar.jcommander.ui
 
-import scalafx.Includes.*
-import scalafx.scene.Node
-import scalafx.scene.input.MouseEvent
-import scalafx.stage.Stage
+import javafx.scene.Node
+import javafx.scene.input.MouseEvent
+import javafx.stage.Stage
 
 class Resizable(stage: Stage, root: Node) {
 
@@ -11,7 +10,7 @@ class Resizable(stage: Stage, root: Node) {
   private var x = 0.0
   private var y = 0.0
 
-  root.addEventFilter(MouseEvent.MouseMoved, (e: MouseEvent) => {
+  root.addEventFilter(MouseEvent.MOUSE_MOVED, (e: MouseEvent) => {
     val w = stage.getWidth
     val h = stage.getHeight
     val xPos = e.getX
@@ -33,12 +32,12 @@ class Resizable(stage: Stage, root: Node) {
     else root.setCursor(javafx.scene.Cursor.DEFAULT)
   })
 
-  root.addEventFilter(MouseEvent.MousePressed, (e: MouseEvent) => {
+  root.addEventFilter(MouseEvent.MOUSE_PRESSED, (e: MouseEvent) => {
     x = e.getSceneX
     y = e.getSceneY
   })
 
-  root.addEventFilter(MouseEvent.MouseDragged, (e: MouseEvent) => {
+  root.addEventFilter(MouseEvent.MOUSE_DRAGGED, (e: MouseEvent) => {
     val w = stage.getWidth
     val h = stage.getHeight
     val dx = e.getSceneX

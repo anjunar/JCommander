@@ -38,7 +38,7 @@ lazy val root = (project in file("."))
         case _ => throw new Exception("Unknown platform!")
       }
       Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
-        .map(m => "org.openjfx" % s"javafx-$m" % "24" classifier osName)
+        .map(m => "org.openjfx" % s"javafx-$m" % "25" classifier osName)
     },
     Compile / mainClass := Some("com.anjunar.jcommander.Launcher"),
 
