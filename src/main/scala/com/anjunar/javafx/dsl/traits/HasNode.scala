@@ -24,7 +24,7 @@ trait HasNode {
 }
 
 object HasNode {
-  
+
   def css()(using h: HasNode): mutable.Buffer[String] = h.node.getStyleClass.asScala
   def css_=(values : mutable.Buffer[String])(using h: HasNode): Unit = {
     h.node.getStyleClass.clear()
@@ -40,7 +40,10 @@ object HasNode {
   def hgrow()(using h: HasNode): Priority = HBox.getHgrow(h.node)
   def hgrow_=(v: Priority)(using h: HasNode): Unit = HBox.setHgrow(h.node, v)
   
-  
+
+  def pickOnBounds(using h: HasNode): Boolean = h.node.isPickOnBounds()
+  def pickOnBounds_=(v: Boolean)(using h: HasNode): Unit = h.node.setPickOnBounds(v)
+
   def addEventHandler[T <: Event](eventType: EventType[T], eventHandler: EventHandler[? >: T])(using h: HasNode) : Unit = 
     h.node.addEventHandler(eventType, eventHandler)
   

@@ -33,6 +33,7 @@ object DSL {
   export com.anjunar.javafx.dsl.traits.HasText.*
   export com.anjunar.javafx.dsl.traits.HasNode.*
   export com.anjunar.javafx.dsl.traits.HasWidth.*
+  export com.anjunar.javafx.dsl.traits.HasHeaderButtons.*
   export com.anjunar.javafx.scene.titleBar
   export com.anjunar.javafx.scene.header
   export com.anjunar.javafx.scene.window

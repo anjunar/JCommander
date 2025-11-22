@@ -8,11 +8,11 @@ trait ChildBuilder[C <: Node] extends NodeBuilder[C] {
 
 object ChildBuilder {
 
-  def addComponent(child: ElementBuilder[?])
-                  (using parent: ChildBuilder[?]): Unit =
+  def register(child: ElementBuilder[?])
+              (using parent: ChildBuilder[?]): Unit =
     parent.add(child)
 
-  def addComponent[C <: ElementBuilder[?]](child: C)
+  def register[C <: ElementBuilder[?]](child: C)
                                           (body: (C, BuildContext) ?=> Unit)
                                           (using parent: ChildBuilder[?], ctx: BuildContext): Unit =
     parent.add(child)

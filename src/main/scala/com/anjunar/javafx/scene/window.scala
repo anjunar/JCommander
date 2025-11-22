@@ -1,7 +1,7 @@
 package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.traits.HasText
+import com.anjunar.javafx.dsl.traits.{HasText, HasHeaderButtons}
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.configuration.DarkModeConf
@@ -14,7 +14,7 @@ import javafx.stage.{Stage, StageStyle}
 import scala.compiletime.uninitialized
 import scala.concurrent.Promise
 
-class window[E](width: Double, height: Double, stage : Stage) extends ElementBuilder[Stage], HasText {
+class window[E](width: Double, height: Double, stage : Stage) extends ElementBuilder[Stage], HasText, HasHeaderButtons {
 
   private val darkMode: DarkModeConf = inject(classOf[DarkModeConf])
 
@@ -24,18 +24,24 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
 
   private var header : header = uninitialized
 
+  private var resizableFlag = true
+
   lazy val node: Stage = {
+    stage.setResizable(resizableFlag)
     stage.initStyle(StageStyle.UNDECORATED)
 
     val ui = component[VBox] {
       vbox() {
         style = "-fx-border-color: #444; -fx-border-width: 1;"
         titleBar(stage) {
+          minimizable = minimizableFlag
+          maximizable = maximizableFlag
+          closeable = closeableFlag
           if (header != null) {
-            header.children.foreach(child => addComponent(child))
+            header.children.foreach(child => register(child))
           }
         }
-        addComponent(content) {
+        register(content) {
           vgrow = Priority.ALWAYS
         }
       }
@@ -94,8 +100,10 @@ object window {
 
     def close[T]()(using h: window[T]): Unit = h.node.close()
 
-    def resizable[T](using h: window[T]) : Boolean = h.node.isResizable
-    def resizable_=[T](value : Boolean)(using h: window[T]) : Unit = h.node.setResizable(value)
+    def resizable[T](using h: window[T]) : Boolean = h.resizableFlag
+    def resizable_=[T](value : Boolean)(using h: window[T]) : Unit = h.resizableFlag = value
+
+
 
   }
 

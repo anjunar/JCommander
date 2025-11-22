@@ -1,6 +1,7 @@
 package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.*
+import com.anjunar.javafx.dsl.traits.{HasHeaderButtons}
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.scene.control.button
 import com.anjunar.jcommander.commands.QuitCommand
@@ -14,7 +15,7 @@ import javafx.stage.{Screen, Stage}
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 
-class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
+class titleBar(val stage: Stage) extends ChildBuilder[HBox], HasHeaderButtons {
 
   private var xOffset = 0.0
   private var yOffset = 0.0
@@ -26,7 +27,7 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
   private var maximized = false
 
   private val maximizeIconRef = Ref[Icon]()
-  private var content = new mutable.ListBuffer[ElementBuilder[?]]()
+  private val content = new mutable.ListBuffer[ElementBuilder[?]]()
 
   private def toggleMaximize(): Unit = {
     if (!maximized) {
@@ -62,6 +63,7 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
 
   lazy val node: HBox = component[HBox] {
     hbox() {
+      pickOnBounds = true
       css = mutable.ListBuffer("main-title-bar")
       alignment = Pos.CENTER
       spacing = 5
@@ -82,40 +84,46 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
       
       hbox() {
         spacing = 10
-        if (content != null) content.foreach(child => addComponent(child))
+        if (content != null) content.foreach(child => register(child))
       }
 
       region() {
         hgrow = Priority.ALWAYS
       }
-      button() {
-        css = mutable.ListBuffer("title-button")
-        onAction = event => {
-          stage.setIconified(true)
-        }
-        graphic = Icon() {
-          iconSize = 18
-          iconLiteral = "mdi2w-window-minimize"
-        }
-      }
-      button() {
-        css = mutable.ListBuffer("title-button")
-        onAction = event => {
-          toggleMaximize()
-        }
-        graphic = Icon(maximizeIconRef) {
-          iconSize = 18
-          iconLiteral = "mdi2w-window-maximize"
+      if (minimizableFlag) {
+        button() {
+          css = mutable.ListBuffer("title-button")
+          onAction = event => {
+            stage.setIconified(true)
+          }
+          graphic = Icon() {
+            iconSize = 18
+            iconLiteral = "mdi2w-window-minimize"
+          }
         }
       }
-      button() {
-        css = mutable.ListBuffer("title-button")
-        onAction = event => {
-          stage.close()
+      if (maximizableFlag) {
+        button() {
+          css = mutable.ListBuffer("title-button")
+          onAction = event => {
+            toggleMaximize()
+          }
+          graphic = Icon(maximizeIconRef) {
+            iconSize = 18
+            iconLiteral = "mdi2w-window-maximize"
+          }
         }
-        graphic = Icon() {
-          iconSize = 18
-          iconLiteral = "mdi2w-window-close"
+      }
+      if (closeableFlag) {
+        button() {
+          css = mutable.ListBuffer("title-button")
+          onAction = event => {
+            stage.close()
+          }
+          graphic = Icon() {
+            iconSize = 18
+            iconLiteral = "mdi2w-window-close"
+          }
         }
       }
     }
@@ -132,4 +140,5 @@ object titleBar {
   def apply(stage: Stage, ref: Ref[titleBar] = Ref())(body: (titleBar, BuildContext) ?=> Unit)
            (using ctx: BuildContext, parent: ElementBuilder[?]): HBox =
     DSL.create[HBox, titleBar](ref, new titleBar(stage))(body)
+
 }

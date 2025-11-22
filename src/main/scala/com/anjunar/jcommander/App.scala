@@ -3,7 +3,7 @@ package com.anjunar.jcommander
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf}
 import com.anjunar.jcommander.dsl.FilePane.HastLocalFileTable.*
-import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu, MainTitleBar}
+import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu}
 import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
 import com.anjunar.jcommander.ui.Resizable
@@ -61,6 +61,11 @@ class App extends Application {
 
     val ui = component[Stage] {
       window(configuration.primaryStage.width, configuration.primaryStage.height, primaryStage) {
+        minimizable = true
+        maximizable = true
+        closeable = true
+        resizable = true
+
         header() {
           label() {
             text = "JCommander"
