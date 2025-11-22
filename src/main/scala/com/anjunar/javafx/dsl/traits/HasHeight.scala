@@ -1,37 +1,28 @@
 package com.anjunar.javafx.dsl.traits
 
-import javafx.scene.Node
+import javafx.beans.property.SimpleDoubleProperty
 
 import scala.language.reflectiveCalls
 
 trait HasHeight {
-  
-  lazy val node : AnyRef
-  
+
+  var prefHeightProperty = new SimpleDoubleProperty(-1)
+  var maxHeightProperty = new SimpleDoubleProperty(-1)
+  var minHeightProperty = new SimpleDoubleProperty(-1)
+
 }
 
 object HasHeight {
-  
-  private type H = {
-    def getPrefHeight(): Double
-    def setPrefHeight(v: Double): Unit
 
-    def getMinHeight(): Double
-    def setMinHeight(v: Double): Unit
+  def prefHeight()(using h: HasHeight): Double = h.prefHeightProperty.get()
 
-    def getMaxHeight(): Double
-    def setMaxHeight(v: Double): Unit
-  }
+  def prefHeight_=(v: Double)(using h: HasHeight): Unit = h.prefHeightProperty.set(v)
 
-  private inline def w(using h: HasHeight): H =
-    h.node.asInstanceOf[H]
+  def maxHeight()(using h: HasHeight): Double = h.maxHeightProperty.get()
 
-  def prefHeight()(using h: HasHeight): Double = w.getPrefHeight()
-  def prefHeight_=(v: Double)(using h: HasHeight): Unit = w.setPrefHeight(v)
+  def maxHeight_=(v: Double)(using h: HasHeight): Unit = h.maxHeightProperty.set(v)
 
-  def maxHeight()(using h: HasHeight): Double = w.getMaxHeight()
-  def maxHeight_=(v: Double)(using h: HasHeight): Unit = w.setMaxHeight(v)
+  def minHeight()(using h: HasHeight): Double = h.minHeightProperty.get()
 
-  def minHeight()(using h: HasHeight): Double = w.getMinHeight()
-  def minHeight_=(v: Double)(using h: HasHeight): Unit = w.setMinHeight(v)
+  def minHeight_=(v: Double)(using h: HasHeight): Unit = h.minHeightProperty.set(v)
 }

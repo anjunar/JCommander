@@ -4,6 +4,7 @@ import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.{ElementBuilder, NodeBuilder, Producer, Ref}
 import com.anjunar.jcommander.dsl.DriveButtons.*
 import com.anjunar.jcommander.dsl.LocalFileTable.HastLocalFileTable.*
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.layout.{Priority, VBox}
 
 import java.io.File
@@ -14,32 +15,35 @@ class FilePane extends NodeBuilder[VBox] {
 
   private var onTableChange : FileTable => Unit = FileTable => {}
 
-  override lazy val node: VBox = component[VBox] {
-    vbox() {
+  override lazy val node: VBox = {
+    val filePane = component[VBox] {
+      vbox() {
 
-      DriveButtons() {
-        change = (file : File) => {
-          fileTableRef {
-            directory = file.getAbsolutePath
+        DriveButtons() {
+          change = (file : File) => {
+            fileTableRef {
+              directory = file.getAbsolutePath
+            }
+          }
+          unmount = drive => {
+
           }
         }
-        unmount = drive => {
 
+        LocalFileTable(fileTableRef) {
+          vgrow = Priority.ALWAYS
+          directory = System.getProperty("user.home")
         }
-      }
 
-      LocalFileTable(fileTableRef) {
-        vgrow = Priority.ALWAYS
-        directory = System.getProperty("user.home")
       }
-
     }
+    
+    AutoBindObservableProperties.bind(this, filePane)
+    
+    filePane
   }
 
-  override def build(): VBox = {
-    onTableChange(fileTableRef.get)
-    node
-  }
+  override def build(): VBox = node
 
 }
 

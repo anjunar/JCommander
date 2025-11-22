@@ -2,11 +2,12 @@ package com.anjunar.javafx.scene.image
 
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
 import com.anjunar.javafx.scene.image.ImageView.HasImageView
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.image.{Image as jFxImage, ImageView as jFxImageView}
 
 class ImageView extends NodeBuilder[jFxImageView], HasImageView {
   
-  override lazy val node: jFxImageView = new jFxImageView
+  override lazy val node: jFxImageView = AutoBindObservableProperties.bind(this, new jFxImageView)
   
   override def build(): jFxImageView = node
   

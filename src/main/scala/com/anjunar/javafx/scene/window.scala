@@ -5,6 +5,7 @@ import com.anjunar.javafx.dsl.traits.{HasText, HasHeaderButtons}
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.configuration.DarkModeConf
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import com.anjunar.jcommander.ui.Resizable
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.scene.Scene
@@ -34,9 +35,9 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
       vbox() {
         style = "-fx-border-color: #444; -fx-border-width: 1;"
         titleBar(stage) {
-          minimizable = minimizableFlag
-          maximizable = maximizableFlag
-          closeable = closeableFlag
+          minimizable = minimizableProperty.get()
+          maximizable = maximizableProperty.get()
+          closeable = closeableProperty.get()
           if (header != null) {
             header.children.foreach(child => register(child))
           }
@@ -63,6 +64,9 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
     new Resizable(stage, ui)
 
     stage.setScene(scene)
+
+    AutoBindObservableProperties.bind(this, stage)
+    
     stage
   }
 

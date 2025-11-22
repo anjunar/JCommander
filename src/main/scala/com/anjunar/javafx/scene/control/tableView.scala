@@ -2,23 +2,26 @@ package com.anjunar.javafx.scene.control
 
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.dsl.traits.{HasHeight, HasNode, HasWidth}
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.control
-import javafx.scene.control.TableView
+import javafx.scene.control.{TableColumn, TableView}
 import javafx.util.Callback
 
 import scala.compiletime.uninitialized
 
-class tableView[E] extends ChildBuilder[control.TableView[E]], HasWidth, HasHeight {
+class tableView[E] extends ChildNodeBuilder[control.TableView[E]], HasWidth, HasHeight {
 
-  override lazy val node: control.TableView[E] = new control.TableView[E]()
+  override lazy val node: control.TableView[E] = {
+    val tableView = new TableView[E]()
+    AutoBindObservableProperties.bind(this, tableView)
+    AutoBindObservableProperties.observeList(children, () => tableView.getColumns)
+    tableView
+  }
 
   var sortPolicy : TableView[E] => Boolean = uninitialized
   
-  override def add(child: ElementBuilder[?]): Unit = {
-    node.getColumns.add(child.build().asInstanceOf[control.TableColumn[E, ?]])
-  }
-
   override def build(): control.TableView[E] = node
+  
 
 }
 

@@ -2,18 +2,23 @@ package com.anjunar.javafx.scene.control
 
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.scene.layout.vbox
-import javafx.scene.control.MenuBar as JfxMenuBar
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.beans.property.SimpleListProperty
+import javafx.collections.ListChangeListener.Change
+import javafx.collections.ObservableList
+import javafx.scene.control.{Menu, MenuBar as JfxMenuBar}
 
-class menuBar extends NodeBuilder[JfxMenuBar] {
-  lazy val node : JfxMenuBar = new JfxMenuBar()
+class menuBar extends ChildNodeBuilder[JfxMenuBar] {
+  
+  lazy val node : JfxMenuBar = {
+    val menuBar = new JfxMenuBar()
+    AutoBindObservableProperties.bind(this, menuBar)
+    AutoBindObservableProperties.observeList(children, () => menuBar.getMenus)
+    menuBar
+  }
 
-  def add(child: ElementBuilder[?]): Unit =
-    child match
-      case m: menu => node.getMenus.add(m.build())
-      case _ => ()
+  def build(): JfxMenuBar = node
 
-  def build(): JfxMenuBar =
-    node
 }
 
 object menuBar extends Producer[menuBar, JfxMenuBar]{

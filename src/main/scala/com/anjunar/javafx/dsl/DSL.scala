@@ -17,7 +17,8 @@ object DSL {
     ref.value = builder
 
     parent match {
-      case children : ChildBuilder[?] => children.add(builder)
+      case children : ChildNodeBuilder[?] => children.add(builder)
+      case children : ChildElementBuilder[?] => children.add(builder)
       case component : ComponentBuilder[?] => component.add(builder)
       case stage : window[?] => stage.add(builder)
       case header : header => header.add(builder)
@@ -58,6 +59,6 @@ object DSL {
   export com.anjunar.javafx.scene.layout.region
   export com.anjunar.javafx.scene.image.ImageView
   export com.anjunar.javafx.scene.image.ImageView.HasImageView.*
-  export com.anjunar.javafx.dsl.ChildBuilder.*
+  export com.anjunar.javafx.dsl.ChildNodeBuilder.*
 
 }

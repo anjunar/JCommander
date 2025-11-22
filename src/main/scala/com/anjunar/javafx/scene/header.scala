@@ -6,12 +6,15 @@ import scala.collection.mutable
 
 class header extends ElementBuilder[header] {
 
+  override lazy val node: AnyRef = ???
+
   val children = mutable.ArrayBuffer[ElementBuilder[?]]()
 
   def add(child: ElementBuilder[?]): Unit =
     children.addOne(child)
 
   override def build(): header = this
+
 
 }
 

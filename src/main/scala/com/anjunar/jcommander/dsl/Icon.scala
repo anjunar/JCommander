@@ -8,11 +8,12 @@ import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.scene.Node
 import javafx.scene.paint.Color
 import org.kordamp.ikonli.javafx.FontIcon
-
-class Icon extends ElementBuilder[FontIcon], HasFontIcon {
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
+class Icon extends NodeBuilder[FontIcon], HasFontIcon {
 
   val darkMode = inject(classOf[DarkModeConf])
-  lazy val node = new FontIcon()
+  
+  lazy val node = AutoBindObservableProperties.bind(this, new FontIcon())
 
   node.setIconColor(if (darkMode.value) Color.WHITE else Color.BLACK)
 

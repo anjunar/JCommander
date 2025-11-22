@@ -1,10 +1,11 @@
 package com.anjunar.javafx.scene.layout
 
 import com.anjunar.javafx.dsl.*
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.layout
 
 class region extends NodeBuilder[layout.Region] {
-  lazy val node : layout.Region = new layout.Region()
+  lazy val node : layout.Region = AutoBindObservableProperties.bind(this, new layout.Region())
 
   override def build(): layout.Region = node
 }

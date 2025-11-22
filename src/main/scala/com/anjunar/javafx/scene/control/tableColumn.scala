@@ -3,6 +3,7 @@ package com.anjunar.javafx.scene.control
 import com.anjunar.javafx.dsl.traits.{HasText, HasWidth}
 import com.anjunar.javafx.dsl.*
 import com.anjunar.jcommander.files.FileItem
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.control
@@ -18,7 +19,9 @@ class tableColumn[E, T] extends ElementBuilder[control.TableColumn[E, T]], HasTe
   var cellFactory : (T, Boolean, TableCell[E,T]) => Unit = uninitialized
   var cellValueFactory : E => T = uninitialized
 
-  override def build(): control.TableColumn[E, T] = node
+  override def build(): control.TableColumn[E, T] = {
+    AutoBindObservableProperties.bind(this, node)
+  }
 
 }
 

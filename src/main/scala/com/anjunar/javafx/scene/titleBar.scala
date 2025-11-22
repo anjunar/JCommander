@@ -1,13 +1,16 @@
 package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.*
-import com.anjunar.javafx.dsl.traits.{HasHeaderButtons}
+import com.anjunar.javafx.dsl.traits.HasHeaderButtons
 import com.anjunar.javafx.dsl.DSL.*
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import com.anjunar.javafx.scene.control.button
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.dsl.Icon
 import com.anjunar.jcommander.dsl.Icon.*
 import com.anjunar.jcommander.utils.CdiUtils.inject
+import javafx.beans.property.SimpleListProperty
+import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.layout.{HBox, Priority}
 import javafx.stage.{Screen, Stage}
@@ -15,7 +18,7 @@ import javafx.stage.{Screen, Stage}
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 
-class titleBar(val stage: Stage) extends ChildBuilder[HBox], HasHeaderButtons {
+class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox], HasHeaderButtons {
 
   private var xOffset = 0.0
   private var yOffset = 0.0
@@ -27,7 +30,7 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox], HasHeaderButtons {
   private var maximized = false
 
   private val maximizeIconRef = Ref[Icon]()
-  private val content = new mutable.ListBuffer[ElementBuilder[?]]()
+  private val content = new SimpleListProperty[ElementBuilder[?]](FXCollections.observableArrayList[ElementBuilder[?]]())
 
   private def toggleMaximize(): Unit = {
     if (!maximized) {
@@ -61,37 +64,45 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox], HasHeaderButtons {
     }
   }
 
-  lazy val node: HBox = component[HBox] {
-    hbox() {
-      pickOnBounds = true
-      css = mutable.ListBuffer("main-title-bar")
-      alignment = Pos.CENTER
-      spacing = 5
-
-      onMousePressed = event => {
-        xOffset = event.getSceneX
-        yOffset = event.getSceneY
-      }
-
-      onMouseDragged = event => {
-        stage.setX(event.getScreenX - xOffset)
-        stage.setY(event.getScreenY - yOffset)
-      }
-
-      onMouseClicked = event => {
-        if (event.getClickCount == 2) toggleMaximize()
-      }
-      
+  lazy val node: HBox = {
+    val titleBar = component[HBox] {
       hbox() {
-        spacing = 10
-        if (content != null) content.foreach(child => register(child))
-      }
+        pickOnBounds = true
+        css = mutable.ListBuffer("main-title-bar")
+        alignment = Pos.CENTER
+        spacing = 5
 
-      region() {
-        hgrow = Priority.ALWAYS
-      }
-      if (minimizableFlag) {
+        onMousePressed = event => {
+          xOffset = event.getSceneX
+          yOffset = event.getSceneY
+        }
+
+        onMouseDragged = event => {
+          stage.setX(event.getScreenX - xOffset)
+          stage.setY(event.getScreenY - yOffset)
+        }
+
+        onMouseClicked = event => {
+          if (event.getClickCount == 2) toggleMaximize()
+        }
+
+        hbox() {
+          spacing = 10
+          react(content)
+        }
+
+        region() {
+          hgrow = Priority.ALWAYS
+        }
+
         button() {
+          text = "TEST"
+          onAction = _ => {
+            minimizableProperty.set(! minimizableProperty.get)
+          }
+        }
+
+        val minimizeButton = button.build() {
           css = mutable.ListBuffer("title-button")
           onAction = event => {
             stage.setIconified(true)
@@ -101,9 +112,16 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox], HasHeaderButtons {
             iconLiteral = "mdi2w-window-minimize"
           }
         }
-      }
-      if (maximizableFlag) {
-        button() {
+
+        react(minimizableProperty) { minimizable =>
+          if (minimizable) {
+            register(minimizeButton)
+          } else {
+            deregister(minimizeButton)
+          }
+        }
+
+        val maximizeButton = button.build() {
           css = mutable.ListBuffer("title-button")
           onAction = event => {
             toggleMaximize()
@@ -113,9 +131,16 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox], HasHeaderButtons {
             iconLiteral = "mdi2w-window-maximize"
           }
         }
-      }
-      if (closeableFlag) {
-        button() {
+
+        react(maximizableProperty) { minimizable =>
+          if (minimizable) {
+            register(maximizeButton)
+          } else {
+            deregister(maximizeButton)
+          }
+        }
+
+        val closeButton = button.build() {
           css = mutable.ListBuffer("title-button")
           onAction = event => {
             stage.close()
@@ -125,12 +150,25 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox], HasHeaderButtons {
             iconLiteral = "mdi2w-window-close"
           }
         }
+
+        react(closeableProperty) { minimizable =>
+          if (minimizable) {
+            register(closeButton)
+          } else {
+            deregister(closeButton)
+          }
+        }
+
       }
     }
+
+    AutoBindObservableProperties.bind(this, titleBar)
+
+    titleBar
   }
 
   override def add(child: ElementBuilder[?]): Unit = {
-    content.addOne(child)
+    content.add(child)
   }
 
   override def build(): HBox = node

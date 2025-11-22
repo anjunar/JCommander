@@ -1,26 +1,28 @@
 package com.anjunar.javafx.dsl.traits
 
+import javafx.beans.property.SimpleBooleanProperty
+
 trait HasHeaderButtons {
 
-  var minimizableFlag = false
-  var maximizableFlag = false
-  var closeableFlag = true
+  var minimizableProperty = new SimpleBooleanProperty(false)
+  var maximizableProperty = new SimpleBooleanProperty(false)
+  var closeableProperty = new SimpleBooleanProperty(true)
 
 }
 
 object HasHeaderButtons {
 
-  def minimizable[T](using h: HasHeaderButtons): Boolean = h.minimizableFlag
+  def minimizable[T](using h: HasHeaderButtons): Boolean = h.minimizableProperty.get()
 
-  def minimizable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.minimizableFlag = value
+  def minimizable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.minimizableProperty.set(value)
 
-  def maximizable[T](using h: HasHeaderButtons): Boolean = h.maximizableFlag
+  def maximizable[T](using h: HasHeaderButtons): Boolean = h.maximizableProperty.get()
 
-  def maximizable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.maximizableFlag = value
+  def maximizable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.maximizableProperty.set(value)
 
-  def closeable[T](using h: HasHeaderButtons): Boolean = h.closeableFlag
+  def closeable[T](using h: HasHeaderButtons): Boolean = h.closeableProperty.get()
 
-  def closeable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.closeableFlag = value
+  def closeable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.closeableProperty.set(value)
 
 
 }

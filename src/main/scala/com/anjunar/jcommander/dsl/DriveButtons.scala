@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 import scala.compiletime.uninitialized
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
-class DriveButtons extends ElementBuilder[HBox] {
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
+class DriveButtons extends NodeBuilder[HBox] {
 
   private val log = Logger[DriveButtons]
   private val running = new AtomicBoolean(true)
@@ -33,11 +33,17 @@ class DriveButtons extends ElementBuilder[HBox] {
   var change: File => Unit = uninitialized
   var unmount: Drive => Unit = uninitialized
 
-  val node: HBox = component[HBox] {
-    hbox() {
-      spacing = 10
-      style = "-fx-padding: 0 0 0 5;"
+  lazy val node: HBox = {
+    val driveButtons = component[HBox] {
+      hbox() {
+        spacing = 10
+        style = "-fx-padding: 0 0 0 5;"
+      }
     }
+
+    AutoBindObservableProperties.bind(this, driveButtons)
+    
+    driveButtons
   }
 
   private def homeButton(): Node =

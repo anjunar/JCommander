@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
-
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
 
   var directory: String = uninitialized
@@ -110,36 +110,42 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
   private def normalize(path: String): String =
     if (path.startsWith("file:")) path.stripPrefix("file:") else path
 
-  override lazy val node: TableView[FileItem] = component[TableView[FileItem]] {
-    AbstractFileTable(abstractFileTableRef) {
-      loadImages = true
-      addEventHandler(KeyEvent.KEY_PRESSED, { event => {
-        if (event.getCode == KeyCode.ENTER) {
-          val selectedItem = node.getSelectionModel.getSelectedItem
-          if (selectedItem.isDir || selectedItem.isUpDir) {
-            loadDirectory(selectedItem.file)
-          } else {
-            fileManager.executeFile(this)
+  override lazy val node: TableView[FileItem] = {
+    val localFileTable = component[TableView[FileItem]] {
+      AbstractFileTable(abstractFileTableRef) {
+        loadImages = true
+        addEventHandler(KeyEvent.KEY_PRESSED, { event => {
+          if (event.getCode == KeyCode.ENTER) {
+            val selectedItem = node.getSelectionModel.getSelectedItem
+            if (selectedItem.isDir || selectedItem.isUpDir) {
+              loadDirectory(selectedItem.file)
+            } else {
+              fileManager.executeFile(this)
+            }
           }
         }
-      }
-      })
-      addEventHandler(MouseEvent.MOUSE_CLICKED, { (event: MouseEvent) => {
-        if (event.getButton == MouseButton.SECONDARY) {
-          fileManager.fileContext(this, event)
-          event.consume()
-        } else if (event.getClickCount == 2) {
-          val selectedItem = node.getSelectionModel.getSelectedItem
-          if (selectedItem.isDir || selectedItem.isUpDir) {
-            loadDirectory(selectedItem.file)
-          } else {
-            fileManager.executeFile(this)
+        })
+        addEventHandler(MouseEvent.MOUSE_CLICKED, { (event: MouseEvent) => {
+          if (event.getButton == MouseButton.SECONDARY) {
+            fileManager.fileContext(this, event)
+            event.consume()
+          } else if (event.getClickCount == 2) {
+            val selectedItem = node.getSelectionModel.getSelectedItem
+            if (selectedItem.isDir || selectedItem.isUpDir) {
+              loadDirectory(selectedItem.file)
+            } else {
+              fileManager.executeFile(this)
+            }
+            event.consume()
           }
-          event.consume()
         }
+        })
       }
-      })
     }
+
+    AutoBindObservableProperties.bind(this, localFileTable)
+    
+    localFileTable
   }
 
   override def build(): TableView[FileItem] = node

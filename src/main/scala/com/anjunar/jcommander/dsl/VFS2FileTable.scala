@@ -12,7 +12,7 @@ import scalafx.scene.control.TableColumn.SortType
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
-
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableView[FileItem]], FileTable {
 
   var directory: String = uninitialized
@@ -100,19 +100,25 @@ class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableVie
         .atZone(java.time.ZoneId.systemDefault())
         .toLocalDateTime)
 
-  override lazy val node: TableView[FileItem] = component[TableView[FileItem]] {
-    AbstractFileTable(abstractFileTableRef) {
-      loadImages = true
-      addEventHandler(KeyEvent.KEY_PRESSED, { event => {
-        if (event.getCode == KeyCode.ENTER) {
-          val selectedItem = node.getSelectionModel.getSelectedItem
-          if (selectedItem.isDir || selectedItem.isUpDir) {
-            loadDirectory(selectedItem.file)
+  override lazy val node: TableView[FileItem] = {
+    val vsf2FileTable = component[TableView[FileItem]] {
+      AbstractFileTable(abstractFileTableRef) {
+        loadImages = true
+        addEventHandler(KeyEvent.KEY_PRESSED, { event => {
+          if (event.getCode == KeyCode.ENTER) {
+            val selectedItem = node.getSelectionModel.getSelectedItem
+            if (selectedItem.isDir || selectedItem.isUpDir) {
+              loadDirectory(selectedItem.file)
+            }
           }
         }
+        })
       }
-      })
     }
+
+    AutoBindObservableProperties.bind(this, vsf2FileTable)
+
+    vsf2FileTable
   }
 
   override def build(): TableView[FileItem] = node

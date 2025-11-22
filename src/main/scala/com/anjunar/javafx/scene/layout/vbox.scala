@@ -1,21 +1,21 @@
 package com.anjunar.javafx.scene.layout
 
 import com.anjunar.javafx.dsl.traits.{HasHeight, HasSpacing, HasWidth}
-import com.anjunar.javafx.dsl.{ChildBuilder, ElementBuilder, Producer}
+import com.anjunar.javafx.dsl.{ChildNodeBuilder, ElementBuilder, Producer}
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.scene.layout.VBox
 import javafx.scene.{Node, layout}
 
-class vbox extends ChildBuilder[layout.VBox], HasSpacing, HasWidth, HasHeight {
-  lazy val node: layout.VBox = new layout.VBox()
+class vbox extends ChildNodeBuilder[layout.VBox], HasSpacing, HasWidth, HasHeight {
+  lazy val node: layout.VBox = {
+    val vBox = new VBox()
+    AutoBindObservableProperties.bind(this, vBox)
+    AutoBindObservableProperties.observeList(children, () => vBox.getChildren)
+    vBox
+  }
 
-  var children: List[ElementBuilder[?]] = Nil
+  override def build(): layout.VBox = node
 
-  override def add(child: ElementBuilder[?]): Unit =
-    children = children :+ child
-
-  override def build(): layout.VBox =
-    node.getChildren.clear()
-    children.foreach(c => node.getChildren.add(c.build().asInstanceOf[Node]))
-    node
 }
 
 object vbox extends Producer[vbox, layout.VBox] {

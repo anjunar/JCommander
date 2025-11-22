@@ -2,13 +2,16 @@ package com.anjunar.javafx.scene.control
 
 import com.anjunar.javafx.dsl.traits.{HasHeight, HasWidth}
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.beans.property.DoubleProperty
 import javafx.scene.Node
 import javafx.scene.control.ProgressBar
 
 class progressBar extends NodeBuilder[ProgressBar], HasWidth, HasHeight {
   
-  override lazy val node: ProgressBar = new ProgressBar()
+  override lazy val node: ProgressBar = {
+    AutoBindObservableProperties.bind(this, new ProgressBar())
+  }
   
   override def build(): ProgressBar = node
   
