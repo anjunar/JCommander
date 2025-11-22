@@ -1,7 +1,6 @@
 package com.anjunar.javafx.dsl.traits
 
-import javafx.geometry.Pos
-import javafx.geometry.Insets
+import javafx.geometry.{Insets, Pos}
 
 import scala.language.reflectiveCalls
 
@@ -27,7 +26,7 @@ object HasSpacing {
 
   def spacing()(using h: HasSpacing): Double = w.getSpacing()
   def spacing_=(v: Double)(using h: HasSpacing): Unit = w.setSpacing(v)
-  
+
   def padding()(using h: HasSpacing): Insets = w.getPadding()
   def padding_=(v: Insets)(using h: HasSpacing): Unit = w.setPadding(v)
 

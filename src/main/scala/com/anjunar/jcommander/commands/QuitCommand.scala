@@ -1,9 +1,9 @@
 package com.anjunar.jcommander.commands
 
 import com.anjunar.jcommander.ConfigDir
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.configuration.Configuration
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.Dependent
 
 import java.io.{File, PrintWriter}

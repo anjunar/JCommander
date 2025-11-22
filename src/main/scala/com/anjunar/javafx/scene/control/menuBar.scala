@@ -1,6 +1,6 @@
 package com.anjunar.javafx.scene.control
 
-import com.anjunar.javafx.dsl.{BuildContext, ChildBuilder, DSL, ElementBuilder, NodeBuilder, Producer, Ref}
+import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.scene.layout.vbox
 import javafx.scene.control.MenuBar as JfxMenuBar
 

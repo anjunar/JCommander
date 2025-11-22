@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Producer, Ref}
+import com.anjunar.javafx.dsl.*
 import javafx.scene.layout.HBox
 
 class MainMenu extends ElementBuilder[HBox] {

@@ -1,9 +1,9 @@
 package com.anjunar.jcommander.manager
 
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.components.LocalFileTableComponent
 import com.anjunar.jcommander.configuration.FileTableConf
 import com.anjunar.jcommander.dsl.FileTable
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.beans.value.{ChangeListener, ObservableValue}
 import javafx.event.EventHandler

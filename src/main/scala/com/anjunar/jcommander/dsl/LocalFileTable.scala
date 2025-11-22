@@ -19,6 +19,7 @@ import java.nio.file.{Files, Path, WatchEvent}
 import java.text.SimpleDateFormat
 import scala.collection.mutable
 import scala.compiletime.uninitialized
+import scala.jdk.CollectionConverters.*
 
 class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
 

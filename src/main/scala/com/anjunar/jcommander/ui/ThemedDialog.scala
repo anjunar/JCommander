@@ -1,13 +1,13 @@
 package com.anjunar.jcommander.ui
 
-import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.configuration.DarkModeConf
+import com.anjunar.jcommander.utils.CdiUtils.inject
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, ButtonType, Label}
-import scalafx.scene.layout.{BorderPane, HBox, Pane, Priority, VBox}
+import scalafx.scene.layout.*
 import scalafx.stage.{Modality, Stage, StageStyle}
 
 abstract class ThemedDialog[T] extends Stage {

@@ -2,8 +2,7 @@ package com.anjunar.javafx.scene.image
 
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
 import com.anjunar.javafx.scene.image.ImageView.HasImageView
-import javafx.scene.image.ImageView as jFxImageView
-import javafx.scene.image.Image as jFxImage
+import javafx.scene.image.{Image as jFxImage, ImageView as jFxImageView}
 
 class ImageView extends NodeBuilder[jFxImageView], HasImageView {
   

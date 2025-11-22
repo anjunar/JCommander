@@ -1,8 +1,8 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.dsl.FileTable
-import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import javafx.scene.input.MouseEvent
+import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 
 import java.awt.image.BufferedImage
 import java.io.File

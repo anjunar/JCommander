@@ -1,7 +1,8 @@
 package com.anjunar.jcommander.security
 
-import com.sun.jna.{Library, Memory, Native, Pointer, PointerType, Structure}
 import com.sun.jna.ptr.PointerByReference
+import com.sun.jna.*
+
 import java.util
 
 object DPAPI {

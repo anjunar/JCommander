@@ -1,10 +1,10 @@
 package com.anjunar.jcommander.dsl
 
-import com.anjunar.javafx.dsl.{ElementBuilder, NodeBuilder, Producer, Ref}
 import com.anjunar.javafx.dsl.DSL.*
-import javafx.scene.layout.{Priority, VBox}
+import com.anjunar.javafx.dsl.{ElementBuilder, NodeBuilder, Producer, Ref}
 import com.anjunar.jcommander.dsl.DriveButtons.*
 import com.anjunar.jcommander.dsl.LocalFileTable.HastLocalFileTable.*
+import javafx.scene.layout.{Priority, VBox}
 
 import java.io.File
 

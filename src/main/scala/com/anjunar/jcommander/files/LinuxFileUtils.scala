@@ -6,13 +6,13 @@ import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.{Icons, LinuxNativeCopy}
 import javafx.concurrent
+import javafx.scene.input.MouseEvent
 import scalafx.Includes.*
 import scalafx.application.Platform
 import scalafx.event.ActionEvent
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
 import scalafx.scene.control.*
-import javafx.scene.input.MouseEvent
 import scalafx.scene.layout.{GridPane, HBox, VBox}
 
 import java.awt.image.BufferedImage

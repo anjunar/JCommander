@@ -2,14 +2,14 @@ package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.components.config.ConfigModule
 import com.anjunar.jcommander.configuration.DarkModeConf
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.MinimalTitleBar
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.Includes.jfxMultipleSelectionModel2sfx
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.{Label, ListView}
-import scalafx.scene.layout.{BorderPane, Priority, Region, StackPane, VBox}
+import scalafx.scene.layout.*
 import scalafx.stage.{Stage, StageStyle}
 
 class ConfigurationComponent extends Component[Stage] {

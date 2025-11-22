@@ -1,6 +1,6 @@
 package com.anjunar.javafx.scene.control
 
-import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Producer, Ref}
+import com.anjunar.javafx.dsl.*
 import javafx.scene.control.CheckMenuItem as JfxCheckMenuItem
 
 class checkMenuItem extends ElementBuilder[JfxCheckMenuItem] {

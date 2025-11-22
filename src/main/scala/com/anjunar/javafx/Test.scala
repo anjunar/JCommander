@@ -1,14 +1,14 @@
 package com.anjunar.javafx
 
-import javafx.application.Application
-import javafx.stage.Stage
-import javafx.scene.{Group, Scene}
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.Ref
 import com.anjunar.javafx.scene.control.label
 import com.anjunar.jcommander.files.FileItem
-import javafx.scene.layout.VBox
+import javafx.application.Application
 import javafx.scene.control.TableView
+import javafx.scene.layout.VBox
+import javafx.scene.{Group, Scene}
+import javafx.stage.Stage
 
 class Test extends Application:
 

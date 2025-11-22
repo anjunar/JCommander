@@ -1,8 +1,8 @@
 package com.anjunar.jcommander.commands
 
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.Dependent
 
 @Dependent

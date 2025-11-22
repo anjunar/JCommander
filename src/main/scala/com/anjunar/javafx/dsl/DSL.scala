@@ -1,7 +1,5 @@
 package com.anjunar.javafx.dsl
 
-import javafx.scene.Node
-
 object DSL {
 
   def component[C](body: (ElementBuilder[C], BuildContext) ?=> Unit): C =
@@ -60,6 +58,5 @@ object DSL {
   export com.anjunar.javafx.scene.image.ImageView
   export com.anjunar.javafx.scene.image.ImageView.HasImageView.*
   export com.anjunar.javafx.dsl.ChildBuilder.*
-  export scala.jdk.CollectionConverters.*
 
 }

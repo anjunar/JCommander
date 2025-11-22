@@ -3,8 +3,8 @@ package com.anjunar.jcommander.components
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.configuration.{DarkModeConf, TextEditorConf}
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.manager.FileTableManager
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.event.EventHandler

@@ -1,20 +1,19 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.files.FileItem
+import com.anjunar.jcommander.utils.CdiUtils.inject
 import jakarta.annotation.PostConstruct
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.scene.control.TableRow
 import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
 import javafx.scene.input.KeyCode
 import org.apache.commons.vfs2.*
-import scalafx.Includes.jfxMouseEvent2sfx
-import scalafx.scene.control.TableColumn.SortType
-import scalafx.scene.control.TableView
 import scalafx.Includes.*
 import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
+import scalafx.scene.control.TableColumn.SortType
+import scalafx.scene.control.TableView
 
 import java.awt.image.BufferedImage
 import scala.collection.immutable.Seq

@@ -1,8 +1,8 @@
 package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.QuitCommand
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.ThemedDialog
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.scene.control.*
 import scalafx.scene.layout.{HBox, VBox}

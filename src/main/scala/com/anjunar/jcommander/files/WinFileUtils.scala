@@ -1,7 +1,6 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.Ref
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.WinNativeCopy
 import com.anjunar.jcommander.dsl.FileTable
@@ -9,10 +8,10 @@ import com.typesafe.scalalogging.Logger
 import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}
 import javafx.concurrent
 import javafx.geometry.{Insets, Pos}
-import scalafx.application.Platform
-import scalafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Priority
+import scalafx.application.Platform
+import scalafx.scene.control.*
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayInputStream, File}

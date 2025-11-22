@@ -1,9 +1,6 @@
 package com.anjunar.javafx.dsl
 
-import javafx.scene.Node
-
 import scala.collection.mutable
-import scala.compiletime.uninitialized
 
 class BuildContext {
 

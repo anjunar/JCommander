@@ -5,8 +5,8 @@ import com.anjunar.jcommander.dsl.{FileTable, LocalFileTable, VFS2FileTable}
 import com.anjunar.jcommander.files.{OSXFileUtils, StreamFileUtils}
 import javafx.scene.input.MouseEvent
 
-import scala.jdk.CollectionConverters.*
 import java.awt.image.BufferedImage
+import scala.jdk.CollectionConverters.*
 
 class OSXFileManager extends FileManager {
 

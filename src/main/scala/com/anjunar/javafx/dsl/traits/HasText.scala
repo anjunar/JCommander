@@ -1,7 +1,6 @@
 package com.anjunar.javafx.dsl.traits
 
 import javafx.beans.property.StringProperty
-import javafx.scene.Node
 
 import scala.language.reflectiveCalls
 

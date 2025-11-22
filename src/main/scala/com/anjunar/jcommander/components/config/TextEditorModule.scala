@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.components.config
 
-import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.configuration.TextEditorConf
+import com.anjunar.jcommander.utils.CdiUtils.inject
 import jakarta.enterprise.context.ApplicationScoped
 import scalafx.scene.control.{Button, Label, TextField}
 import scalafx.scene.layout.{HBox, VBox}

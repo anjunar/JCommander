@@ -4,14 +4,14 @@ import com.anjunar.jcommander.components.{LocalFileTableComponent, VFS2FileTable
 import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.{ProgressListener, VFSUtils}
-import org.apache.commons.vfs2.FileObject
-import scalafx.event.ActionEvent
-import scalafx.scene.control.{ButtonType, CheckBox, Label, ProgressBar, TextField}
-import scalafx.scene.layout.VBox
 import javafx.concurrent
+import javafx.scene.input.MouseEvent
+import org.apache.commons.vfs2.FileObject
 import scalafx.Includes.observableList2ObservableBuffer
 import scalafx.application.Platform
-import javafx.scene.input.MouseEvent
+import scalafx.event.ActionEvent
+import scalafx.scene.control.*
+import scalafx.scene.layout.VBox
 
 import java.awt.image.BufferedImage
 import java.nio.file.Files

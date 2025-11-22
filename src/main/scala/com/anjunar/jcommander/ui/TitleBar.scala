@@ -1,10 +1,10 @@
 package com.anjunar.jcommander.ui
 
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.Icons
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.components.{DarkModeComponent, HeaderMenuBarComponent}
 import com.anjunar.jcommander.configuration.DarkModeConf
+import com.anjunar.jcommander.utils.CdiUtils.*
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Cursor

@@ -1,8 +1,8 @@
 package com.anjunar.jcommander.commands
 
 import com.anjunar.jcommander.configuration.TextEditorConf
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.manager.FileTableManager
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.Dependent
 
 import java.io.File

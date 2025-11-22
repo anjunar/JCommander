@@ -1,6 +1,5 @@
 package com.anjunar.javafx.dsl.traits
 
-import javafx.beans.property.ObjectProperty
 import javafx.event.{Event, EventHandler, EventType}
 import javafx.scene.Node
 import javafx.scene.input.{KeyEvent, MouseEvent}

@@ -1,10 +1,10 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{DarkModeComponent}
-import com.anjunar.jcommander.utils.CdiUtils.*
+import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.ui.ThemedDialog
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}

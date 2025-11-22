@@ -1,10 +1,10 @@
 package com.anjunar.jcommander.components
 
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.configuration.FileTableConf
 import com.anjunar.jcommander.files.{FileItem, FileUtils, FileWatcher}
 import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.utils.OSType
 import jakarta.annotation.PostConstruct
 import jakarta.enterprise.context.ApplicationScoped

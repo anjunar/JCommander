@@ -3,6 +3,7 @@ package com.anjunar.jcommander.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+
 import java.nio.file.{Files, Path}
 import java.util.Base64
 

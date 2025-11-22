@@ -1,8 +1,8 @@
 package com.anjunar.javafx.scene.control
 
-import com.anjunar.javafx.dsl.traits.{HasHeight, HasLabeled, HasOnAction, HasText, HasWidth}
-import com.anjunar.javafx.dsl.{BuildContext, ChildBuilder, DSL, ElementBuilder, Producer, Ref}
-import javafx.scene.{Node, control}
+import com.anjunar.javafx.dsl.traits.*
+import com.anjunar.javafx.dsl.{ChildBuilder, ElementBuilder, Producer}
+import javafx.scene.control
 
 class button extends ChildBuilder[control.Button], HasLabeled, HasText, HasOnAction, HasWidth, HasHeight {
   lazy val node: control.Button = new control.Button()

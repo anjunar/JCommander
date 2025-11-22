@@ -2,19 +2,19 @@ package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.dsl.FileTable
-import com.anjunar.jcommander.{Main, WinNativeCopy}
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.ThemedDialog
+import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.utils.OSType
+import com.anjunar.jcommander.{Main, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.concurrent
+import javafx.scene.input.MouseEvent
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
 import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control.*
-import javafx.scene.input.MouseEvent
 import scalafx.scene.layout.VBox
 
 import java.awt.image.BufferedImage

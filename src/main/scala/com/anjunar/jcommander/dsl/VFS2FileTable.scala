@@ -1,19 +1,17 @@
 package com.anjunar.jcommander.dsl
 
-import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.*
+import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.jcommander.dsl.AbstractFileTable.HasAbstractFileTable.loadImages
 import com.anjunar.jcommander.files.FileItem
-import javafx.scene.control.skin.{TableViewSkin, VirtualFlow}
-import javafx.scene.control.{TableRow, TableView}
+import javafx.scene.control.TableView
 import javafx.scene.input.{KeyCode, KeyEvent}
 import org.apache.commons.vfs2.{FileObject, FileSystemManager, FileType}
-import scalafx.application.Platform
-import scalafx.collections.ObservableBuffer
 import scalafx.scene.control.TableColumn.SortType
 
 import scala.collection.mutable
 import scala.compiletime.uninitialized
+import scala.jdk.CollectionConverters.*
 
 class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableView[FileItem]], FileTable {
 

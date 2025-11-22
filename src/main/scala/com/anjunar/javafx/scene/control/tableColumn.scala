@@ -1,7 +1,7 @@
 package com.anjunar.javafx.scene.control
 
-import com.anjunar.javafx.dsl.traits.{HasWidth, HasText}
-import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Producer, Ref}
+import com.anjunar.javafx.dsl.traits.{HasText, HasWidth}
+import com.anjunar.javafx.dsl.*
 import com.anjunar.jcommander.files.FileItem
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue

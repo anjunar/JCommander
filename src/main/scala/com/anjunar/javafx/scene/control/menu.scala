@@ -1,7 +1,7 @@
 package com.anjunar.javafx.scene.control
 
 import com.anjunar.javafx.dsl.traits.{HasLabeled, HasText}
-import com.anjunar.javafx.dsl.{BuildContext, ChildBuilder, DSL, ElementBuilder, Ref}
+import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.scene.layout.vbox
 import javafx.scene.control.Menu as JfxMenu
 

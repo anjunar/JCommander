@@ -1,9 +1,8 @@
 package com.anjunar.javafx.scene.layout
 
 import com.anjunar.javafx.dsl.traits.{HasHeight, HasSpacing, HasWidth}
-import com.anjunar.javafx.dsl.{BuildContext, ChildBuilder, DSL, ElementBuilder, Producer, Ref}
-import javafx.scene.Node
-import javafx.scene.layout
+import com.anjunar.javafx.dsl.{ChildBuilder, ElementBuilder, Producer}
+import javafx.scene.{Node, layout}
 
 class hbox extends ChildBuilder[layout.HBox], HasSpacing, HasWidth, HasHeight {
   lazy val node: layout.HBox = new layout.HBox()

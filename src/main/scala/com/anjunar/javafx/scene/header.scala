@@ -1,7 +1,6 @@
 package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.{ElementBuilder, Producer}
-import javafx.scene.Node
 
 import scala.collection.mutable
 

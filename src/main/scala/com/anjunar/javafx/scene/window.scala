@@ -7,8 +7,8 @@ import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.ui.Resizable
 import com.anjunar.jcommander.utils.CdiUtils.inject
-import javafx.scene.layout.{Priority, VBox}
-import javafx.scene.{Node, Scene}
+import javafx.scene.Scene
+import javafx.scene.layout.VBox
 import javafx.stage.StageStyle
 
 import scala.compiletime.uninitialized

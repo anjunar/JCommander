@@ -1,9 +1,9 @@
 package com.anjunar.jcommander.security
 
-import javax.crypto.{Cipher, KeyGenerator, SecretKey}
-import javax.crypto.spec.{GCMParameterSpec, SecretKeySpec}
 import java.nio.file.{Files, Path}
 import java.security.SecureRandom
+import javax.crypto.spec.{GCMParameterSpec, SecretKeySpec}
+import javax.crypto.{Cipher, KeyGenerator, SecretKey}
 
 class KeyStore(keyPath: Path) {
   def loadOrCreateKey(): SecretKey = {

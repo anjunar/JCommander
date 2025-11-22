@@ -2,15 +2,15 @@ package com.anjunar.jcommander.components
 
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.configuration.PrimaryStageConf
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.{Resizable, TitleBar}
+import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
+import scalafx.Includes.*
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
+import scalafx.scene.image.Image
 import scalafx.scene.layout.{Priority, VBox}
 import scalafx.stage.StageStyle
-import scalafx.Includes.*
-import scalafx.scene.image.Image
 
 class PrimaryStageComponent extends Component[JFXApp3.PrimaryStage] {
 

@@ -1,9 +1,8 @@
 package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.{BuildContext, ChildBuilder, ElementBuilder, Producer, Ref}
-import com.anjunar.javafx.scene.control.button
-import com.anjunar.javafx.scene.control.label
+import com.anjunar.javafx.dsl.*
+import com.anjunar.javafx.scene.control.{button, label}
 import com.anjunar.javafx.scene.image.ImageView
 import com.anjunar.javafx.scene.image.ImageView.*
 import com.anjunar.jcommander.manager.{Drive, DriveDetectionService, FileManager}
@@ -17,8 +16,8 @@ import scalafx.embed.swing.SwingFXUtils
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.compiletime.uninitialized
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class DriveButtons extends ElementBuilder[HBox] {
 

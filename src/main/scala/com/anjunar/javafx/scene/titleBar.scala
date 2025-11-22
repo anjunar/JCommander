@@ -132,10 +132,4 @@ object titleBar {
   def apply(stage: Stage, ref: Ref[titleBar] = Ref())(body: (titleBar, BuildContext) ?=> Unit)
            (using ctx: BuildContext, parent: ElementBuilder[?]): HBox =
     DSL.create[HBox, titleBar](ref, new titleBar(stage))(body)
-  
-  object HasTitleBar {
-    
-    
-    
-  }
 }
