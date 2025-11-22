@@ -3,6 +3,7 @@ package com.anjunar.javafx.scene
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasText
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
+import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.ui.Resizable
 import com.anjunar.jcommander.utils.CdiUtils.inject
@@ -10,24 +11,30 @@ import javafx.scene.layout.{Priority, VBox}
 import javafx.scene.{Node, Scene}
 import javafx.stage.StageStyle
 
+import scala.compiletime.uninitialized
 import scala.concurrent.Promise
 
-class stage[E](width: Double, height: Double) extends ElementBuilder[Window[E]], HasText {
-
-  private val rootRef = Ref[vbox]()
+class window[E](width: Double, height: Double) extends ElementBuilder[Window[E]], HasText {
 
   private val darkMode: DarkModeConf = inject(classOf[DarkModeConf])
 
   private val promise = Promise[E]()
 
-  val node: Window[E] = {
+  private var content : ElementBuilder[?] = uninitialized
+
+  private var header : header = uninitialized
+
+  lazy val node: Window[E] = {
     val stage = new Window[E]()
     stage.initStyle(StageStyle.UNDECORATED)
 
     val ui = component[VBox] {
-      vbox(rootRef) {
+      vbox() {
         style = "-fx-border-color: #444; -fx-border-width: 1;"
-        titleBar(stage) {}
+        titleBar(stage) {
+          if (header != null) header.children.foreach(child => addComponent(child))
+        }
+        addComponent(content)
       }
     }
 
@@ -56,9 +63,12 @@ class stage[E](width: Double, height: Double) extends ElementBuilder[Window[E]],
   }
 
   def add(child: ElementBuilder[?]): Unit = {
-    val element = child.build().asInstanceOf[Node]
-    VBox.setVgrow(element, Priority.ALWAYS)
-    rootRef.value.node.getChildren.add(element)
+    child match
+      case h: header =>
+        header = h
+
+      case _ =>
+        content = child
   }
 
   def closeWithResult(value: E): Unit =
@@ -70,17 +80,21 @@ class stage[E](width: Double, height: Double) extends ElementBuilder[Window[E]],
 
 }
 
-object stage {
+object window {
 
-  def apply[T](width: Double = -1, height: Double = -1)(body: (stage[T], BuildContext) ?=> Unit)
+  def apply[T](width: Double = -1, height: Double = -1)(body: (window[T], BuildContext) ?=> Unit)
               (using ctx: BuildContext, parent: ElementBuilder[?]): Window[T] =
-    DSL.create[Window[T], stage[T]](Ref(), new stage[T](width, height))(body)
+    DSL.create[Window[T], window[T]](Ref(), new window[T](width, height))(body)
 
-  object HasStage {
+  object HasWindow {
 
-    def closeWithResult[T](value: T)(using h: stage[T]): Unit = h.closeWithResult(value)
+    def closeWithResult[T](value: T)(using h: window[T]): Unit = h.closeWithResult(value)
 
-    def close[T]()(using h: stage[T]): Unit = h.node.close()
+    def close[T]()(using h: window[T]): Unit = h.node.close()
+    
+    def resizable[T](using h: window[T]) : Boolean = h.node.isResizable
+    def resizable_=[T](value : Boolean)(using h: window[T]) : Unit = h.node.setResizable(value)
+
   }
 
 }
