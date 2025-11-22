@@ -2,7 +2,7 @@ package com.anjunar.jcommander.files
 
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.Ref
-import com.anjunar.javafx.scene.Window
+import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.WinNativeCopy
 import com.anjunar.jcommander.dsl.FileTable
 import com.typesafe.scalalogging.Logger
@@ -119,14 +119,16 @@ class WinFileUtils extends AbstractFileUtils {
     val moveToRecycleBinBox = new SimpleBooleanProperty(true)
 
     val confirmDialog = component[Window[String]] {
-      stage() {
+      window() {
+        header() {
+          label() {
+            text = confirmTitle
+          }
+        }
         vbox() {
           spacing = 12
           padding = new Insets(10)
 
-          label() {
-            text = confirmTitle
-          }
           label() {
             text = confirmHeader
           }
@@ -238,7 +240,13 @@ class WinFileUtils extends AbstractFileUtils {
         }
 
         val progressDialog = component[Window[Unit]] {
-          stage() {
+          window() {
+            header() {
+              label() {
+                text = "Progress"
+              }
+            }
+
             vbox() {
               spacing = 14
               padding = new Insets(20)

@@ -5,7 +5,7 @@ import com.anjunar.javafx.dsl.{BuildContext, ChildBuilder, DSL, ElementBuilder, 
 import javafx.scene.{Node, control}
 
 class button extends ChildBuilder[control.Button], HasLabeled, HasText, HasOnAction, HasWidth, HasHeight {
-  val node: control.Button = new control.Button()
+  lazy val node: control.Button = new control.Button()
 
   var children: List[ElementBuilder[?]] = Nil
 

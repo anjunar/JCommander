@@ -6,7 +6,7 @@ import javafx.scene.Node
 import scala.language.reflectiveCalls
 
 trait HasText {
-  val node : AnyRef
+  lazy val node : AnyRef
 }
 
 object HasText {

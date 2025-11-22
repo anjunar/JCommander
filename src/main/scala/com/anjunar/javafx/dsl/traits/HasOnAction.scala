@@ -9,7 +9,7 @@ import scala.language.reflectiveCalls
 
 trait HasOnAction {
   
-  val node : AnyRef
+  lazy val node : AnyRef
   
   var onAction : ActionEvent => Unit = uninitialized
 }

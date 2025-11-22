@@ -6,7 +6,7 @@ import javafx.scene.Node
 import javafx.scene.layout
 
 class vbox extends ChildBuilder[layout.VBox], HasSpacing, HasWidth, HasHeight {
-  val node: layout.VBox = new layout.VBox()
+  lazy val node: layout.VBox = new layout.VBox()
 
   var children: List[ElementBuilder[?]] = Nil
 

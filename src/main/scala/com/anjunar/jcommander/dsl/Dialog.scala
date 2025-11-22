@@ -5,7 +5,7 @@ import scalafx.stage.Stage
 
 class Dialog extends ElementBuilder[Stage]{
   
-  val node : Stage = new Stage()
+  lazy val node : Stage = new Stage()
   
   override def build(): Stage = node
 }

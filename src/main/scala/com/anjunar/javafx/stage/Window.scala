@@ -1,6 +1,5 @@
-package com.anjunar.javafx.scene
+package com.anjunar.javafx.stage
 
-import javafx.scene.SceneAntialiasing
 import scalafx.stage.Stage
 
 class Window[E] extends Stage {

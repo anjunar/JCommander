@@ -2,7 +2,7 @@ import scala.collection.Seq
 
 ThisBuild / version := "1.0.0"
 
-ThisBuild / scalaVersion := "3.3.7"
+ThisBuild / scalaVersion := "3.7.3"
 
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
@@ -11,6 +11,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "JCommander",
     libraryDependencies ++= Seq(
+      "com.anjunar"% "scalauniverse2_3" % "0.1.0-SNAPSHOT",
       "com.google.guava" % "guava" % "33.5.0-jre",
       "ch.qos.logback" % "logback-classic" % "1.5.20",
       "org.slf4j" % "slf4j-api" % "2.0.17",

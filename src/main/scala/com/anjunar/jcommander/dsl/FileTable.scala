@@ -8,7 +8,7 @@ import scala.collection.mutable
 
 trait FileTable {
 
-  val node : TableView[FileItem]
+  lazy val node : TableView[FileItem]
 
   val manager : FileSystemManager
   

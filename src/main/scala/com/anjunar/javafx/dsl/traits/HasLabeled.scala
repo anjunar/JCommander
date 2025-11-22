@@ -4,7 +4,7 @@ import javafx.scene.Node
 import javafx.scene.control.Labeled
 
 trait HasLabeled {
-  val node : Labeled
+  lazy val node : Labeled
 }
 
 object HasLabeled {

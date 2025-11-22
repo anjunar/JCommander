@@ -6,7 +6,7 @@ import com.anjunar.javafx.scene.layout.vbox
 import javafx.scene.control.Menu as JfxMenu
 
 class menu extends ElementBuilder[JfxMenu], HasText {
-  val node : JfxMenu = new JfxMenu()
+  lazy val node : JfxMenu = new JfxMenu()
 
   def add(child: ElementBuilder[?]): Unit =
     child match

@@ -5,7 +5,7 @@ import com.anjunar.javafx.scene.layout.vbox
 import javafx.scene.control.MenuBar as JfxMenuBar
 
 class menuBar extends NodeBuilder[JfxMenuBar] {
-  val node : JfxMenuBar = new JfxMenuBar()
+  lazy val node : JfxMenuBar = new JfxMenuBar()
 
   def add(child: ElementBuilder[?]): Unit =
     child match

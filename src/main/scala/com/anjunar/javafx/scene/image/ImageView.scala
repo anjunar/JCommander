@@ -7,7 +7,7 @@ import javafx.scene.image.Image as jFxImage
 
 class ImageView extends NodeBuilder[jFxImageView], HasImageView {
   
-  override val node: jFxImageView = new jFxImageView
+  override lazy val node: jFxImageView = new jFxImageView
   
   override def build(): jFxImageView = node
   
@@ -17,7 +17,7 @@ object ImageView extends Producer[ImageView, jFxImageView] {
   override def createBuilder: ImageView = new ImageView
   
   trait HasImageView {
-    val node : jFxImageView
+    lazy val node : jFxImageView
   }
   
   object HasImageView {

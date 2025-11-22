@@ -12,7 +12,7 @@ import org.kordamp.ikonli.javafx.FontIcon
 class Icon extends ElementBuilder[FontIcon], HasFontIcon {
 
   val darkMode = inject(classOf[DarkModeConf])
-  val node = new FontIcon()
+  lazy val node = new FontIcon()
 
   node.setIconColor(if (darkMode.value) Color.WHITE else Color.BLACK)
 
@@ -28,7 +28,7 @@ object Icon extends Producer[Icon, FontIcon] {
   override def createBuilder: Icon = new Icon()
 
   trait HasFontIcon {
-    val node : FontIcon
+    lazy val node : FontIcon
   }
 
   object HasFontIcon {

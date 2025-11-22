@@ -12,8 +12,9 @@ import javafx.scene.layout.{HBox, Priority}
 import javafx.stage.{Screen, Stage}
 
 import scala.collection.mutable
+import scala.compiletime.uninitialized
 
-class titleBar(val stage: Stage) extends ElementBuilder[HBox] {
+class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
 
   private var xOffset = 0.0
   private var yOffset = 0.0
@@ -25,6 +26,7 @@ class titleBar(val stage: Stage) extends ElementBuilder[HBox] {
   private var maximized = false
 
   private val maximizeIconRef = Ref[Icon]()
+  private var content : ElementBuilder[?] = uninitialized
 
   private def toggleMaximize(): Unit = {
     if (!maximized) {
@@ -58,7 +60,7 @@ class titleBar(val stage: Stage) extends ElementBuilder[HBox] {
     }
   }
 
-  val node: HBox = component[HBox] {
+  lazy val node: HBox = component[HBox] {
     hbox() {
       css = mutable.ListBuffer("main-title-bar")
       alignment = Pos.CENTER
@@ -78,8 +80,9 @@ class titleBar(val stage: Stage) extends ElementBuilder[HBox] {
         if (event.getClickCount == 2) toggleMaximize()
       }
       
-      label() {
-        textProperty.bindBidirectional(stage.titleProperty())
+      hbox() {
+        spacing = 10
+        if (content != null) addComponent(content)
       }
 
       region() {
@@ -118,6 +121,10 @@ class titleBar(val stage: Stage) extends ElementBuilder[HBox] {
     }
   }
 
+  override def add(child: ElementBuilder[?]): Unit = {
+    content = child
+  }
+
   override def build(): HBox = node
 }
 
@@ -125,4 +132,10 @@ object titleBar {
   def apply(stage: Stage, ref: Ref[titleBar] = Ref())(body: (titleBar, BuildContext) ?=> Unit)
            (using ctx: BuildContext, parent: ElementBuilder[?]): HBox =
     DSL.create[HBox, titleBar](ref, new titleBar(stage))(body)
+  
+  object HasTitleBar {
+    
+    
+    
+  }
 }

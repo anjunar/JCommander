@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters.*
 
 trait HasNode {
 
-  val node : Node
+  lazy val node : Node
 
   var onKeyPressed : KeyEvent => Unit = uninitialized
   
@@ -25,6 +25,7 @@ trait HasNode {
 }
 
 object HasNode {
+  
   def css()(using h: HasNode): mutable.Buffer[String] = h.node.getStyleClass.asScala
   def css_=(values : mutable.Buffer[String])(using h: HasNode): Unit = {
     h.node.getStyleClass.clear()

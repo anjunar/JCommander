@@ -8,7 +8,7 @@ import javafx.scene.layout.{HBox, Priority}
 
 class ActionButtons extends NodeBuilder[HBox] {
 
-  override val node: HBox = component[HBox] {
+  override lazy val node: HBox = component[HBox] {
     hbox() {
       maxWidth = Double.MaxValue
 

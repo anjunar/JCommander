@@ -6,7 +6,7 @@ import javafx.scene.Node
 import javafx.scene.layout
 
 class hbox extends ChildBuilder[layout.HBox], HasSpacing, HasWidth, HasHeight {
-  val node: layout.HBox = new layout.HBox()
+  lazy val node: layout.HBox = new layout.HBox()
 
   override def add(child: ElementBuilder[?]): Unit =
     node.getChildren.add(child.build().asInstanceOf[Node])

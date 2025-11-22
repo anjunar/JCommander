@@ -6,8 +6,7 @@ import javafx.scene.Node
 import javafx.scene.control
 
 class label extends ElementBuilder[control.Label], HasLabeled, HasText {
-  val node: control.Label = new control.Label()
-  export node.{getText, setText}
+  lazy val node: control.Label = new control.Label()
   override def build(): control.Label = node
 }
 

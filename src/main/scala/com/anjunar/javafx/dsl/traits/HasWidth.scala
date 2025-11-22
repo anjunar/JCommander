@@ -8,7 +8,7 @@ import scala.language.reflectiveCalls
 
 trait HasWidth {
 
-  val node : AnyRef
+  lazy val node : AnyRef
 
 }
 

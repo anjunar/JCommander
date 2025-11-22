@@ -1,13 +1,11 @@
 package com.anjunar.javafx.scene.control
 
-import com.anjunar.javafx.dsl.{BuildContext, ChildBuilder, DSL, ElementBuilder, NodeBuilder, Producer, Ref}
-import com.anjunar.javafx.scene.control.splitPane.HasDividerPosition
+import com.anjunar.javafx.dsl.{ChildBuilder, ElementBuilder, Producer}
 import javafx.scene.{Node, control}
 
-class splitPane extends ChildBuilder[control.SplitPane], HasDividerPosition {
+class splitPane extends ChildBuilder[control.SplitPane] {
 
-  val node : control.SplitPane = new control.SplitPane()
-  export node.{getDividerPositions, setDividerPositions}
+  lazy val node: control.SplitPane = new control.SplitPane()
 
   override def add(child: ElementBuilder[?]): Unit = node.getItems.add(child.build().asInstanceOf[Node])
 
@@ -15,20 +13,14 @@ class splitPane extends ChildBuilder[control.SplitPane], HasDividerPosition {
 
 }
 
-object splitPane extends Producer[splitPane, control.SplitPane]{
+object splitPane extends Producer[splitPane, control.SplitPane] {
 
   override def createBuilder: splitPane = new splitPane()
 
-  trait HasDividerPosition {
-    def getDividerPositions(): Array[Double]
-    def setDividerPositions(v: Double*): Unit
-  }
-
   object HasDividerPosition {
-    def dividerPositions()(using h: HasDividerPosition): Array[Double] = h.getDividerPositions()
-    def dividerPositions_=(v: Array[Double])(using h: HasDividerPosition): Unit = h.setDividerPositions(v*)
-  }
+    def dividerPositions()(using h: splitPane): Array[Double] = h.node.getDividerPositions()
 
-  export HasDividerPosition.*
+    def dividerPositions_=(v: Array[Double])(using h: splitPane): Unit = h.node.setDividerPositions(v *)
+  }
 
 }

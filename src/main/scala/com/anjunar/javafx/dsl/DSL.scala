@@ -7,7 +7,7 @@ object DSL {
   def component[C](body: (ElementBuilder[C], BuildContext) ?=> Unit): C =
     given ctx: BuildContext = BuildContext()
 
-    val root = ComponentBuilder[C]("root")
+    val root = ComponentBuilder[C]()
 
     body(using root, ctx)
     root.build()
@@ -21,7 +21,8 @@ object DSL {
     parent match {
       case children : ChildBuilder[?] => children.add(builder)
       case component : ComponentBuilder[?] => component.add(builder)
-      case stage : stage[?] => stage.add(builder)
+      case stage : window[?] => stage.add(builder)
+      case header : header => header.add(builder)
       case _ => ()
     }
 
@@ -35,8 +36,9 @@ object DSL {
   export com.anjunar.javafx.dsl.traits.HasNode.*
   export com.anjunar.javafx.dsl.traits.HasWidth.*
   export com.anjunar.javafx.scene.titleBar
-  export com.anjunar.javafx.scene.stage
-  export com.anjunar.javafx.scene.stage.HasStage.*
+  export com.anjunar.javafx.scene.header
+  export com.anjunar.javafx.scene.window
+  export com.anjunar.javafx.scene.window.HasWindow.*
   export com.anjunar.javafx.scene.control.button
   export com.anjunar.javafx.scene.control.progressBar
   export com.anjunar.javafx.scene.control.progressBar.HasProgressBar.*
@@ -57,6 +59,7 @@ object DSL {
   export com.anjunar.javafx.scene.layout.region
   export com.anjunar.javafx.scene.image.ImageView
   export com.anjunar.javafx.scene.image.ImageView.HasImageView.*
+  export com.anjunar.javafx.dsl.ChildBuilder.*
   export scala.jdk.CollectionConverters.*
 
 }

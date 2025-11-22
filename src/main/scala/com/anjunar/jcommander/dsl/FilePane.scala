@@ -14,7 +14,7 @@ class FilePane extends NodeBuilder[VBox] {
 
   private var onTableChange : FileTable => Unit = FileTable => {}
 
-  override val node: VBox = component[VBox] {
+  override lazy val node: VBox = component[VBox] {
     vbox() {
 
       DriveButtons() {

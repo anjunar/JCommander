@@ -6,7 +6,7 @@ import scala.language.reflectiveCalls
 
 trait HasHeight {
   
-  val node : AnyRef
+  lazy val node : AnyRef
   
 }
 

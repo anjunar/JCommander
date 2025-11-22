@@ -6,7 +6,7 @@ import javafx.geometry.Insets
 import scala.language.reflectiveCalls
 
 trait HasSpacing {
-  val node : AnyRef
+  lazy val node : AnyRef
 }
 object HasSpacing {
   

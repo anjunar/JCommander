@@ -33,7 +33,7 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
 
   var loadImages : Boolean = false
 
-  override val node: TableView[FileItem] = component[TableView[FileItem]] {
+  override lazy val node: TableView[FileItem] = component[TableView[FileItem]] {
     tableView[FileItem]() {
 
       addEventHandler(KeyEvent.KEY_PRESSED, { event => {
