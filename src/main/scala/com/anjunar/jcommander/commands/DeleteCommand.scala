@@ -12,7 +12,7 @@ class DeleteCommand extends Command {
 
   val fileUtils: FileManager = inject(classOf[FileManager])
 
-  override def canExecute: Boolean = ! fileTableManager.source.node.selectionModel.value.getSelectedItem.isUpDir
+  override def canExecute: Boolean = ! fileTableManager.source.node.getSelectionModel.getSelectedItem.isUpDir
 
   override def execute(): Unit = {
     if (canExecute) {

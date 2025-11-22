@@ -10,10 +10,10 @@ class SplitPaneComponent extends Component[SplitPane] {
   val fileTableManager: FileTableManager = inject(classOf[FileTableManager])
 
   val leftPane = new FilePaneComponent("left", newLeftTable => {
-    fileTableManager.loadLeft(newLeftTable)
+//    fileTableManager.loadLeft(newLeftTable)
   })
   val rightPane = new FilePaneComponent("right", newRightTable => {
-    fileTableManager.loadRight(newRightTable)
+//    fileTableManager.loadRight(newRightTable)
   })
 
   override val node: SplitPane = new SplitPane {

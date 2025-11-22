@@ -4,7 +4,7 @@ import javafx.scene.Node
 
 import scala.compiletime.uninitialized
 
-class ComponentBuilder[C <: Node](val name: String) extends ElementBuilder[C] {
+class ComponentBuilder[C](val name: String) extends ElementBuilder[C] {
   var children: List[ElementBuilder[?]] = Nil
   var rootNode: C = uninitialized
 

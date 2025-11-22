@@ -14,7 +14,7 @@ class EditCommand extends AbstractFileCommand {
 
   override def execute(): Unit = {
     if (canExecute) {
-      fileUtils.executeFile(configuration.executable, null,  Seq(fileTableManager.source.node.selectionModel.value.getSelectedItem.file))
+      fileUtils.executeFile(configuration.executable, null,  Seq(fileTableManager.source.node.getSelectionModel.getSelectedItem.file))
     }
   }
   

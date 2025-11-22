@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{AbstractFileTableComponent, DarkModeComponent}
+import com.anjunar.jcommander.components.DarkModeComponent
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.{Main, WinNativeCopy}
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.ui.ThemedDialog
@@ -13,7 +14,7 @@ import scalafx.application.Platform
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.event.ActionEvent
 import scalafx.scene.control.*
-import scalafx.scene.input.MouseEvent
+import javafx.scene.input.MouseEvent
 import scalafx.scene.layout.VBox
 
 import java.awt.image.BufferedImage
@@ -35,7 +36,7 @@ class FallBackFileUtils extends AbstractFileUtils {
 
   override def executeFile(file: String): Unit = ???
 
-  override def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         val copyOption = copyOptions(replaceExisting, copyAttributes)
@@ -51,7 +52,7 @@ class FallBackFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         val sameDrive =
@@ -89,7 +90,7 @@ class FallBackFileUtils extends AbstractFileUtils {
     copyOption
   }
 
-  override def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         setWriteable(path)
@@ -119,8 +120,8 @@ class FallBackFileUtils extends AbstractFileUtils {
                    confirmHeader: String,
                    progressText: String,
                    isDelete: Boolean,
-                   activeTable: AbstractFileTableComponent,
-                   otherTable: AbstractFileTableComponent): Unit = {
+                   activeTable: FileTable,
+                   otherTable: FileTable): Unit = {
 
     val replaceExistingBox = new CheckBox("Replace existing files") {
       selected = true
@@ -150,7 +151,7 @@ class FallBackFileUtils extends AbstractFileUtils {
         val checkForLockedFiles = checkForLockedFilesBox.selected.value
 
         val lockedFiles = new ListBuffer[Path]
-        val selectedItems = activeTable.node.selectionModel.value.getSelectedItems
+        val selectedItems = activeTable.node.getSelectionModel.getSelectedItems
 
         val allFiles = selectedItems.stream().flatMap { fileItem =>
           val path = Path.of(fileItem.file)

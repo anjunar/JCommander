@@ -1,20 +1,37 @@
 package com.anjunar.javafx.dsl.traits
 
 import javafx.geometry.Pos
+import javafx.geometry.Insets
+
+import scala.language.reflectiveCalls
 
 trait HasSpacing {
-  def getSpacing(): Double
-  def setSpacing(v: Double): Unit
-  
-  def getAlignment() : Pos
-  def setAlignment(value : Pos) : Unit
+  val node : AnyRef
 }
 object HasSpacing {
+  
+  private type H = {
+    def getSpacing(): Double
+    def setSpacing(v: Double): Unit
+  
+    def getPadding() : Insets
+    def setPadding(value : Insets) : Unit
 
-  def spacing()(using h: HasSpacing): Double = h.getSpacing()
-  def spacing_=(v: Double)(using h: HasSpacing): Unit = h.setSpacing(v)
+    def getAlignment() : Pos
+    def setAlignment(value : Pos) : Unit
+  }
 
-  def alignment()(using h: HasSpacing): Pos = h.getAlignment()
-  def alignment_=(v: Pos)(using h: HasSpacing): Unit = h.setAlignment(v)
+  private inline def w(using h: HasSpacing): H =
+    h.node.asInstanceOf[H]
+
+
+  def spacing()(using h: HasSpacing): Double = w.getSpacing()
+  def spacing_=(v: Double)(using h: HasSpacing): Unit = w.setSpacing(v)
+  
+  def padding()(using h: HasSpacing): Insets = w.getPadding()
+  def padding_=(v: Insets)(using h: HasSpacing): Unit = w.setPadding(v)
+
+  def alignment()(using h: HasSpacing): Pos = w.getAlignment()
+  def alignment_=(v: Pos)(using h: HasSpacing): Unit = w.setAlignment(v)
 
 }

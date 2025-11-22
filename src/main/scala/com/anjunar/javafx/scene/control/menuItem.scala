@@ -6,8 +6,7 @@ import com.anjunar.javafx.scene.layout.vbox
 import javafx.scene.control.MenuItem as JfxMenuItem
 
 class menuItem extends ElementBuilder[JfxMenuItem], HasText, HasOnAction {
-  val node = new JfxMenuItem()
-  export node.{getText, setText, getOnAction, setOnAction}
+  val node : JfxMenuItem = new JfxMenuItem()
   def build(): JfxMenuItem = node
 }
 

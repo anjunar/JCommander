@@ -14,7 +14,6 @@ import scala.compiletime.uninitialized
 class tableColumn[E, T] extends ElementBuilder[control.TableColumn[E, T]], HasText, HasWidth {
 
   val node: control.TableColumn[E, T] = new control.TableColumn[E, T]()
-  export node.{getText, setText, getPrefWidth, setPrefWidth, getMinWidth, setMinWidth, getMaxWidth, setMaxWidth}
   
   var cellFactory : (T, Boolean, TableCell[E,T]) => Unit = uninitialized
   var cellValueFactory : E => T = uninitialized
@@ -31,6 +30,9 @@ object tableColumn {
 
 
   object HasTableColumn {
+    
+    def reorderable[E, T]()(using h: tableColumn[E,T]) : Boolean = h.node.isReorderable
+    def reorderable_=[E, T](v: Boolean)(using h: tableColumn[E,T]) : Unit = h.node.setReorderable(v)
 
     def cellFactory[E, T]()(using h: tableColumn[E, T]): (T, Boolean, TableCell[E,T]) => Unit =
       h.cellFactory

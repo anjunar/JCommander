@@ -7,7 +7,6 @@ import javafx.scene.layout
 
 class hbox extends ChildBuilder[layout.HBox], HasSpacing, HasWidth, HasHeight {
   val node: layout.HBox = new layout.HBox()
-  export node.{setSpacing, getSpacing, getAlignment, setAlignment, getPrefWidth, setPrefWidth, getMinWidth, setMinWidth, getMaxWidth, setMaxWidth, getPrefHeight, setPrefHeight, getMinHeight, setMinHeight, getMaxHeight, setMaxHeight}
 
   override def add(child: ElementBuilder[?]): Unit =
     node.getChildren.add(child.build().asInstanceOf[Node])

@@ -5,6 +5,8 @@ import scala.compiletime.uninitialized
 class Ref[R] {
   
   var value : R = uninitialized
+  
+  def get: R = value
 
   inline def apply(body: R ?=> Unit): Unit =
     body(using value)

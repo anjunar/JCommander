@@ -1,17 +1,18 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.AbstractFileTableComponent
-import com.anjunar.jcommander.ui.ThemedDialog
+import com.anjunar.javafx.dsl.DSL.*
+import com.anjunar.javafx.dsl.Ref
+import com.anjunar.javafx.scene.Window
 import com.anjunar.jcommander.WinNativeCopy
-import com.anjunar.jcommander.utils.OSType
+import com.anjunar.jcommander.dsl.FileTable
 import com.typesafe.scalalogging.Logger
+import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}
 import javafx.concurrent
-import scalafx.Includes.jfxDialogPane2sfx
+import javafx.geometry.{Insets, Pos}
 import scalafx.application.Platform
-import scalafx.event.ActionEvent
 import scalafx.scene.control.*
-import scalafx.scene.input.MouseEvent
-import scalafx.scene.layout.{Pane, VBox}
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.Priority
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayInputStream, File}
@@ -44,7 +45,7 @@ class WinFileUtils extends AbstractFileUtils {
 
   override def executeFile(file: String): Unit = WinNativeCopy.executeFile(file)
 
-  override def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.copyFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback, overwrite)
@@ -58,7 +59,7 @@ class WinFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.moveFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, progressCallback, overwrite)
@@ -72,7 +73,7 @@ class WinFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, progressCallback: WinNativeCopy.ProgressCallback) => {
         WinNativeCopy.deleteFiles(paths.map(_.toAbsolutePath.toString).toArray, progressCallback, recycle)
@@ -110,48 +111,75 @@ class WinFileUtils extends AbstractFileUtils {
                     confirmHeader: String,
                     progressText: String,
                     isDelete: Boolean,
-                    activeTable: AbstractFileTableComponent,
-                    otherTable: AbstractFileTableComponent
+                    activeTable: FileTable,
+                    otherTable: FileTable
                   ): Unit = {
 
-    val replaceExistingBox = new CheckBox("Replace existing files") {
-      selected = false
-    }
-    val moveToRecycleBinBox = new CheckBox("Move to Recycle Bin") {
-      selected = true
-    }
+    val replaceExistingBox = new SimpleBooleanProperty(false)
+    val moveToRecycleBinBox = new SimpleBooleanProperty(true)
 
-    val confirmDialog = new ThemedDialog[ButtonType] {
-      title = confirmTitle
-      headerText = confirmHeader
-      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      dialogPane.content = new VBox(10) {
-        if (!isDelete) {
-          children += replaceExistingBox
-        } else {
-          children += moveToRecycleBinBox
+    val confirmDialog = component[Window[String]] {
+      stage() {
+        vbox() {
+          spacing = 12
+          padding = new Insets(10)
+
+          label() {
+            text = confirmTitle
+          }
+          label() {
+            text = confirmHeader
+          }
+
+          if (isDelete) {
+            checkbox() {
+              text = "Move to Recycle Bin"
+              selectedProperty.bindBidirectional(moveToRecycleBinBox)
+            }
+          } else {
+            checkbox() {
+              text = "Replace existing files"
+              selectedProperty.bindBidirectional(replaceExistingBox)
+            }
+          }
+
+          region() {
+            vgrow = Priority.ALWAYS
+          }
+
+          hbox() {
+            spacing = 10
+            alignment = Pos.CENTER_RIGHT
+
+            button() {
+              text = "Cancel"
+              onAction = _ => closeWithResult("Cancel")
+            }
+            button() {
+              text = "OK"
+              onAction = _ => closeWithResult("Ok")
+            }
+          }
         }
       }
     }
 
-    confirmDialog.resultConverter = identity
+    confirmDialog.showAndWaitResult().foreach { result =>
+      if (result == "Ok") {
 
-    confirmDialog.showAndWaitDialog().foreach { result =>
-      if (result == ButtonType.OK) {
+        val overwriteExisting = replaceExistingBox.get()
+        val moveToRecycleBin = moveToRecycleBinBox.get()
 
-        val overwriteExisting = replaceExistingBox.selected.value
-        val moveToRecycleBin = moveToRecycleBinBox.selected.value
-
-        val selectedFiles = activeTable.node.selectionModel.value.getSelectedItems.asScala.map(item => Path.of(item.file)).toSeq
+        val selectedFiles = activeTable.node.getSelectionModel.getSelectedItems.asScala.map(item => Path.of(item.file)).toSeq
         val targetDir = if isDelete then Path.of(activeTable.directory) else Path.of(otherTable.directory)
 
         val cancelledFlag = new AtomicBoolean(false)
 
-        val progressBar = new ProgressBar {
+        val progressBar3 = new ProgressBar {
           prefWidth = 350
         }
-        val progressLabel = new Label("0% copied")
-        val fileLabel = new Label("")
+        val progressString = new SimpleStringProperty()
+        val fileString = new SimpleStringProperty()
 
         val task = new concurrent.Task[Unit]() {
           override def call(): Unit = {
@@ -166,7 +194,7 @@ class WinFileUtils extends AbstractFileUtils {
 
                     if (isDelete) {
                       Platform.runLater {
-                        fileLabel.text = event.source
+                        fileString.set(event.source)
                       }
                     }
 
@@ -175,18 +203,18 @@ class WinFileUtils extends AbstractFileUtils {
                     val etaSec = (eta / 1000).toInt
 
                     Platform.runLater {
-                      progressLabel.text =
-                        f"${(event.percent * 100).toInt}%% copied  –  (${formatEta(etaSec)})"
+                      val text = f"${(event.percent * 100).toInt}%% copied  –  (${formatEta(etaSec)})"
+                      progressString.set(text)
                     }
 
                   case WinNativeCopy.ProgressEvent.Type.PRE_COPY =>
                     Platform.runLater {
-                      fileLabel.text = event.source
+                      fileString.set(event.source)
                     }
 
                   case WinNativeCopy.ProgressEvent.Type.FINISH =>
                     Platform.runLater {
-                      progressLabel.text = "Finishing..."
+                      progressString.set("Finishing...")
                     }
 
                   case _ => // ignore
@@ -200,7 +228,7 @@ class WinFileUtils extends AbstractFileUtils {
               override def onComplete(): Unit = {
                 log.info("Operation completed successfully.")
                 Platform.runLater {
-                  progressLabel.text = "Completed!"
+                  progressString.set("Completed!")
                 }
               }
 
@@ -209,21 +237,48 @@ class WinFileUtils extends AbstractFileUtils {
           }
         }
 
-        val progressDialog = new ThemedDialog[Unit]() {
-          title = progressText
-          dialogPane.content = new VBox(10, progressBar, progressLabel, fileLabel)
-          dialogPane.buttonTypes = Seq(ButtonType.Cancel)
+        val progressDialog = component[Window[Unit]] {
+          stage() {
+            vbox() {
+              spacing = 14
+              padding = new Insets(20)
+
+              label() {
+                text = progressText
+              }
+
+              progressBar() {
+                prefWidth = 380
+                progressProperty.bind(task.progressProperty())
+              }
+
+              label() {
+                textProperty.bind(progressString)
+              }
+
+              label() {
+                textProperty.bind(fileString)
+              }
+
+              region() {
+                vgrow = Priority.ALWAYS
+              }
+
+              hbox() {
+                alignment = Pos.CENTER_RIGHT
+                button() {
+                  text = "Cancel"
+                  onAction = _ => {
+                    cancelledFlag.set(true)
+                    task.cancel()
+                    close()
+                    log.info("Operation cancelledFlag by user.")
+                  }
+                }
+              }
+            }
+          }
         }
-
-        val cancelButton = progressDialog.dialogPane.lookupButton(ButtonType.Cancel).asInstanceOf[javafx.scene.control.Button]
-        cancelButton.addEventFilter(ActionEvent.Action, _ => {
-          cancelledFlag.set(true) 
-          task.cancel()
-          progressDialog.close()
-          log.info("Operation cancelledFlag by user.")
-        })
-
-        progressBar.progress <== task.progressProperty()
 
         task.setOnSucceeded { _ =>
           progressDialog.close()
@@ -239,7 +294,6 @@ class WinFileUtils extends AbstractFileUtils {
           log.info("Task was cancelledFlag.")
         }
 
-        // Starte Task in eigenem Thread
         Platform.runLater {
           progressDialog.show()
         }

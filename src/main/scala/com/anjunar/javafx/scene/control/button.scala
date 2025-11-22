@@ -6,7 +6,6 @@ import javafx.scene.{Node, control}
 
 class button extends ChildBuilder[control.Button], HasLabeled, HasText, HasOnAction, HasWidth, HasHeight {
   val node: control.Button = new control.Button()
-  export node.{getText, setText, getOnAction, setOnAction, getPrefWidth, setPrefWidth, getMinWidth, setMinWidth, getMaxWidth, setMaxWidth, getPrefHeight, setPrefHeight, getMinHeight, setMinHeight, getMaxHeight, setMaxHeight}
 
   var children: List[ElementBuilder[?]] = Nil
 

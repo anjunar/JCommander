@@ -1,8 +1,9 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{AbstractFileTableComponent, DarkModeComponent}
+import com.anjunar.jcommander.components.{DarkModeComponent}
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.configuration.DarkModeConf
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.typesafe.scalalogging.Logger
 import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
@@ -33,7 +34,7 @@ abstract class AbstractFileUtils extends FileUtils {
     }
   }
 
-  def mkDir(activeTable: AbstractFileTableComponent): Unit = {
+  def mkDir(activeTable: FileTable): Unit = {
     val textField: TextField = new TextField {
       promptText = "Directory Name"
     }
@@ -55,9 +56,9 @@ abstract class AbstractFileUtils extends FileUtils {
     }
   }
 
-  def renameFile(activeTable: AbstractFileTableComponent): Unit = {
+  def renameFile(activeTable: FileTable): Unit = {
     val textField: TextField = new TextField {
-      text = activeTable.node.selectionModel.value.getSelectedItem.name
+      text = activeTable.node.getSelectionModel.getSelectedItem.name
     }
 
     val renameDialog = new ThemedDialog[ButtonType]() {
@@ -72,7 +73,7 @@ abstract class AbstractFileUtils extends FileUtils {
     renameDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
-        val oldPath = activeTable.node.selectionModel.value.getSelectedItems.head
+        val oldPath = activeTable.node.getSelectionModel.getSelectedItems.head
         val newPath = Path.of(oldPath.parent).resolve(newFileName)
         Files.move(Path.of(oldPath.file), newPath)
       }

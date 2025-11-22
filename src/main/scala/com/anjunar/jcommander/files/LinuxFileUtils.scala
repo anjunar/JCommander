@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
-import com.anjunar.jcommander.components.AbstractFileTableComponent
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.{Icons, LinuxNativeCopy}
@@ -12,7 +12,7 @@ import scalafx.event.ActionEvent
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
 import scalafx.scene.control.*
-import scalafx.scene.input.MouseEvent
+import javafx.scene.input.MouseEvent
 import scalafx.scene.layout.{GridPane, HBox, VBox}
 
 import java.awt.image.BufferedImage
@@ -667,7 +667,7 @@ class LinuxFileUtils extends AbstractFileUtils {
     ImageIO.read(new ByteArrayInputStream(bytes))
   }
 
-  override def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, ProgressListener: LinuxNativeCopy.ProgressListener) => {
         LinuxNativeCopy.copyFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, overwrite, ProgressListener)
@@ -681,7 +681,7 @@ class LinuxFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, ProgressListener: LinuxNativeCopy.ProgressListener) => {
         LinuxNativeCopy.moveFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, overwrite, ProgressListener)
@@ -695,7 +695,7 @@ class LinuxFileUtils extends AbstractFileUtils {
     )
   }
 
-  override def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, ProgressListener: LinuxNativeCopy.ProgressListener) => {
         LinuxNativeCopy.deleteFiles(paths.map(_.toAbsolutePath.toString).toArray, recycle, ProgressListener)
@@ -733,8 +733,8 @@ class LinuxFileUtils extends AbstractFileUtils {
                     confirmHeader: String,
                     progressText: String,
                     isDelete: Boolean,
-                    activeTable: AbstractFileTableComponent,
-                    otherTable: AbstractFileTableComponent
+                    activeTable: FileTable,
+                    otherTable: FileTable
                   ): Unit = {
 
     val replaceExistingBox = new CheckBox("Replace existing files") {

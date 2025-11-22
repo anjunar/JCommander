@@ -25,10 +25,10 @@ class FilePaneComponent(position: String, newTable: AbstractFileTableComponent =
 
   position match {
     case "left" =>
-      fileTableManager.loadLeft(table)
+//      fileTableManager.loadLeft(table)
       table.loadDirectory(leftConf.file.getAbsolutePath)
     case "right" =>
-      fileTableManager.loadRight(table, true)
+//      fileTableManager.loadRight(table, true)
       table.loadDirectory(rightConf.file.getAbsolutePath)
   }
 

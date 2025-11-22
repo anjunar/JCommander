@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
-import com.anjunar.jcommander.components.AbstractFileTableComponent
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.{Icons, OSXNativeCopy}
@@ -12,7 +12,7 @@ import scalafx.event.ActionEvent
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
 import scalafx.scene.control.*
-import scalafx.scene.input.MouseEvent
+import javafx.scene.input.MouseEvent
 import scalafx.scene.layout.{GridPane, HBox, VBox}
 
 import java.awt.image.BufferedImage
@@ -260,7 +260,7 @@ class OSXFileUtils extends AbstractFileUtils {
     ImageIO.read(new ByteArrayInputStream(bytes))
   }
 
-  override def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit =
+  override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit =
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, ProgressListener: OSXNativeCopy.ProgressListener) => {
         OSXNativeCopy.deleteFiles(paths.map(_.toAbsolutePath.toString).toArray, recycle, ProgressListener)
@@ -273,7 +273,7 @@ class OSXFileUtils extends AbstractFileUtils {
       otherTable
     )
 
-  override def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit =
+  override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit =
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, ProgressListener: OSXNativeCopy.ProgressListener) => {
         OSXNativeCopy.copyFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, overwrite, ProgressListener)
@@ -286,7 +286,7 @@ class OSXFileUtils extends AbstractFileUtils {
       otherTable
     )
 
-  override def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit =
+  override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit =
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, ProgressListener: OSXNativeCopy.ProgressListener) => {
         OSXNativeCopy.moveFiles(paths.map(_.toAbsolutePath.toString).toArray, target.toAbsolutePath.toString, overwrite, ProgressListener)
@@ -322,8 +322,8 @@ class OSXFileUtils extends AbstractFileUtils {
                     confirmHeader: String,
                     progressText: String,
                     isDelete: Boolean,
-                    activeTable: AbstractFileTableComponent,
-                    otherTable: AbstractFileTableComponent
+                    activeTable: FileTable,
+                    otherTable: FileTable
                   ): Unit = {
 
     val replaceExistingBox = new CheckBox("Replace existing files") { selected = false }

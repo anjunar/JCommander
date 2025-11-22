@@ -1,6 +1,7 @@
 package com.anjunar.javafx.dsl.traits
 
-import javafx.event.EventHandler
+import javafx.beans.property.ObjectProperty
+import javafx.event.{Event, EventHandler, EventType}
 import javafx.scene.Node
 import javafx.scene.input.{KeyEvent, MouseEvent}
 import javafx.scene.layout.{HBox, Priority, VBox}
@@ -38,7 +39,11 @@ object HasNode {
 
   def hgrow()(using h: HasNode): Priority = HBox.getHgrow(h.node)
   def hgrow_=(v: Priority)(using h: HasNode): Unit = HBox.setHgrow(h.node, v)
-
+  
+  
+  def addEventHandler[T <: Event](eventType: EventType[T], eventHandler: EventHandler[? >: T])(using h: HasNode) : Unit = 
+    h.node.addEventHandler(eventType, eventHandler)
+  
   def onKeyPressed(using h: HasNode): KeyEvent => Unit =
     h.onKeyPressed
 
@@ -46,6 +51,9 @@ object HasNode {
     h.onKeyPressed = f
     h.node.setOnKeyPressed((t: KeyEvent) => f(t))
   }
+  
+  
+  
 
   def onMouseClicked(using h: HasNode): MouseEvent => Unit =
     h.onMouseClicked

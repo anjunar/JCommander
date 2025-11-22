@@ -1,32 +1,70 @@
 package com.anjunar.jcommander.dsl
 
 
-import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.traits.HasNode
+import com.anjunar.javafx.dsl.{NodeBuilder, Producer, Ref}
+import com.anjunar.jcommander.dsl.AbstractFileTable.HasAbstractFileTable.loadImages
 import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
 import com.anjunar.jcommander.manager.FileManager
 import com.anjunar.jcommander.utils.CdiUtils.inject
-import javafx.scene.control.TableCell
-import javafx.embed.swing.SwingFXUtils
+import com.anjunar.jcommander.utils.FileSystemManagerBuilder
+import javafx.event.EventHandler
 import javafx.scene.control.TableView
-import javafx.scene.input.KeyCode
+import javafx.scene.input.{KeyCode, KeyEvent, MouseButton, MouseEvent}
+import org.apache.commons.vfs2.{FileObject, FileSystemManager}
 
 import java.io.File
+import java.nio.file.StandardWatchEventKinds.*
 import java.nio.file.{Files, Path, WatchEvent}
 import java.text.SimpleDateFormat
-import java.nio.file.StandardWatchEventKinds.*
+import scala.collection.mutable
 import scala.compiletime.uninitialized
 
-class LocalFileTable extends NodeBuilder[TableView[FileItem]] {
+class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
 
-  var directory : String = uninitialized
+  var directory: String = uninitialized
+
+  override val manager: FileSystemManager = FileSystemManagerBuilder.build()
+
+  override def lastSelections: mutable.Map[String, String] = abstractFileTableRef.value.lastSelections
 
   private var currentWatcher: Option[FileWatcher2] = None
 
-  private val fileManager : FileManager = inject(classOf[FileManager])
+  private val fileManager: FileManager = inject(classOf[FileManager])
 
   private val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm")
+  
+  private val abstractFileTableRef = Ref[AbstractFileTable]()
+
+  override def resolveDirectory: FileObject =
+    manager.toFileObject(Path.of(normalize(directory)))
+
+
+  def loadDirectory(value: String): Unit = {
+    val clean = normalize(value)
+    val dir = File(clean)
+    directory = dir.getAbsolutePath
+
+    val files = Option(dir.listFiles()).getOrElse(Array.empty[File])
+    val parent = Option(dir.getParentFile).map(p => FileItem("..", "<UP-DIR>", "<UP-DIR>", 0, "", 0, p.getAbsolutePath, true, p.getParent)).toSeq
+
+    val fileItems = files.toSeq
+      .filter(f => !(f.isDirectory && !Files.isReadable(f.toPath)))
+      .map { f => createFileItem(f) }
+
+    if (currentWatcher.isEmpty || directory != currentWatcher.get.path.toAbsolutePath.toString) {
+      currentWatcher.foreach(_.stop())
+      val watcher = new FileWatcher2(dir.toPath, this)
+      watcher.start()
+      currentWatcher = Some(watcher)
+    }
+
+    node.getSortOrder.clear()
+    node.getSortOrder.add(node.getColumns.asScala.find(_.getText == "Name").get)
+    node.sort()
+    node.getItems.clear()
+    node.getItems.addAll((parent ++ fileItems) *)
+  }
 
   def updateFile(file: Path, kind: WatchEvent.Kind[?]): Unit = {
     val itemOpt = node.getItems.asScala.find(item => Path.of(item.file) == file)
@@ -42,32 +80,6 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]] {
           if (index >= 0) buffer.set(index, createFileItem(file.toFile))
         }
     }
-  }
-
-  def loadDirectory(value: String): Unit = {
-    val clean = normalize(value)
-    val dir = File(clean)
-    directory = dir.getAbsolutePath
-
-    val files = Option(dir.listFiles()).getOrElse(Array.empty[File])
-    val parent = Option(dir.getParentFile).map(p => FileItem("..", "<UP-DIR>", "<UP-DIR>", 0, "", 0, p.getAbsolutePath, true, p.getParent)).toSeq
-
-    val fileItems = files.toSeq
-      .filter(f => !(f.isDirectory && !Files.isReadable(f.toPath)))
-      .map { f => createFileItem(f)}
-
-    if (currentWatcher.isEmpty || directory != currentWatcher.get.path.toAbsolutePath.toString) {
-      currentWatcher.foreach(_.stop())
-      val watcher = new FileWatcher2(dir.toPath, this)
-      watcher.start()
-      currentWatcher = Some(watcher)
-    }
-
-    node.getSortOrder.clear()
-    node.getSortOrder.add(node.getColumns.asScala.find(_.getText == "Name").get)
-    node.sort()
-    node.getItems.clear()
-    node.getItems.addAll((parent ++ fileItems)*)
   }
 
   private def createFileItem(file: File): FileItem = {
@@ -98,54 +110,34 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]] {
     if (path.startsWith("file:")) path.stripPrefix("file:") else path
 
   override val node: TableView[FileItem] = component[TableView[FileItem]] {
-    tableView[FileItem]() {
-
-      HasNode.onKeyPressed = event => {
+    AbstractFileTable(abstractFileTableRef) {
+      loadImages = true
+      addEventHandler(KeyEvent.KEY_PRESSED, { event => {
         if (event.getCode == KeyCode.ENTER) {
-          loadDirectory(node.getSelectionModel.getSelectedItem.file)
-        }
-      }
-
-      tableColumn[FileItem, FileItem]() {
-        text = "Name"
-
-        cellValueFactory = (item : FileItem) => item
-        cellFactory = (item: FileItem, empty: Boolean, tableCell: TableCell[FileItem, FileItem]) => {
-          if (empty) {
-            tableCell.setText(null)
-            tableCell.setGraphic(null)
+          val selectedItem = node.getSelectionModel.getSelectedItem
+          if (selectedItem.isDir || selectedItem.isUpDir) {
+            loadDirectory(selectedItem.file)
           } else {
-            tableCell.setText(item.name)
-            tableCell.setGraphic(component {
-              ImageView() {
-                fitWidth = 18
-                fitHeight = 18
-                image = SwingFXUtils.toFXImage(fileManager.getFileIcon(item.file, false), null)
-              }
-            })
+            fileManager.executeFile(this)
           }
         }
       }
-
-      tableColumn[FileItem, String]() {
-        text = "Extension"
-        prefWidth = 100
-        cellValueFactory = (fileItem : FileItem) => fileItem.ext
+      })
+      addEventHandler(MouseEvent.MOUSE_CLICKED, { (event: MouseEvent) => {
+        if (event.getButton == MouseButton.SECONDARY) {
+          fileManager.fileContext(this, event)
+          event.consume()
+        } else if (event.getClickCount == 2) {
+          val selectedItem = node.getSelectionModel.getSelectedItem
+          if (selectedItem.isDir || selectedItem.isUpDir) {
+            loadDirectory(selectedItem.file)
+          } else {
+            fileManager.executeFile(this)
+          }
+          event.consume()
+        }
       }
-
-      tableColumn[FileItem, String]() {
-        text = "Size"
-        prefWidth = 100
-        cellValueFactory = (fileItem: FileItem) => fileItem.size
-      }
-
-      tableColumn[FileItem, String]() {
-        text = "Modified Date"
-        prefWidth = 100
-        cellValueFactory = (fileItem: FileItem) => fileItem.date
-      }
-
-
+      })
     }
   }
 
@@ -159,8 +151,9 @@ object LocalFileTable extends Producer[LocalFileTable, TableView[FileItem]] {
 
   object HastLocalFileTable {
 
-    def directory()(using l: LocalFileTable) : String = l.directory
-    def directory_=(value : String)(using l: LocalFileTable) : Unit = l.loadDirectory(value)
+    def directory()(using l: LocalFileTable): String = l.directory
+
+    def directory_=(value: String)(using l: LocalFileTable): Unit = l.loadDirectory(value)
 
   }
 

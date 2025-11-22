@@ -11,8 +11,8 @@ abstract class AbstractFileCommand extends Command {
   val fileUtils: FileManager = inject(classOf[FileManager])
 
   override def canExecute: Boolean = {
-    val isItemSelected = fileTableManager.source.node.selectionModel.value.getSelectedItem != null
-    val isFileNotUpDir = !fileTableManager.source.node.selectionModel.value.getSelectedItem.isUpDir
+    val isItemSelected = fileTableManager.source.node.getSelectionModel.getSelectedItem != null
+    val isFileNotUpDir = !fileTableManager.source.node.getSelectionModel.getSelectedItem.isUpDir
     val isDirectoryDifferent = fileTableManager.target.directory != fileTableManager.source.directory
     
     isItemSelected && isFileNotUpDir && isDirectoryDifferent

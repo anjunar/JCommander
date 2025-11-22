@@ -6,18 +6,14 @@ import com.anjunar.javafx.scene.layout.vbox
 import javafx.scene.control.Menu as JfxMenu
 
 class menu extends ElementBuilder[JfxMenu], HasText {
-  val node = new JfxMenu()
-  export node.{getText, setText}
-  private var items: List[menuItem] = Nil
+  val node : JfxMenu = new JfxMenu()
 
   def add(child: ElementBuilder[?]): Unit =
     child match
-      case mi: menuItem => items = items :+ mi
+      case mi: menuItem => node.getItems.add(mi.build())
       case _ => ()
 
-  def build(): JfxMenu =
-    items.foreach(i => node.getItems.add(i.build()))
-    node
+  def build(): JfxMenu = node
 }
 
 object menu {

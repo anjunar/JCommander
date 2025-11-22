@@ -1,8 +1,8 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.AbstractFileTableComponent
+import com.anjunar.jcommander.dsl.FileTable
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
-import scalafx.scene.input.MouseEvent
+import javafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage
 import java.io.File
@@ -19,13 +19,13 @@ trait FileUtils {
   
   def executeFile(file : String) : Unit
 
-  def mkDir(activeTable: AbstractFileTableComponent): Unit
+  def mkDir(activeTable: FileTable): Unit
 
-  def renameFile(activeTable: AbstractFileTableComponent): Unit
+  def renameFile(activeTable: FileTable): Unit
 
-  def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit
+  def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit
 
-  def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit
+  def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit
 
-  def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit
+  def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit
 }

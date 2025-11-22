@@ -1,14 +1,10 @@
 package com.anjunar.jcommander
 
-import javafx.application.Application
-import javafx.scene.{Group, Scene}
-import javafx.stage.{Stage, StageStyle}
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.traits.HasNode
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf}
 import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainTitleBar}
-import com.anjunar.jcommander.dsl.MainTitleBar.*
-import com.anjunar.jcommander.files.FileItem
+import com.anjunar.jcommander.dsl.FilePane.HastLocalFileTable.*
+import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
 import com.anjunar.jcommander.ui.Resizable
 import com.anjunar.jcommander.utils.CdiUtils.inject
@@ -16,7 +12,10 @@ import com.anjunar.scala.universe.introspector.BeanIntrospector
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.enterprise.inject.se.SeContainerInitializer
 import jakarta.inject.Inject
-import javafx.scene.layout.{HBox, Priority, VBox}
+import javafx.application.Application
+import javafx.scene.Scene
+import javafx.scene.layout.{Priority, VBox}
+import javafx.stage.{Stage, StageStyle}
 
 import java.io.File
 
@@ -27,6 +26,8 @@ class App extends Application {
     val container = SeContainerInitializer.newInstance().initialize()
 
     val configuration = inject(classOf[Configuration])
+
+    val fileTableManager = inject(classOf[FileTableManager])
 
     val objectMapper = ObjectMapperBuilder.build()
 
@@ -68,11 +69,17 @@ class App extends Application {
           vbox() {
             FilePane() {
               vgrow = Priority.ALWAYS
+              onTableChange = table => {
+                fileTableManager.loadLeft(table)
+              }
             }
           }
           vbox() {
             FilePane() {
               vgrow = Priority.ALWAYS
+              onTableChange = table => {
+                fileTableManager.loadRight(table, true)
+              }
             }
           }
         }

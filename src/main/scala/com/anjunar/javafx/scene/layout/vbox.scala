@@ -7,7 +7,6 @@ import javafx.scene.layout
 
 class vbox extends ChildBuilder[layout.VBox], HasSpacing, HasWidth, HasHeight {
   val node: layout.VBox = new layout.VBox()
-  export node.{setSpacing, getSpacing, getAlignment, setAlignment, getPrefWidth, setPrefWidth, getMinWidth, setMinWidth, getMaxWidth, setMaxWidth, getPrefHeight, setPrefHeight, getMinHeight, setMinHeight, getMaxHeight, setMaxHeight}
 
   var children: List[ElementBuilder[?]] = Nil
 

@@ -1,5 +1,6 @@
 package com.anjunar.jcommander.components
 
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.files.FileItem
 import javafx.scene.control.TableCell as JfxTableCell
 import org.apache.commons.vfs2.{FileObject, FileSystemManager}

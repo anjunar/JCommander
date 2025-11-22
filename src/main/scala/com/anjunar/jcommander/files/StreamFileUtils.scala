@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.jcommander.components.{AbstractFileTableComponent, LocalFileTableComponent, VFS2FileTableComponent}
+import com.anjunar.jcommander.components.{LocalFileTableComponent, VFS2FileTableComponent}
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.{ProgressListener, VFSUtils}
 import org.apache.commons.vfs2.FileObject
@@ -10,7 +11,7 @@ import scalafx.scene.layout.VBox
 import javafx.concurrent
 import scalafx.Includes.observableList2ObservableBuffer
 import scalafx.application.Platform
-import scalafx.scene.input.MouseEvent
+import javafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage
 import java.nio.file.Files
@@ -28,7 +29,7 @@ class StreamFileUtils extends FileUtils {
 
   override def executeFile(file: String): Unit = throw new NotImplementedError("Will not be implemented in Future")
 
-  override def mkDir(activeTable: AbstractFileTableComponent): Unit = {
+  override def mkDir(activeTable: FileTable): Unit = {
     val textField: TextField = new TextField {
       promptText = "Directory Name"
     }
@@ -52,9 +53,9 @@ class StreamFileUtils extends FileUtils {
     }
   }
 
-  override def renameFile(activeTable: AbstractFileTableComponent): Unit = {
+  override def renameFile(activeTable: FileTable): Unit = {
     val textField = new TextField {
-      text = activeTable.node.selectionModel.value.getSelectedItem.name
+      text = activeTable.node.getSelectionModel.getSelectedItem.name
     }
 
     val renameDialog = new ThemedDialog[ButtonType]() {
@@ -68,7 +69,7 @@ class StreamFileUtils extends FileUtils {
 
     renameDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
-        val selected = activeTable.node.selectionModel.value.getSelectedItems.head
+        val selected = activeTable.node.getSelectionModel.getSelectedItems.head
         val oldFile = activeTable.manager.resolveFile(selected.file)
 
         val parent = Option(oldFile.getParent).getOrElse {
@@ -82,7 +83,7 @@ class StreamFileUtils extends FileUtils {
     }
   }
 
-  override def copyFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (sources: Seq[FileObject], destDir: FileObject, listener: ProgressListener) => {
         VFSUtils.copyMultiple(sources, destDir, listener)
@@ -96,7 +97,7 @@ class StreamFileUtils extends FileUtils {
     )
   }
 
-  override def moveFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def moveFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (sources: Seq[FileObject], destDir: FileObject, listener: ProgressListener) => {
         VFSUtils.moveMultiple(sources, destDir, listener)
@@ -110,7 +111,7 @@ class StreamFileUtils extends FileUtils {
     )
   }
 
-  override def deleteFiles(activeTable: AbstractFileTableComponent, otherTable: AbstractFileTableComponent): Unit = {
+  override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (sources: Seq[FileObject], destDir: FileObject, listener: ProgressListener) => {
         VFSUtils.deleteMultiple(sources, listener)
@@ -129,8 +130,8 @@ class StreamFileUtils extends FileUtils {
                    confirmHeader: String,
                    progressText: String,
                    isDelete: Boolean,
-                   activeTable: AbstractFileTableComponent,
-                   otherTable: AbstractFileTableComponent): Unit = {
+                   activeTable: FileTable,
+                   otherTable: FileTable): Unit = {
 
     val confirmDialog = new ThemedDialog[ButtonType]() {
       title = confirmTitle
@@ -151,7 +152,7 @@ class StreamFileUtils extends FileUtils {
 
         val task = new concurrent.Task[Unit]() {
           override def call(): Unit = {
-            val selectedItems = activeTable.node.selectionModel.value.getSelectedItems
+            val selectedItems = activeTable.node.getSelectionModel.getSelectedItems
             val sources = selectedItems.stream().map(item => activeTable.manager.resolveFile(item.file)).toList.asScala.toSeq
             val target = otherTable.resolveDirectory
 

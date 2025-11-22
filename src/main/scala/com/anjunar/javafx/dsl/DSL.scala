@@ -4,7 +4,7 @@ import javafx.scene.Node
 
 object DSL {
 
-  def component[C <: Node](body: (ElementBuilder[C], BuildContext) ?=> Unit): C =
+  def component[C](body: (ElementBuilder[C], BuildContext) ?=> Unit): C =
     given ctx: BuildContext = BuildContext()
 
     val root = ComponentBuilder[C]("root")
@@ -21,6 +21,7 @@ object DSL {
     parent match {
       case children : ChildBuilder[?] => children.add(builder)
       case component : ComponentBuilder[?] => component.add(builder)
+      case stage : stage[?] => stage.add(builder)
       case _ => ()
     }
 
@@ -33,7 +34,14 @@ object DSL {
   export com.anjunar.javafx.dsl.traits.HasText.*
   export com.anjunar.javafx.dsl.traits.HasNode.*
   export com.anjunar.javafx.dsl.traits.HasWidth.*
+  export com.anjunar.javafx.scene.titleBar
+  export com.anjunar.javafx.scene.stage
+  export com.anjunar.javafx.scene.stage.HasStage.*
   export com.anjunar.javafx.scene.control.button
+  export com.anjunar.javafx.scene.control.progressBar
+  export com.anjunar.javafx.scene.control.progressBar.HasProgressBar.*
+  export com.anjunar.javafx.scene.control.checkbox
+  export com.anjunar.javafx.scene.control.checkbox.HasCheckBox.*
   export com.anjunar.javafx.scene.control.label
   export com.anjunar.javafx.scene.control.menu
   export com.anjunar.javafx.scene.control.menuBar
@@ -41,6 +49,7 @@ object DSL {
   export com.anjunar.javafx.scene.control.splitPane
   export com.anjunar.javafx.scene.control.splitPane.HasDividerPosition.*
   export com.anjunar.javafx.scene.control.tableView
+  export com.anjunar.javafx.scene.control.tableView.HasTableView.*
   export com.anjunar.javafx.scene.control.tableColumn
   export com.anjunar.javafx.scene.control.tableColumn.HasTableColumn.*
   export com.anjunar.javafx.scene.layout.vbox

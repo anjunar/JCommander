@@ -12,6 +12,8 @@ class FilePane extends NodeBuilder[VBox] {
 
   private val fileTableRef = Ref[LocalFileTable]()
 
+  private var onTableChange : FileTable => Unit = FileTable => {}
+
   override val node: VBox = component[VBox] {
     vbox() {
 
@@ -34,10 +36,22 @@ class FilePane extends NodeBuilder[VBox] {
     }
   }
 
-  override def build(): VBox = node
+  override def build(): VBox = {
+    onTableChange(fileTableRef.get)
+    node
+  }
 
 }
 
 object FilePane extends Producer[FilePane, VBox] {
+
   override def createBuilder: FilePane = new FilePane
+
+  object HastLocalFileTable {
+
+    def onTableChange()(using h: FilePane) : FileTable => Unit = h.onTableChange
+    def onTableChange_=(v: FileTable => Unit)(using h: FilePane) : Unit = h.onTableChange = v
+
+  }
+
 }
