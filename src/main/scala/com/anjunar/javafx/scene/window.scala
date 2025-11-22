@@ -8,13 +8,13 @@ import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.ui.Resizable
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.scene.Scene
-import javafx.scene.layout.VBox
-import javafx.stage.StageStyle
+import javafx.scene.layout.{Priority, VBox}
+import javafx.stage.{Stage, StageStyle}
 
 import scala.compiletime.uninitialized
 import scala.concurrent.Promise
 
-class window[E](width: Double, height: Double) extends ElementBuilder[Window[E]], HasText {
+class window[E](width: Double, height: Double, stage : Stage) extends ElementBuilder[Stage], HasText {
 
   private val darkMode: DarkModeConf = inject(classOf[DarkModeConf])
 
@@ -24,17 +24,20 @@ class window[E](width: Double, height: Double) extends ElementBuilder[Window[E]]
 
   private var header : header = uninitialized
 
-  lazy val node: Window[E] = {
-    val stage = new Window[E]()
+  lazy val node: Stage = {
     stage.initStyle(StageStyle.UNDECORATED)
 
     val ui = component[VBox] {
       vbox() {
         style = "-fx-border-color: #444; -fx-border-width: 1;"
         titleBar(stage) {
-          if (header != null) header.children.foreach(child => addComponent(child))
+          if (header != null) {
+            header.children.foreach(child => addComponent(child))
+          }
         }
-        addComponent(content)
+        addComponent(content) {
+          vgrow = Priority.ALWAYS
+        }
       }
     }
 
@@ -53,11 +56,6 @@ class window[E](width: Double, height: Double) extends ElementBuilder[Window[E]]
 
     new Resizable(stage, ui)
 
-    stage.setOnCloseRequest { _ =>
-      if !promise.isCompleted then
-        promise.trySuccess(node.result.get)
-    }
-
     stage.setScene(scene)
     stage
   }
@@ -72,26 +70,30 @@ class window[E](width: Double, height: Double) extends ElementBuilder[Window[E]]
   }
 
   def closeWithResult(value: E): Unit =
-    node.result = Some(value)
-    promise.trySuccess(value)
-    node.close()
+    node match {
+      case w : Window[E] =>
+        w.result = Some(value)
+        promise.trySuccess(value)
+        w.close()
+      case _ => node.close()
+    }
 
-  override def build(): Window[E] = node
+  override def build(): Stage = node
 
 }
 
 object window {
 
-  def apply[T](width: Double = -1, height: Double = -1)(body: (window[T], BuildContext) ?=> Unit)
-              (using ctx: BuildContext, parent: ElementBuilder[?]): Window[T] =
-    DSL.create[Window[T], window[T]](Ref(), new window[T](width, height))(body)
+  def apply[T](width: Double = -1, height: Double = -1, stage : Stage = new Window[T]())(body: (window[T], BuildContext) ?=> Unit)
+              (using ctx: BuildContext, parent: ElementBuilder[?]): Stage =
+    DSL.create[Stage, window[T]](Ref(), new window[T](width, height, stage))(body)
 
   object HasWindow {
 
     def closeWithResult[T](value: T)(using h: window[T]): Unit = h.closeWithResult(value)
 
     def close[T]()(using h: window[T]): Unit = h.node.close()
-    
+
     def resizable[T](using h: window[T]) : Boolean = h.node.isResizable
     def resizable_=[T](value : Boolean)(using h: window[T]) : Unit = h.node.setResizable(value)
 

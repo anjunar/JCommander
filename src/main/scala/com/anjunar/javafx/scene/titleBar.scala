@@ -26,7 +26,7 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
   private var maximized = false
 
   private val maximizeIconRef = Ref[Icon]()
-  private var content : ElementBuilder[?] = uninitialized
+  private var content = new mutable.ListBuffer[ElementBuilder[?]]()
 
   private def toggleMaximize(): Unit = {
     if (!maximized) {
@@ -82,7 +82,7 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
       
       hbox() {
         spacing = 10
-        if (content != null) addComponent(content)
+        if (content != null) content.foreach(child => addComponent(child))
       }
 
       region() {
@@ -111,7 +111,7 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
       button() {
         css = mutable.ListBuffer("title-button")
         onAction = event => {
-          inject(classOf[QuitCommand]).execute()
+          stage.close()
         }
         graphic = Icon() {
           iconSize = 18
@@ -122,7 +122,7 @@ class titleBar(val stage: Stage) extends ChildBuilder[HBox] {
   }
 
   override def add(child: ElementBuilder[?]): Unit = {
-    content = child
+    content.addOne(child)
   }
 
   override def build(): HBox = node

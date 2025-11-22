@@ -7,7 +7,15 @@ trait ChildBuilder[C <: Node] extends NodeBuilder[C] {
 }
 
 object ChildBuilder {
-  
-  def addComponent(builder : ElementBuilder[?])(using h: ChildBuilder[?]) : Unit = h.add(builder)
-  
+
+  def addComponent(child: ElementBuilder[?])
+                  (using parent: ChildBuilder[?]): Unit =
+    parent.add(child)
+
+  def addComponent[C <: ElementBuilder[?]](child: C)
+                                          (body: (C, BuildContext) ?=> Unit)
+                                          (using parent: ChildBuilder[?], ctx: BuildContext): Unit =
+    parent.add(child)
+    body(using child, ctx)
+
 }

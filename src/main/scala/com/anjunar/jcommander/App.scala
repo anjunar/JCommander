@@ -3,7 +3,7 @@ package com.anjunar.jcommander
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf}
 import com.anjunar.jcommander.dsl.FilePane.HastLocalFileTable.*
-import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainTitleBar}
+import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu, MainTitleBar}
 import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
 import com.anjunar.jcommander.ui.Resizable
@@ -59,44 +59,42 @@ class App extends Application {
 
     val darkMode = inject(classOf[DarkModeConf])
 
-    val ui = component[VBox] {
-      vbox() {
-        style = "-fx-border-color: #444; -fx-border-width: 1;"
-        MainTitleBar(primaryStage) {}
-        splitPane() {
-          dividerPositions = Array(0.5)
-          vgrow = Priority.ALWAYS
-          vbox() {
-            FilePane() {
-              vgrow = Priority.ALWAYS
-              onTableChange = table => {
-                fileTableManager.loadLeft(table)
-              }
-            }
+    val ui = component[Stage] {
+      window(configuration.primaryStage.width, configuration.primaryStage.height, primaryStage) {
+        header() {
+          label() {
+            text = "JCommander"
           }
-          vbox() {
-            FilePane() {
-              vgrow = Priority.ALWAYS
-              onTableChange = table => {
-                fileTableManager.loadRight(table, true)
-              }
-            }
-          }
+          MainMenu() {}
         }
-        ActionButtons() {}
+        vbox() {
+          vgrow = Priority.ALWAYS
+          splitPane() {
+            dividerPositions = Array(0.5)
+            vgrow = Priority.ALWAYS
+            vbox() {
+              FilePane() {
+                vgrow = Priority.ALWAYS
+                onTableChange = table => {
+                  fileTableManager.loadLeft(table)
+                }
+              }
+            }
+            vbox() {
+              FilePane() {
+                vgrow = Priority.ALWAYS
+                onTableChange = table => {
+                  fileTableManager.loadRight(table, true)
+                }
+              }
+            }
+          }
+          ActionButtons() {}
+        }
       }
     }
 
-    val scene = new Scene(ui, 1000, 600)
-    new Resizable(primaryStage, ui)
-
-    val lightCSS = getClass.getResource("/light-theme.css").toExternalForm
-    val darkCSS = getClass.getResource("/dark-theme.css").toExternalForm
-    scene.getStylesheets.add(if darkMode.value then darkCSS else lightCSS)
-
-    primaryStage.setScene(scene)
-    primaryStage.initStyle(StageStyle.UNDECORATED)
-    primaryStage.show()
+    ui.show()
 
 
   }

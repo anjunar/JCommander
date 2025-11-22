@@ -1,6 +1,6 @@
 package com.anjunar.javafx.stage
 
-import scalafx.stage.Stage
+import javafx.stage.Stage
 
 class Window[E] extends Stage {
   
