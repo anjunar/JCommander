@@ -2,9 +2,16 @@ package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.*
+import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
+import com.anjunar.javafx.dsl.traits.HasSpacing.spacing
+import com.anjunar.javafx.dsl.traits.IsLabeled.graphic
+import com.anjunar.javafx.dsl.traits.HasText.text
+import com.anjunar.javafx.dsl.traits.IsNode.style
 import com.anjunar.javafx.scene.control.{button, label}
 import com.anjunar.javafx.scene.image.imageView
 import com.anjunar.javafx.scene.image.imageView.*
+import com.anjunar.javafx.scene.image.imageView.IsImageView.{fitHeight, fitWidth, image}
+import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.jcommander.manager.{Drive, DriveDetectionService, FileManager}
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
@@ -19,6 +26,7 @@ import scala.compiletime.uninitialized
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
+
 class DriveButtons extends NodeBuilder[HBox] {
 
   private val log = Logger[DriveButtons]

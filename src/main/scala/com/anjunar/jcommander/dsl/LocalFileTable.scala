@@ -3,6 +3,7 @@ package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer, Ref}
+import com.anjunar.javafx.dsl.traits.IsNode.addEventHandler
 import com.anjunar.jcommander.dsl.AbstractFileTable.IsAbstractFileTable.loadImages
 import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
 import com.anjunar.jcommander.manager.FileManager

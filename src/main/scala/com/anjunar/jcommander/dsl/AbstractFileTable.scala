@@ -1,10 +1,15 @@
 package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.traits.IsNode
+import com.anjunar.javafx.dsl.traits.IsNode.addEventHandler
+import com.anjunar.javafx.dsl.traits.HasText.text
+import com.anjunar.javafx.dsl.traits.HasWidth.{prefWidth, widthProperty}
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
-import com.anjunar.javafx.scene.control.tableColumn
-import com.anjunar.javafx.scene.control.tableView.IsTableView
+import com.anjunar.javafx.scene.control.{tableColumn, tableView}
+import com.anjunar.javafx.scene.control.tableView.IsTableView.{selectionModel, sortPolicy}
+import com.anjunar.javafx.scene.control.tableColumn.IsTableColumn.{cellFactory, cellValueFactory}
+import com.anjunar.javafx.scene.image.imageView
+import com.anjunar.javafx.scene.image.imageView.IsImageView.{fitHeight, fitWidth, image}
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
 import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
@@ -110,7 +115,7 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
           }
         })
 
-        IsTableView.sortPolicy = (tv : TableView[FileItem]) => {
+        sortPolicy = (tv : TableView[FileItem]) => {
           val sortOrder = tv.getSortOrder
           val sortCol = if (sortOrder.isEmpty) None else Some(sortOrder.get(0))
           val sortType = sortCol.map(_.getSortType).getOrElse(TableColumn.SortType.ASCENDING)

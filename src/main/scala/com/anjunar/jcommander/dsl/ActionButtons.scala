@@ -2,6 +2,11 @@ package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.dsl.DSL.*
+import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
+import com.anjunar.javafx.dsl.traits.HasWidth.maxWidth
+import com.anjunar.javafx.dsl.traits.HasText.text
+import com.anjunar.javafx.scene.control.button
+import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.scene.layout.{HBox, Priority}

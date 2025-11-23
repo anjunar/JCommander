@@ -1,7 +1,9 @@
 package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
+import com.anjunar.javafx.dsl.traits.IsNode.vgrow
 import com.anjunar.javafx.dsl.{ChildNodeBuilder, ElementBuilder, NodeBuilder, Producer, Ref}
+import com.anjunar.javafx.scene.layout.vbox
 import com.anjunar.jcommander.dsl.DriveButtons.*
 import com.anjunar.jcommander.dsl.LocalFileTable.IsLocalFileTable.*
 import com.anjunar.jcommander.utils.AutoBindObservableProperties

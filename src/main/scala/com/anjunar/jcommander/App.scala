@@ -1,6 +1,14 @@
 package com.anjunar.jcommander
 
 import com.anjunar.javafx.dsl.DSL.*
+import com.anjunar.javafx.dsl.traits.HasHeaderButtons.{closeable, maximizable, minimizable}
+import com.anjunar.javafx.dsl.traits.HasText.text
+import com.anjunar.javafx.dsl.traits.IsNode.vgrow
+import com.anjunar.javafx.scene.control.splitPane.IsSplitPane.dividerPositions
+import com.anjunar.javafx.scene.control.{label, splitPane}
+import com.anjunar.javafx.scene.layout.vbox
+import com.anjunar.javafx.scene.{header, window}
+import com.anjunar.javafx.scene.window.IsWindow.resizable
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf}
 import com.anjunar.jcommander.dsl.FilePane.IsFilePane.*
 import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu}

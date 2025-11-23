@@ -1,6 +1,17 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.javafx.dsl.DSL.*
+import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
+import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, padding, spacing}
+import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
+import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
+import com.anjunar.javafx.dsl.traits.IsNode.vgrow
+import com.anjunar.javafx.scene.window.IsWindow.{close, closeWithResult}
+import com.anjunar.javafx.scene.control.checkbox.IsCheckBox.selectedProperty
+import com.anjunar.javafx.scene.control.progressBar.HasProgressBar.progressProperty
+import com.anjunar.javafx.scene.control.{button, checkbox, label, progressBar}
+import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
+import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.WinNativeCopy
 import com.anjunar.jcommander.dsl.FileTable

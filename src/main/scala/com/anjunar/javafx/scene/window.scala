@@ -1,8 +1,12 @@
 package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.DSL.*
+import com.anjunar.javafx.dsl.traits.HasHeaderButtons.{closeableProp, maximizableProp, minimizableProp}
+import com.anjunar.javafx.dsl.traits.IsNode.{style, vgrow}
 import com.anjunar.javafx.dsl.traits.{HasHeaderButtons, HasText}
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
+import com.anjunar.javafx.dsl.ChildNodeBuilder.{reactTo, register, deregister}
+import com.anjunar.javafx.scene.layout.vbox
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
