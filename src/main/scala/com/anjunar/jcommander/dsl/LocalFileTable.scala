@@ -61,8 +61,11 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
     }
 
     node.getSortOrder.clear()
-    node.getSortOrder.add(node.getColumns.asScala.find(_.getText == "Name").get)
-    node.sort()
+    val option = node.getColumns.asScala.find(_.getText == "Name")
+    if (option.nonEmpty) {
+      node.getSortOrder.add(option.get)
+      node.sort()
+    }
     node.getItems.clear()
     node.getItems.addAll((parent ++ fileItems) *)
   }
@@ -143,8 +146,7 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
       }
     }
 
-    AutoBindObservableProperties.bind(this, localFileTable)
-    
+
     localFileTable
   }
 

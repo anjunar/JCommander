@@ -30,8 +30,6 @@ class MainMenu extends NodeBuilder[HBox] {
       }
     }
 
-    AutoBindObservableProperties.bind(this, mainMenu)
-
     mainMenu
   }
 

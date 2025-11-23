@@ -10,7 +10,7 @@ import com.anjunar.jcommander.dsl.Icon
 import com.anjunar.jcommander.dsl.Icon.*
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.beans.property.SimpleListProperty
-import javafx.collections.FXCollections
+import javafx.collections.{FXCollections, ObservableList}
 import javafx.geometry.Pos
 import javafx.scene.layout.{HBox, Priority}
 import javafx.stage.{Screen, Stage}
@@ -18,7 +18,7 @@ import javafx.stage.{Screen, Stage}
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 
-class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox], HasHeaderButtons {
+class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?]], HasHeaderButtons {
 
   private var xOffset = 0.0
   private var yOffset = 0.0
@@ -162,8 +162,6 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox], HasHeaderButton
       }
     }
 
-    AutoBindObservableProperties.bind(this, titleBar)
-
     titleBar
   }
 
@@ -172,6 +170,8 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox], HasHeaderButton
   }
 
   override def build(): HBox = node
+
+  override def fxObservableList: ObservableList[ElementBuilder[?]] = null
 }
 
 object titleBar {

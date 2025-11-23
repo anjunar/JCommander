@@ -5,39 +5,41 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.{FXCollections, ListChangeListener, ObservableList}
 import javafx.scene.{Node, layout}
 
-trait ChildNodeBuilder[C <: Node] extends NodeBuilder[C] {
+trait ChildNodeBuilder[C <: Node, I] extends NodeBuilder[C] {
 
   var children = new SimpleListProperty[ElementBuilder[?]](FXCollections.observableArrayList[ElementBuilder[?]]())
 
   def add(child: ElementBuilder[?]): Unit =
     children.add(child)
+    
+  def fxObservableList : ObservableList[I]  
 
 }
 
 object ChildNodeBuilder {
 
   def register(child: ElementBuilder[?])
-              (using parent: ChildNodeBuilder[?]): Unit =
+              (using parent: ChildNodeBuilder[?,?]): Unit =
     parent.add(child)
 
   def register[C <: ElementBuilder[?]](child: C)
                                           (body: (C, BuildContext) ?=> Unit)
-                                          (using parent: ChildNodeBuilder[?], ctx: BuildContext): Unit =
+                                          (using parent: ChildNodeBuilder[?,?], ctx: BuildContext): Unit =
     parent.add(child)
     body(using child, ctx)
 
   def deregister(child: ElementBuilder[?])
-                (using parent: ChildNodeBuilder[?]): Unit =
+                (using parent: ChildNodeBuilder[?,?]): Unit =
     parent.children.remove(child)
 
   def reactTo[T](prop: ObservableValue[T])
                 (f: T => Unit)
-                (using parent: ChildNodeBuilder[?]): Unit =
+                (using parent: ChildNodeBuilder[?,?]): Unit =
     f(prop.getValue)
     prop.addListener((_, _, newValue) => f(newValue))
 
   def reactTo[T <: ElementBuilder[?]](prop: ObservableList[T])
-                                     (using parent: ChildNodeBuilder[?]): Unit =
+                                     (using parent: ChildNodeBuilder[?,?]): Unit =
     prop.addListener(new ListChangeListener[T] {
       override def onChanged(change: ListChangeListener.Change[? <: T]): Unit = {
         while change.next() do

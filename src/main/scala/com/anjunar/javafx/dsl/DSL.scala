@@ -1,5 +1,8 @@
 package com.anjunar.javafx.dsl
 
+import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.scene.control.Button
+
 object DSL {
 
   def component[C](body: (ElementBuilder[C], BuildContext) ?=> Unit): C =
@@ -17,8 +20,8 @@ object DSL {
     ref.value = builder
 
     parent match {
-      case children : ChildNodeBuilder[?] => children.add(builder)
-      case children : ChildElementBuilder[?] => children.add(builder)
+      case children : ChildNodeBuilder[?,?] => children.add(builder)
+      case children : ChildElementBuilder[?,?] => children.add(builder)
       case component : ComponentBuilder[?] => component.add(builder)
       case stage : window[?] => stage.add(builder)
       case header : header => header.add(builder)
@@ -26,7 +29,19 @@ object DSL {
     }
 
     body(using builder, ctx)
-    builder.build()
+    val node = builder.build()
+
+    AutoBindObservableProperties.bind(builder, node)
+
+    builder match {
+      case builder : ChildNodeBuilder[?,?] =>
+        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
+      case builder : ChildElementBuilder[?, ?] =>
+        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
+      case _ => ()
+    }
+
+    node
 
   export com.anjunar.javafx.dsl.traits.HasSpacing.*
   export com.anjunar.javafx.dsl.traits.HasOnAction.*

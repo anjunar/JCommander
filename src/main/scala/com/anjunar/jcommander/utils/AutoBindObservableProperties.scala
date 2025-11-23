@@ -12,26 +12,29 @@ import scala.reflect.ClassTag
 
 object AutoBindObservableProperties {
 
-  def observeList[E](children: SimpleListProperty[ElementBuilder[?]], list: () => ObservableList[E]): Unit = {
-    children.addListener((change: Change[? <: ElementBuilder[?]]) =>
-      while change.next() do
-        if change.wasAdded() then {
-          change.getAddedSubList.forEach(elem =>
-            list().add(elem.build().asInstanceOf[E])
-          )
-        }
-        if change.wasRemoved() then
-          change.getRemoved.forEach(elem =>
-            list().remove(elem.build().asInstanceOf[E])
-          )
-    )
+  def observeList[E](children: SimpleListProperty[ElementBuilder[?]], list: ObservableList[E]): Unit = {
+    if (list != null) {
+      list.setAll(children.stream().map(elem => elem.build().asInstanceOf[E]).toList)
+      children.addListener((change: Change[? <: ElementBuilder[?]]) =>
+        while change.next() do
+          if change.wasAdded() then {
+            change.getAddedSubList.forEach(elem =>
+              list.add(elem.build().asInstanceOf[E])
+            )
+          }
+          if change.wasRemoved() then
+            change.getRemoved.forEach(elem =>
+              list.remove(elem.build().asInstanceOf[E])
+            )
+      )
+    }
   }
 
 
-  inline def bind[S,T](source: S, target: T)(using cs: ClassTag[S], ct: ClassTag[T]): T = {
+  def bind[S,T](source: S, target: T): T = {
     try {
-      val sourceResolvedClass = TypeResolver.resolve(cs.runtimeClass)
-      val targetResolvedClass = TypeResolver.resolve(ct.runtimeClass)
+      val sourceResolvedClass = TypeResolver.resolve(source.getClass)
+      val targetResolvedClass = TypeResolver.resolve(target.getClass)
 
       sourceResolvedClass.methods.filter(method => classOf[Property[?]].isAssignableFrom(method.returnType.raw) && method.parameters.isEmpty)
         .foreach(method => {

@@ -6,16 +6,12 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.layout.VBox
 import javafx.scene.{Node, layout}
 
-class vbox extends ChildNodeBuilder[layout.VBox], HasSpacing, HasWidth, HasHeight {
-  lazy val node: layout.VBox = {
-    val vBox = new VBox()
-    AutoBindObservableProperties.bind(this, vBox)
-    AutoBindObservableProperties.observeList(children, () => vBox.getChildren)
-    vBox
-  }
+class vbox extends ChildNodeBuilder[layout.VBox, Node], HasSpacing, HasWidth, HasHeight {
+  lazy val node: layout.VBox = new VBox()
 
   override def build(): layout.VBox = node
 
+  override def fxObservableList: javafx.collections.ObservableList[Node] = node.getChildren
 }
 
 object vbox extends Producer[vbox, layout.VBox] {

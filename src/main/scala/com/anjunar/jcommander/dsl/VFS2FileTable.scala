@@ -116,8 +116,6 @@ class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableVie
       }
     }
 
-    AutoBindObservableProperties.bind(this, vsf2FileTable)
-
     vsf2FileTable
   }
 

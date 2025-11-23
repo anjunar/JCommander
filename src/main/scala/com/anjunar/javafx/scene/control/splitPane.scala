@@ -2,21 +2,17 @@ package com.anjunar.javafx.scene.control
 
 import com.anjunar.javafx.dsl.{ChildNodeBuilder, ElementBuilder, Producer}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.collections.ObservableList
 import javafx.scene.control.SplitPane
 import javafx.scene.{Node, control}
 
-class splitPane extends ChildNodeBuilder[control.SplitPane] {
+class splitPane extends ChildNodeBuilder[control.SplitPane, Node] {
 
-  lazy val node: control.SplitPane = {
-    val splitPane = new SplitPane()
-    AutoBindObservableProperties.bind(this, splitPane)
-    AutoBindObservableProperties.observeList(children, () => splitPane.getItems)
-    splitPane
-  }
+  lazy val node: control.SplitPane = new SplitPane()
 
   override def build(): control.SplitPane = node
-  
 
+    override def fxObservableList: ObservableList[Node] = node.getItems
 }
 
 object splitPane extends Producer[splitPane, control.SplitPane] {

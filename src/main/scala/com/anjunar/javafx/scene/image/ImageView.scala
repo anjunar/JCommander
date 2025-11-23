@@ -7,7 +7,7 @@ import javafx.scene.image.{Image as jFxImage, ImageView as jFxImageView}
 
 class ImageView extends NodeBuilder[jFxImageView], HasImageView {
   
-  override lazy val node: jFxImageView = AutoBindObservableProperties.bind(this, new jFxImageView)
+  override lazy val node: jFxImageView = new jFxImageView
   
   override def build(): jFxImageView = node
   

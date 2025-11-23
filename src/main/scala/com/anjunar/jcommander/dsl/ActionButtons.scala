@@ -93,8 +93,6 @@ class ActionButtons extends NodeBuilder[HBox] {
       }
     }
 
-    AutoBindObservableProperties.bind(this, actionButtons)
-    
     actionButtons
   }
 

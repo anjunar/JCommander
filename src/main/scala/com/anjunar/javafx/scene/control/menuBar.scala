@@ -8,17 +8,13 @@ import javafx.collections.ListChangeListener.Change
 import javafx.collections.ObservableList
 import javafx.scene.control.{Menu, MenuBar as JfxMenuBar}
 
-class menuBar extends ChildNodeBuilder[JfxMenuBar] {
-  
-  lazy val node : JfxMenuBar = {
-    val menuBar = new JfxMenuBar()
-    AutoBindObservableProperties.bind(this, menuBar)
-    AutoBindObservableProperties.observeList(children, () => menuBar.getMenus)
-    menuBar
-  }
+class menuBar extends ChildNodeBuilder[JfxMenuBar, Menu] {
+
+  lazy val node : JfxMenuBar = new JfxMenuBar()
 
   def build(): JfxMenuBar = node
 
+  override def fxObservableList: ObservableList[Menu] = node.getMenus
 }
 
 object menuBar extends Producer[menuBar, JfxMenuBar]{

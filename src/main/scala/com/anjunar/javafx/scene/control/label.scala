@@ -6,7 +6,7 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.{Node, control}
 
 class label extends NodeBuilder[control.Label], HasLabeled, HasText {
-  lazy val node: control.Label = AutoBindObservableProperties.bind(this, new control.Label())
+  lazy val node: control.Label = new control.Label()
   
   override def build(): control.Label = node
 }

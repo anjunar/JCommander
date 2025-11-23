@@ -19,9 +19,8 @@ class tableColumn[E, T] extends ElementBuilder[control.TableColumn[E, T]], HasTe
   var cellFactory : (T, Boolean, TableCell[E,T]) => Unit = uninitialized
   var cellValueFactory : E => T = uninitialized
 
-  override def build(): control.TableColumn[E, T] = {
-    AutoBindObservableProperties.bind(this, node)
-  }
+  override def build(): control.TableColumn[E, T] = node
+  
 
 }
 

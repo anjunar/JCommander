@@ -41,8 +41,6 @@ class DriveButtons extends NodeBuilder[HBox] {
       }
     }
 
-    AutoBindObservableProperties.bind(this, driveButtons)
-    
     driveButtons
   }
 

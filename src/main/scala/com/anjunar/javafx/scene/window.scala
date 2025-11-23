@@ -65,8 +65,6 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
 
     stage.setScene(scene)
 
-    AutoBindObservableProperties.bind(this, stage)
-    
     stage
   }
 

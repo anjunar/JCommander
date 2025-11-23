@@ -165,8 +165,6 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
       }
     }
 
-    AutoBindObservableProperties.bind(this, abstractFileTable)
-    
     abstractFileTable
   }
 

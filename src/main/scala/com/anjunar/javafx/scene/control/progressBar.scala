@@ -9,9 +9,7 @@ import javafx.scene.control.ProgressBar
 
 class progressBar extends NodeBuilder[ProgressBar], HasWidth, HasHeight {
   
-  override lazy val node: ProgressBar = {
-    AutoBindObservableProperties.bind(this, new ProgressBar())
-  }
+  override lazy val node: ProgressBar = new ProgressBar()
   
   override def build(): ProgressBar = node
   

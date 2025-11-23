@@ -4,17 +4,15 @@ import com.anjunar.javafx.dsl.traits.{HasLabeled, HasText}
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.scene.layout.vbox
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.collections.ObservableList
 import javafx.scene.control.{MenuItem, Menu as JfxMenu}
 
-class menu extends ChildElementBuilder[JfxMenu], HasText {
-  lazy val node : JfxMenu = {
-    val menu = new JfxMenu()
-    AutoBindObservableProperties.bind(this, menu)
-    AutoBindObservableProperties.observeList(children, () => menu.getItems)
-    menu
-  }
+class menu extends ChildElementBuilder[JfxMenu, MenuItem], HasText {
+  lazy val node : JfxMenu = new JfxMenu()
 
   def build(): JfxMenu = node
+
+  override def fxObservableList: ObservableList[MenuItem] = node.getItems
 }
 
 object menu extends Producer[menu, JfxMenu]{
