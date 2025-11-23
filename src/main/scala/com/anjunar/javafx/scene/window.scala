@@ -35,9 +35,9 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
       vbox() {
         style = "-fx-border-color: #444; -fx-border-width: 1;"
         titleBar(stage) {
-          minimizable = minimizableProperty.get()
-          maximizable = maximizableProperty.get()
-          closeable = closeableProperty.get()
+          minimizable = minimizableProperty.get.get()
+          maximizable = maximizableProperty.get.get()
+          closeable = closeableProperty.get.get()
           if (header != null) {
             header.children.foreach(child => register(child))
           }

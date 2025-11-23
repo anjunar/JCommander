@@ -13,6 +13,27 @@ object DSL {
     body(using root, ctx)
     root.build()
 
+  def createBuilder[T, B <: ElementBuilder[? <: T]](ref : Ref[B], construct: B)(body: (B, BuildContext) ?=> Unit)
+                                            (using ctx: BuildContext): B =
+
+    val builder = construct
+    ref.value = builder
+
+    body(using builder, ctx)
+    val node = builder.build()
+
+    AutoBindObservableProperties.bind(builder, node)
+
+    builder match {
+      case builder : ChildNodeBuilder[?,?] =>
+        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
+      case builder : ChildElementBuilder[?, ?] =>
+        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
+      case _ => ()
+    }
+
+    builder
+
   def create[T, B <: ElementBuilder[? <: T]](ref : Ref[B], construct: B)(body: (B, BuildContext) ?=> Unit)
                                                (using ctx: BuildContext, parent: ElementBuilder[?]): T =
 

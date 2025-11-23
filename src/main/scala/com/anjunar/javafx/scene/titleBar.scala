@@ -71,20 +71,6 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         alignment = Pos.CENTER
         spacing = 5
 
-        onMousePressed = event => {
-          xOffset = event.getSceneX
-          yOffset = event.getSceneY
-        }
-
-        onMouseDragged = event => {
-          stage.setX(event.getScreenX - xOffset)
-          stage.setY(event.getScreenY - yOffset)
-        }
-
-        onMouseClicked = event => {
-          if (event.getClickCount == 2) toggleMaximize()
-        }
-
         hbox() {
           spacing = 10
           reactTo(content)
@@ -92,12 +78,27 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
 
         region() {
           hgrow = Priority.ALWAYS
+
+          onMousePressed = event => {
+            xOffset = event.getSceneX
+            yOffset = event.getSceneY
+          }
+
+          onMouseDragged = event => {
+            stage.setX(event.getScreenX - xOffset)
+            stage.setY(event.getScreenY - yOffset)
+          }
+
+          onMouseClicked = event => {
+            if (event.getClickCount == 2) toggleMaximize()
+          }
+
         }
 
         button() {
           text = "TEST"
           onAction = _ => {
-            minimizableProperty.set(!minimizableProperty.get())
+            minimizableProperty.get.set(!minimizableProperty.get.get())
           }
         }
 
@@ -113,7 +114,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         vbox() {
-          reactTo(minimizableProperty) { minimizable =>
+          reactTo(minimizableProperty.get) { minimizable =>
             if (minimizable) {
               register(minimizeButton)
             } else {
@@ -134,7 +135,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         vbox() {
-          reactTo(maximizableProperty) { minimizable =>
+          reactTo(maximizableProperty.get) { minimizable =>
             if (minimizable) {
               register(maximizeButton)
             } else {
@@ -155,7 +156,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         vbox() {
-          reactTo(closeableProperty) { minimizable =>
+          reactTo(closeableProperty.get) { minimizable =>
             if (minimizable) {
               register(closeButton)
             } else {

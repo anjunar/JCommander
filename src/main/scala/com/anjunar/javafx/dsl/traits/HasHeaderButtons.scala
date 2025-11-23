@@ -3,26 +3,37 @@ package com.anjunar.javafx.dsl.traits
 import javafx.beans.property.SimpleBooleanProperty
 
 trait HasHeaderButtons {
-
-  var minimizableProperty: SimpleBooleanProperty = new SimpleBooleanProperty(false)
-  var maximizableProperty: SimpleBooleanProperty = new SimpleBooleanProperty(false)
-  var closeableProperty: SimpleBooleanProperty = new SimpleBooleanProperty(true)
-
+  var minimizableProperty: Option[SimpleBooleanProperty] = None
+  var maximizableProperty: Option[SimpleBooleanProperty] = None
+  var closeableProperty: Option[SimpleBooleanProperty]   = Some(SimpleBooleanProperty(true))
 }
 
 object HasHeaderButtons {
 
-  def minimizable[T](using h: HasHeaderButtons): Boolean = h.minimizableProperty.get()
+  def minimizable(using h: HasHeaderButtons): Boolean =
+    h.minimizableProperty.exists(_.get)
 
-  def minimizable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.minimizableProperty.set(value)
+  def minimizable_=(v: Boolean)(using h: HasHeaderButtons): Unit =
+    h.minimizableProperty match {
+      case Some(p) => p.set(v)
+      case None    => h.minimizableProperty = Some(SimpleBooleanProperty(v))
+    }
 
-  def maximizable[T](using h: HasHeaderButtons): Boolean = h.maximizableProperty.get()
+  def maximizable(using h: HasHeaderButtons): Boolean =
+    h.maximizableProperty.exists(_.get)
 
-  def maximizable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.maximizableProperty.set(value)
+  def maximizable_=(v: Boolean)(using h: HasHeaderButtons): Unit =
+    h.maximizableProperty match {
+      case Some(p) => p.set(v)
+      case None    => h.maximizableProperty = Some(SimpleBooleanProperty(v))
+    }
 
-  def closeable[T](using h: HasHeaderButtons): Boolean = h.closeableProperty.get()
+  def closeable(using h: HasHeaderButtons): Boolean =
+    h.closeableProperty.exists(_.get)
 
-  def closeable_=[T](value: Boolean)(using h: HasHeaderButtons): Unit = h.closeableProperty.set(value)
-
-
+  def closeable_=(v: Boolean)(using h: HasHeaderButtons): Unit =
+    h.closeableProperty match {
+      case Some(p) => p.set(v)
+      case None    => h.closeableProperty = Some(SimpleBooleanProperty(v))
+    }
 }

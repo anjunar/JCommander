@@ -6,11 +6,18 @@ import javafx.scene.control.Labeled
 
 trait HasLabeled {
   
-  val graphicProperty: SimpleObjectProperty[Node] = SimpleObjectProperty[Node]()
+  var graphicProperty: Option[SimpleObjectProperty[Node]] = None
   
 }
 
 object HasLabeled {
-  def graphic()(using h: HasLabeled): Node = h.graphicProperty.get()
-  def graphic_=(v: Node)(using h: HasLabeled): Unit = h.graphicProperty.set(v)
+
+  def graphic(using h: HasLabeled): Option[Node] =
+    h.graphicProperty.map(_.get)
+
+  def graphic_=(v: Node)(using h: HasLabeled): Unit =
+    h.graphicProperty match {
+      case Some(p) => p.set(v)
+      case None    => h.graphicProperty = Some(SimpleObjectProperty(v))
+    }
 }

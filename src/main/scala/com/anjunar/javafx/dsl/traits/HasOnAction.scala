@@ -10,16 +10,29 @@ import scala.compiletime.uninitialized
 import scala.language.reflectiveCalls
 
 trait HasOnAction {
-  
-  var onActionProperty = new SimpleObjectProperty[EventHandler[ActionEvent]]() 
-  
+
+  var onActionProperty: Option[SimpleObjectProperty[EventHandler[ActionEvent]]] = None
+
 }
 
 object HasOnAction {
-  
-  def onAction()(using h: HasOnAction): EventHandler[ActionEvent] = h.onActionProperty.get()
 
-  def onAction_=(f: ActionEvent => Unit)(using h: HasOnAction): Unit = {
-    h.onActionProperty.set((t: ActionEvent) => f(t))
-  }
+  def onAction(using h: HasOnAction): Option[EventHandler[ActionEvent]] =
+    h.onActionProperty.map(_.get)
+
+  def onAction_=(f: ActionEvent => Unit)(using h: HasOnAction): Unit =
+    h.onActionProperty match
+      case Some(p) =>
+        p.set(new EventHandler[ActionEvent] {
+          override def handle(event: ActionEvent): Unit = f(event)
+        })
+
+      case None =>
+        h.onActionProperty = Some(
+          new SimpleObjectProperty[EventHandler[ActionEvent]](
+            new EventHandler[ActionEvent] {
+              override def handle(event: ActionEvent): Unit = f(event)
+            }
+          )
+        )
 }

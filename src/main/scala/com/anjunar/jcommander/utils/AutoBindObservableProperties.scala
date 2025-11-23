@@ -34,17 +34,23 @@ object AutoBindObservableProperties {
       val sourceResolvedClass = TypeResolver.resolve(source.getClass)
       val targetResolvedClass = TypeResolver.resolve(target.getClass)
 
-      sourceResolvedClass.methods.filter(method => classOf[Property[?]].isAssignableFrom(method.returnType.raw) && method.parameters.isEmpty)
+      sourceResolvedClass.methods.filter(method => {
+        classOf[Option[?]].isAssignableFrom(method.returnType.raw) &&
+              method.parameters.isEmpty
+        })
         .foreach(method => {
-          val sourceBindableProperty = method.invoke(source.asInstanceOf[AnyRef]).asInstanceOf[Property[AnyRef]]
+          val sourceBindableProperty = method.invoke(source.asInstanceOf[AnyRef]).asInstanceOf[Option[Property[AnyRef]]]
           val resolvedMethod = targetResolvedClass.findMethod(method.name)
 
           if (resolvedMethod == null) {
-            //            println(s"Error Binding property ${method.name} from ${sourceResolvedClass.name}")
+            println(s"Error Binding property ${method.name} from ${sourceResolvedClass.name}")
           } else {
             val targetBindableProperty = resolvedMethod.invoke(target.asInstanceOf[AnyRef]).asInstanceOf[Property[AnyRef]]
-            targetBindableProperty.bindBidirectional(sourceBindableProperty)
-            //            sourceBindableProperty.bindBidirectional(targetBindableProperty)
+
+            if (sourceBindableProperty.nonEmpty) {
+              targetBindableProperty.bindBidirectional(sourceBindableProperty.get)
+            }
+
           }
         })
 
