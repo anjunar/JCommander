@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.{ElementBuilder, NodeBuilder, Producer, Ref}
+import com.anjunar.javafx.dsl.{ChildNodeBuilder, ElementBuilder, NodeBuilder, Producer, Ref}
 import com.anjunar.jcommander.dsl.DriveButtons.*
 import com.anjunar.jcommander.dsl.LocalFileTable.HastLocalFileTable.*
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
@@ -18,7 +18,7 @@ class FilePane extends NodeBuilder[VBox] {
   override lazy val node: VBox = {
     val filePane = component[VBox] {
       vbox() {
-
+        vgrow = Priority.ALWAYS
         DriveButtons() {
           change = (file : File) => {
             fileTableRef {
@@ -37,8 +37,6 @@ class FilePane extends NodeBuilder[VBox] {
 
       }
     }
-    
-    AutoBindObservableProperties.bind(this, filePane)
     
     filePane
   }

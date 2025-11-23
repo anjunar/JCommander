@@ -13,13 +13,13 @@ import scala.reflect.ClassTag
 object AutoBindObservableProperties {
 
   def observeList[E](children: SimpleListProperty[ElementBuilder[?]], list: () => ObservableList[E]): Unit = {
-    list().addAll(children.stream().map(elem => elem.build().asInstanceOf[E]).toList)
     children.addListener((change: Change[? <: ElementBuilder[?]]) =>
       while change.next() do
-        if change.wasAdded() then
+        if change.wasAdded() then {
           change.getAddedSubList.forEach(elem =>
             list().add(elem.build().asInstanceOf[E])
           )
+        }
         if change.wasRemoved() then
           change.getRemoved.forEach(elem =>
             list().remove(elem.build().asInstanceOf[E])
@@ -39,7 +39,7 @@ object AutoBindObservableProperties {
           val resolvedMethod = targetResolvedClass.findMethod(method.name)
 
           if (resolvedMethod == null) {
-            println(s"Error Binding property ${method.name} from ${sourceResolvedClass.name}")
+//            println(s"Error Binding property ${method.name} from ${sourceResolvedClass.name}")
           } else {
             val targetBindableProperty = resolvedMethod.invoke(target.asInstanceOf[AnyRef]).asInstanceOf[Property[AnyRef]]
             targetBindableProperty.bindBidirectional(sourceBindableProperty)
