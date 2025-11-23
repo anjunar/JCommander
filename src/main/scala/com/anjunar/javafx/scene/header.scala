@@ -14,6 +14,7 @@ class header extends ElementBuilder[header] {
   override def build(): header = this
 
 
+  override def create(): header = null.asInstanceOf[header]
 }
 
 object header extends Producer[header, header] {

@@ -35,7 +35,9 @@ object ChildNodeBuilder {
   def reactTo[T](prop: ObservableValue[T])
                 (f: T => Unit)
                 (using parent: ChildNodeBuilder[?,?]): Unit =
-    f(prop.getValue)
+    if (prop.getValue != null) {
+      f(prop.getValue)  
+    }
     prop.addListener((_, _, newValue) => f(newValue))
 
   def reactTo[T <: ElementBuilder[?]](prop: ObservableList[T])

@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.{Node, layout}
 
 class vbox extends ChildNodeBuilder[layout.VBox, Node], HasSpacing, HasWidth, HasHeight {
-  lazy val node: layout.VBox = new VBox()
+  def create(): layout.VBox = new VBox()
 
   override def build(): layout.VBox = node
 

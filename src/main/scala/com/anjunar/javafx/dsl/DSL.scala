@@ -19,10 +19,9 @@ object DSL {
     val builder = construct
     ref.value = builder
 
-    body(using builder, ctx)
     val node = builder.build()
 
-    AutoBindObservableProperties.bind(builder, node)
+    body(using builder, ctx)
 
     builder match {
       case builder : ChildNodeBuilder[?,?] =>
@@ -40,19 +39,18 @@ object DSL {
     val builder = construct
     ref.value = builder
 
-    parent match {
-      case children : ChildNodeBuilder[?,?] => children.add(builder)
-      case children : ChildElementBuilder[?,?] => children.add(builder)
-      case component : ComponentBuilder[?] => component.add(builder)
-      case stage : window[?] => stage.add(builder)
-      case header : header => header.add(builder)
-      case _ => ()
-    }
-
-    body(using builder, ctx)
     val node = builder.build()
 
-    AutoBindObservableProperties.bind(builder, node)
+    body(using builder, ctx)
+
+    parent match {
+      case children: ChildNodeBuilder[?, ?] => children.add(builder)
+      case children: ChildElementBuilder[?, ?] => children.add(builder)
+      case component: ComponentBuilder[?] => component.add(builder)
+      case stage: window[?] => stage.add(builder)
+      case header: header => header.add(builder)
+      case _ => ()
+    }
 
     builder match {
       case builder : ChildNodeBuilder[?,?] =>
@@ -63,6 +61,10 @@ object DSL {
     }
 
     node
+
+  extension [A](src: javafx.beans.property.Property[A])
+    infix def <->(target: javafx.beans.property.Property[A]): Unit =
+      src.bindBidirectional(target)
 
   export com.anjunar.javafx.dsl.traits.HasSpacing.*
   export com.anjunar.javafx.dsl.traits.HasOnAction.*

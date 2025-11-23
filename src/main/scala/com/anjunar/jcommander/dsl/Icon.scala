@@ -13,7 +13,7 @@ class Icon extends NodeBuilder[FontIcon], HasFontIcon {
 
   val darkMode = inject(classOf[DarkModeConf])
 
-  lazy val node = new FontIcon()
+  def create(): FontIcon = new FontIcon()
 
   node.setIconColor(if (darkMode.value) Color.WHITE else Color.BLACK)
 

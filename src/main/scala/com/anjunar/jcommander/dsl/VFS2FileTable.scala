@@ -100,7 +100,7 @@ class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableVie
         .atZone(java.time.ZoneId.systemDefault())
         .toLocalDateTime)
 
-  override lazy val node: TableView[FileItem] = {
+  def create(): TableView[FileItem] = {
     val vsf2FileTable = component[TableView[FileItem]] {
       AbstractFileTable(abstractFileTableRef) {
         loadImages = true

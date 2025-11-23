@@ -113,7 +113,7 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
   private def normalize(path: String): String =
     if (path.startsWith("file:")) path.stripPrefix("file:") else path
 
-  override lazy val node: TableView[FileItem] = {
+  def create(): TableView[FileItem] = {
     val localFileTable = component[TableView[FileItem]] {
       AbstractFileTable(abstractFileTableRef) {
         loadImages = true

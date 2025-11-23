@@ -33,7 +33,7 @@ class DriveButtons extends NodeBuilder[HBox] {
   var change: File => Unit = uninitialized
   var unmount: Drive => Unit = uninitialized
 
-  lazy val node: HBox = {
+  def create(): HBox = {
     val driveButtons = component[HBox] {
       hbox() {
         spacing = 10

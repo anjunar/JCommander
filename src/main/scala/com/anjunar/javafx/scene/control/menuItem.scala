@@ -7,7 +7,7 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.control.MenuItem as JfxMenuItem
 
 class menuItem extends ElementBuilder[JfxMenuItem], HasText, HasOnAction {
-  lazy val node : JfxMenuItem =  new JfxMenuItem()
+  def create() : JfxMenuItem =  new JfxMenuItem()
   
   def build(): JfxMenuItem = node
 }

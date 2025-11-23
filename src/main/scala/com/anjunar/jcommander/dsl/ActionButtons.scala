@@ -8,7 +8,7 @@ import javafx.scene.layout.{HBox, Priority}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 class ActionButtons extends NodeBuilder[HBox] {
 
-  override lazy val node: HBox = {
+  def create(): HBox = {
     val actionButtons = component[HBox] {
       hbox() {
         maxWidth = Double.MaxValue

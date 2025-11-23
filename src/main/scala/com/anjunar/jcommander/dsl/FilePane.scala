@@ -15,7 +15,7 @@ class FilePane extends NodeBuilder[VBox] {
 
   private var onTableChange : FileTable => Unit = FileTable => {}
 
-  override lazy val node: VBox = {
+  def create(): VBox = {
     val filePane = component[VBox] {
       vbox() {
         vgrow = Priority.ALWAYS

@@ -1,13 +1,14 @@
 package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.traits.{HasText, HasHeaderButtons}
+import com.anjunar.javafx.dsl.traits.{HasHeaderButtons, HasText}
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import com.anjunar.jcommander.ui.Resizable
 import com.anjunar.jcommander.utils.CdiUtils.inject
+import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.Scene
 import javafx.scene.layout.{Priority, VBox}
 import javafx.stage.{Stage, StageStyle}
@@ -21,13 +22,13 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
 
   private val promise = Promise[E]()
 
-  private var content : ElementBuilder[?] = uninitialized
+  private val content = new SimpleObjectProperty[ElementBuilder[?]]()
 
-  private var header : header = uninitialized
+  private val header = new SimpleObjectProperty[header]()
 
   private var resizableFlag = true
 
-  lazy val node: Stage = {
+  def create() : Stage = {
     stage.setResizable(resizableFlag)
     stage.initStyle(StageStyle.UNDECORATED)
 
@@ -35,16 +36,22 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
       vbox() {
         style = "-fx-border-color: #444; -fx-border-width: 1;"
         titleBar(stage) {
-          minimizable = minimizableProperty.get.get()
-          maximizable = maximizableProperty.get.get()
-          closeable = closeableProperty.get.get()
-          if (header != null) {
+          minimizableProp <-> minimizableProperty
+          maximizableProp <-> maximizableProperty
+          closeableProp <-> closeableProperty
+
+          reactTo(header) { header => {
             header.children.foreach(child => register(child))
+          }}
+
+        }
+
+        reactTo(content) { content => {
+          register(content) {
+            vgrow = Priority.ALWAYS
           }
-        }
-        register(content) {
-          vgrow = Priority.ALWAYS
-        }
+        }}
+
       }
     }
 
@@ -71,10 +78,9 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
   def add(child: ElementBuilder[?]): Unit = {
     child match
       case h: header =>
-        header = h
-
+        header.set(h)
       case _ =>
-        content = child
+        content.set(child)
   }
 
   def closeWithResult(value: E): Unit =

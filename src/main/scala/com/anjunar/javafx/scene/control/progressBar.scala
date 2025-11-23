@@ -8,8 +8,8 @@ import javafx.scene.Node
 import javafx.scene.control.ProgressBar
 
 class progressBar extends NodeBuilder[ProgressBar], HasWidth, HasHeight {
-  
-  override lazy val node: ProgressBar = new ProgressBar()
+
+  def create(): ProgressBar = new ProgressBar()
   
   override def build(): ProgressBar = node
   

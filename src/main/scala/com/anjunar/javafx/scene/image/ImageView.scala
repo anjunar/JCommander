@@ -6,8 +6,8 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.image.{Image as jFxImage, ImageView as jFxImageView}
 
 class ImageView extends NodeBuilder[jFxImageView], HasImageView {
-  
-  override lazy val node: jFxImageView = new jFxImageView
+
+  def create(): jFxImageView = new jFxImageView
   
   override def build(): jFxImageView = node
   

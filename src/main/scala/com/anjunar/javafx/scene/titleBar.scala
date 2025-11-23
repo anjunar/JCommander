@@ -64,7 +64,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
     }
   }
 
-  lazy val node: HBox = {
+  def create(): HBox = {
     val titleBar = component[HBox] {
       hbox() {
         css = mutable.ListBuffer("main-title-bar")
@@ -98,7 +98,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         button() {
           text = "TEST"
           onAction = _ => {
-            minimizableProperty.get.set(!minimizableProperty.get.get())
+            minimizableProperty.set(!minimizableProperty.get())
           }
         }
 
@@ -114,7 +114,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         vbox() {
-          reactTo(minimizableProperty.get) { minimizable =>
+          reactTo(minimizableProperty) { minimizable =>
             if (minimizable) {
               register(minimizeButton)
             } else {
@@ -135,7 +135,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         vbox() {
-          reactTo(maximizableProperty.get) { minimizable =>
+          reactTo(maximizableProperty) { minimizable =>
             if (minimizable) {
               register(maximizeButton)
             } else {
@@ -156,7 +156,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         vbox() {
-          reactTo(closeableProperty.get) { minimizable =>
+          reactTo(closeableProperty) { minimizable =>
             if (minimizable) {
               register(closeButton)
             } else {

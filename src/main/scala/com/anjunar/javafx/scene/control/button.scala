@@ -8,7 +8,7 @@ import javafx.scene.control.Button
 
 class button extends NodeBuilder[control.Button], HasLabeled, HasText, HasOnAction, HasWidth, HasHeight {
   
-  lazy val node: control.Button = new Button()
+  def create(): control.Button = new Button()
 
   override def build(): Button = node
   

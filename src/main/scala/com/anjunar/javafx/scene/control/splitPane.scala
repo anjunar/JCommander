@@ -8,7 +8,7 @@ import javafx.scene.{Node, control}
 
 class splitPane extends ChildNodeBuilder[control.SplitPane, Node] {
 
-  lazy val node: control.SplitPane = new SplitPane()
+  def create(): control.SplitPane = new SplitPane()
 
   override def build(): control.SplitPane = node
 

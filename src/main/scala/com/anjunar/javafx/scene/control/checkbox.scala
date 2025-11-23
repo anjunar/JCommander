@@ -4,11 +4,11 @@ import com.anjunar.javafx.dsl.traits.HasText
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.beans.property.BooleanProperty
-import javafx.scene.control.CheckBox
+import javafx.scene.control.{Button, CheckBox}
 
 class checkbox extends NodeBuilder[CheckBox], HasText {
 
-  override lazy val node: CheckBox = new CheckBox()
+  def create() : CheckBox = new CheckBox()
 
   override def build(): CheckBox = node
   

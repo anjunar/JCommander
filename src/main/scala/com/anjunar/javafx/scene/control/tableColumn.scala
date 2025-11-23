@@ -14,7 +14,7 @@ import scala.compiletime.uninitialized
 
 class tableColumn[E, T] extends ElementBuilder[control.TableColumn[E, T]], HasText, HasWidth {
 
-  lazy val node: control.TableColumn[E, T] = new control.TableColumn[E, T]()
+  def create(): control.TableColumn[E, T] = new control.TableColumn[E, T]()
   
   var cellFactory : (T, Boolean, TableCell[E,T]) => Unit = uninitialized
   var cellValueFactory : E => T = uninitialized

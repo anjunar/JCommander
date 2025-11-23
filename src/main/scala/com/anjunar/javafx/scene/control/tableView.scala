@@ -12,7 +12,7 @@ import scala.compiletime.uninitialized
 
 class tableView[E] extends ChildNodeBuilder[control.TableView[E], TableColumn[E, ?]], HasWidth, HasHeight {
 
-  override lazy val node: control.TableView[E] =  new TableView[E]()
+  def create(): control.TableView[E] =  new TableView[E]()
 
   var sortPolicy : TableView[E] => Boolean = uninitialized
   

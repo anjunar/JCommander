@@ -35,7 +35,7 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
 
   var loadImages : Boolean = false
 
-  override lazy val node: TableView[FileItem] = {
+  def create(): TableView[FileItem] = {
     val abstractFileTable = component[TableView[FileItem]] {
       tableView[FileItem]() {
 

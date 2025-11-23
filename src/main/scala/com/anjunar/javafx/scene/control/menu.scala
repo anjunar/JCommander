@@ -8,7 +8,7 @@ import javafx.collections.ObservableList
 import javafx.scene.control.{MenuItem, Menu as JfxMenu}
 
 class menu extends ChildElementBuilder[JfxMenu, MenuItem], HasText {
-  lazy val node : JfxMenu = new JfxMenu()
+  def create() : JfxMenu = new JfxMenu()
 
   def build(): JfxMenu = node
 
