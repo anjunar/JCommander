@@ -31,7 +31,7 @@ object tableColumn {
     DSL.create[control.TableColumn[E,T], tableColumn[E,T]](ref, new tableColumn[E,T]())(body)
 
 
-  object HasTableColumn {
+  object IsTableColumn {
     
     def reorderable[E, T]()(using h: tableColumn[E,T]) : Boolean = h.node.isReorderable
     def reorderable_=[E, T](v: Boolean)(using h: tableColumn[E,T]) : Unit = h.node.setReorderable(v)

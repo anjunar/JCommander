@@ -3,13 +3,14 @@ package com.anjunar.jcommander.dsl
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.scene.layout.vbox
 import com.anjunar.jcommander.configuration.DarkModeConf
-import com.anjunar.jcommander.dsl.Icon.HasFontIcon
+import com.anjunar.jcommander.dsl.Icon.IsIcon
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.scene.Node
 import javafx.scene.paint.Color
 import org.kordamp.ikonli.javafx.FontIcon
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
-class Icon extends NodeBuilder[FontIcon], HasFontIcon {
+
+class Icon extends NodeBuilder[FontIcon] {
 
   val darkMode = inject(classOf[DarkModeConf])
 
@@ -28,19 +29,13 @@ object Icon extends Producer[Icon, FontIcon] {
 
   override def createBuilder: Icon = new Icon()
 
-  trait HasFontIcon {
-    lazy val node : FontIcon
-  }
+  object IsIcon {
+    def iconLiteral()(using h: Icon): String = h.node.getIconLiteral()
+    def iconLiteral_=(v: String)(using h: Icon): Unit = h.node.setIconLiteral(v)
 
-  object HasFontIcon {
-    def iconLiteral()(using h: HasFontIcon): String = h.node.getIconLiteral()
-    def iconLiteral_=(v: String)(using h: HasFontIcon): Unit = h.node.setIconLiteral(v)
-
-    def iconSize()(using h: HasFontIcon): Int = h.node.getIconSize
-    def iconSize_=(v: Int)(using h: HasFontIcon): Unit = h.node.setIconSize(v)
+    def iconSize()(using h: Icon): Int = h.node.getIconSize
+    def iconSize_=(v: Int)(using h: Icon): Unit = h.node.setIconSize(v)
 
   }
-
-  export HasFontIcon.*
 
 }

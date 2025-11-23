@@ -4,11 +4,11 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.Node
 import javafx.scene.control.Labeled
 
-trait HasLabeled {
+trait IsLabeled {
   lazy val node : Labeled
 }
 
-object HasLabeled {
-  def graphic()(using h: HasLabeled): Node = h.node.getGraphic()
-  def graphic_=(v: Node)(using h: HasLabeled): Unit = h.node.setGraphic(v)
+object IsLabeled {
+  def graphic()(using h: IsLabeled): Node = h.node.getGraphic()
+  def graphic_=(v: Node)(using h: IsLabeled): Unit = h.node.setGraphic(v)
 }

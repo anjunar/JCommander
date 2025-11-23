@@ -6,7 +6,7 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.{Node, control, layout}
 import javafx.scene.control.Button
 
-class button extends NodeBuilder[control.Button], HasLabeled, HasText, HasOnAction, HasWidth, HasHeight {
+class button extends NodeBuilder[control.Button], IsLabeled, HasText, HasOnAction, HasWidth, HasHeight {
   
   lazy val node : control.Button = new Button()
 

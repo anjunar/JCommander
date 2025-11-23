@@ -17,7 +17,7 @@ class checkbox extends NodeBuilder[CheckBox], HasText {
 object checkbox extends Producer[checkbox, CheckBox] {
   override def createBuilder: checkbox = new checkbox()
   
-  object HasCheckBox {
+  object IsCheckBox {
     def selected(using cb: checkbox): Boolean = cb.node.isSelected
     def selected_=(v: Boolean)(using cb: checkbox): Unit = cb.node.setSelected(v)
     

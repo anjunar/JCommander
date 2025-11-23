@@ -2,7 +2,7 @@ package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.jcommander.dsl.AbstractFileTable.HasAbstractFileTable.loadImages
+import com.anjunar.jcommander.dsl.AbstractFileTable.IsAbstractFileTable.loadImages
 import com.anjunar.jcommander.files.FileItem
 import javafx.scene.control.TableView
 import javafx.scene.input.{KeyCode, KeyEvent}

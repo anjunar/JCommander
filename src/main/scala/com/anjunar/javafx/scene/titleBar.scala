@@ -7,7 +7,7 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import com.anjunar.javafx.scene.control.button
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.dsl.Icon
-import com.anjunar.jcommander.dsl.Icon.*
+import com.anjunar.jcommander.dsl.Icon.IsIcon.*
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.beans.property.SimpleListProperty
 import javafx.collections.{FXCollections, ObservableList}

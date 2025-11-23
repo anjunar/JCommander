@@ -3,8 +3,8 @@ package com.anjunar.jcommander.dsl
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.scene.control.{button, label}
-import com.anjunar.javafx.scene.image.ImageView
-import com.anjunar.javafx.scene.image.ImageView.*
+import com.anjunar.javafx.scene.image.imageView
+import com.anjunar.javafx.scene.image.imageView.*
 import com.anjunar.jcommander.manager.{Drive, DriveDetectionService, FileManager}
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
@@ -47,7 +47,7 @@ class DriveButtons extends NodeBuilder[HBox] {
   private def homeButton(): Node =
     component[Node] {
       button() {
-        graphic = ImageView() {
+        graphic = imageView() {
           fitWidth = 16
           fitHeight = 16
           image = SwingFXUtils.toFXImage(
@@ -72,7 +72,7 @@ class DriveButtons extends NodeBuilder[HBox] {
       button() {
         text = drive.name
 
-        graphic = ImageView() {
+        graphic = imageView() {
           fitWidth = 16
           fitHeight = 16
           image = SwingFXUtils.toFXImage(
@@ -144,7 +144,7 @@ object DriveButtons extends Producer[DriveButtons, HBox] {
 
   override def createBuilder: DriveButtons = new DriveButtons()
 
-  object HasDriveButtons {
+  object IsDriveButtons {
     
     def change()(using d : DriveButtons) : File => Unit = d.change
     def change_=(v : File => Unit)(using d : DriveButtons) : Unit = d.change = v
@@ -155,6 +155,6 @@ object DriveButtons extends Producer[DriveButtons, HBox] {
 
   }
   
-  export HasDriveButtons.*
+  export IsDriveButtons.*
     
 }

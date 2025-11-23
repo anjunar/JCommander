@@ -2,7 +2,7 @@ package com.anjunar.jcommander
 
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf}
-import com.anjunar.jcommander.dsl.FilePane.HastLocalFileTable.*
+import com.anjunar.jcommander.dsl.FilePane.IsFilePane.*
 import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu}
 import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder

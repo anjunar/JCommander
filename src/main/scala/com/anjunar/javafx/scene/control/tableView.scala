@@ -1,7 +1,7 @@
 package com.anjunar.javafx.scene.control
 
 import com.anjunar.javafx.dsl.*
-import com.anjunar.javafx.dsl.traits.{HasHeight, HasNode, HasWidth}
+import com.anjunar.javafx.dsl.traits.{HasHeight, IsNode, HasWidth}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.collections.ObservableList
 import javafx.scene.control
@@ -27,7 +27,7 @@ object tableView {
               (using ctx: BuildContext, parent: ElementBuilder[?]): control.TableView[E] =
     DSL.create[control.TableView[E], tableView[E]](ref, new tableView[E]())(body)
   
-  object HasTableView {
+  object IsTableView {
     
     def sortPolicy[E]()(using h: tableView[E]) : TableView[E] => Boolean = h.sortPolicy
     def sortPolicy_=[E](v: TableView[E] => Boolean)(using h: tableView[E]) : Unit = {

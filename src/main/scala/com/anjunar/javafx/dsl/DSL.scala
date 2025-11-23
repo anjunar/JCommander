@@ -68,35 +68,35 @@ object DSL {
 
   export com.anjunar.javafx.dsl.traits.HasSpacing.*
   export com.anjunar.javafx.dsl.traits.HasOnAction.*
-  export com.anjunar.javafx.dsl.traits.HasLabeled.*
   export com.anjunar.javafx.dsl.traits.HasText.*
-  export com.anjunar.javafx.dsl.traits.HasNode.*
   export com.anjunar.javafx.dsl.traits.HasWidth.*
   export com.anjunar.javafx.dsl.traits.HasHeaderButtons.*
+  export com.anjunar.javafx.dsl.traits.IsLabeled.*
+  export com.anjunar.javafx.dsl.traits.IsNode.*
   export com.anjunar.javafx.scene.titleBar
   export com.anjunar.javafx.scene.header
   export com.anjunar.javafx.scene.window
-  export com.anjunar.javafx.scene.window.HasWindow.*
+  export com.anjunar.javafx.scene.window.IsWindow.*
   export com.anjunar.javafx.scene.control.button
   export com.anjunar.javafx.scene.control.progressBar
   export com.anjunar.javafx.scene.control.progressBar.HasProgressBar.*
   export com.anjunar.javafx.scene.control.checkbox
-  export com.anjunar.javafx.scene.control.checkbox.HasCheckBox.*
+  export com.anjunar.javafx.scene.control.checkbox.IsCheckBox.*
   export com.anjunar.javafx.scene.control.label
   export com.anjunar.javafx.scene.control.menu
   export com.anjunar.javafx.scene.control.menuBar
   export com.anjunar.javafx.scene.control.menuItem
   export com.anjunar.javafx.scene.control.splitPane
-  export com.anjunar.javafx.scene.control.splitPane.HasDividerPosition.*
+  export com.anjunar.javafx.scene.control.splitPane.IsSplitPane.*
   export com.anjunar.javafx.scene.control.tableView
-  export com.anjunar.javafx.scene.control.tableView.HasTableView.*
+  export com.anjunar.javafx.scene.control.tableView.IsTableView.*
   export com.anjunar.javafx.scene.control.tableColumn
-  export com.anjunar.javafx.scene.control.tableColumn.HasTableColumn.*
+  export com.anjunar.javafx.scene.control.tableColumn.IsTableColumn.*
   export com.anjunar.javafx.scene.layout.vbox
   export com.anjunar.javafx.scene.layout.hbox
   export com.anjunar.javafx.scene.layout.region
-  export com.anjunar.javafx.scene.image.ImageView
-  export com.anjunar.javafx.scene.image.ImageView.HasImageView.*
+  export com.anjunar.javafx.scene.image.imageView
+  export com.anjunar.javafx.scene.image.imageView.IsImageView.*
   export com.anjunar.javafx.dsl.ChildNodeBuilder.*
 
 }

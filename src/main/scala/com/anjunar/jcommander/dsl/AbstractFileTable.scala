@@ -1,10 +1,10 @@
 package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.traits.HasNode
+import com.anjunar.javafx.dsl.traits.IsNode
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
 import com.anjunar.javafx.scene.control.tableColumn
-import com.anjunar.javafx.scene.control.tableView.HasTableView
+import com.anjunar.javafx.scene.control.tableView.IsTableView
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
 import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
@@ -65,7 +65,7 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
             } else {
               tableCell.setText(item.name)
               tableCell.setGraphic(component {
-                ImageView() {
+                imageView() {
                   fitWidth = 18
                   fitHeight = 18
                   image = SwingFXUtils.toFXImage(fileManager.getFileIcon(item.file, false), null)
@@ -110,7 +110,7 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
           }
         })
 
-        HasTableView.sortPolicy = (tv : TableView[FileItem]) => {
+        IsTableView.sortPolicy = (tv : TableView[FileItem]) => {
           val sortOrder = tv.getSortOrder
           val sortCol = if (sortOrder.isEmpty) None else Some(sortOrder.get(0))
           val sortType = sortCol.map(_.getSortType).getOrElse(TableColumn.SortType.ASCENDING)
@@ -176,7 +176,7 @@ object AbstractFileTable extends Producer[AbstractFileTable, TableView[FileItem]
 
   override def createBuilder: AbstractFileTable = new AbstractFileTable()
 
-  object HasAbstractFileTable {
+  object IsAbstractFileTable {
 
     def loadImages()(using l: AbstractFileTable): Boolean = l.loadImages
 

@@ -102,7 +102,7 @@ object window {
               (using ctx: BuildContext, parent: ElementBuilder[?]): Stage =
     DSL.create[Stage, window[T]](Ref(), new window[T](width, height, stage))(body)
 
-  object HasWindow {
+  object IsWindow {
 
     def closeWithResult[T](value: T)(using h: window[T]): Unit = h.closeWithResult(value)
 
