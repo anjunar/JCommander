@@ -43,6 +43,7 @@ object AutoBindObservableProperties {
           } else {
             val targetBindableProperty = resolvedMethod.invoke(target.asInstanceOf[AnyRef]).asInstanceOf[Property[AnyRef]]
             targetBindableProperty.bindBidirectional(sourceBindableProperty)
+//            sourceBindableProperty.bindBidirectional(targetBindableProperty)
           }
         })
 

@@ -30,14 +30,14 @@ object ChildNodeBuilder {
                 (using parent: ChildNodeBuilder[?]): Unit =
     parent.children.remove(child)
 
-  def react[T](prop: ObservableValue[T])
-              (f: T => Unit)
-              (using parent: ChildNodeBuilder[?]): Unit =
+  def reactTo[T](prop: ObservableValue[T])
+                (f: T => Unit)
+                (using parent: ChildNodeBuilder[?]): Unit =
     f(prop.getValue)
     prop.addListener((_, _, newValue) => f(newValue))
 
-  def react[T <: ElementBuilder[?]](prop: ObservableList[T])
-              (using parent: ChildNodeBuilder[?]): Unit =
+  def reactTo[T <: ElementBuilder[?]](prop: ObservableList[T])
+                                     (using parent: ChildNodeBuilder[?]): Unit =
     prop.addListener(new ListChangeListener[T] {
       override def onChanged(change: ListChangeListener.Change[? <: T]): Unit = {
         while change.next() do

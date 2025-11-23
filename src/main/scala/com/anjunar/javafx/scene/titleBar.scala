@@ -88,18 +88,11 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox], HasHeaderButton
 
         hbox() {
           spacing = 10
-          react(content)
+          reactTo(content)
         }
 
         region() {
           hgrow = Priority.ALWAYS
-        }
-
-        button() {
-          text = "TEST"
-          onAction = _ => {
-            minimizableProperty.set(! minimizableProperty.get)
-          }
         }
 
         val minimizeButton = button.build() {
@@ -113,11 +106,13 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox], HasHeaderButton
           }
         }
 
-        react(minimizableProperty) { minimizable =>
-          if (minimizable) {
-            register(minimizeButton)
-          } else {
-            deregister(minimizeButton)
+        vbox() {
+          reactTo(minimizableProperty) { minimizable =>
+            if (minimizable) {
+              register(minimizeButton)
+            } else {
+              deregister(minimizeButton)
+            }
           }
         }
 
@@ -132,11 +127,13 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox], HasHeaderButton
           }
         }
 
-        react(maximizableProperty) { minimizable =>
-          if (minimizable) {
-            register(maximizeButton)
-          } else {
-            deregister(maximizeButton)
+        vbox() {
+          reactTo(maximizableProperty) { minimizable =>
+            if (minimizable) {
+              register(maximizeButton)
+            } else {
+              deregister(maximizeButton)
+            }
           }
         }
 
@@ -151,13 +148,16 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox], HasHeaderButton
           }
         }
 
-        react(closeableProperty) { minimizable =>
-          if (minimizable) {
-            register(closeButton)
-          } else {
-            deregister(closeButton)
+        vbox() {
+          reactTo(closeableProperty) { minimizable =>
+            if (minimizable) {
+              register(closeButton)
+            } else {
+              deregister(closeButton)
+            }
           }
         }
+
 
       }
     }

@@ -4,9 +4,9 @@ import javafx.beans.property.SimpleBooleanProperty
 
 trait HasHeaderButtons {
 
-  var minimizableProperty = new SimpleBooleanProperty(false)
-  var maximizableProperty = new SimpleBooleanProperty(false)
-  var closeableProperty = new SimpleBooleanProperty(true)
+  var minimizableProperty: SimpleBooleanProperty = new SimpleBooleanProperty(false)
+  var maximizableProperty: SimpleBooleanProperty = new SimpleBooleanProperty(false)
+  var closeableProperty: SimpleBooleanProperty = new SimpleBooleanProperty(true)
 
 }
 

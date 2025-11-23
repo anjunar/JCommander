@@ -6,9 +6,9 @@ import scala.language.reflectiveCalls
 
 trait HasHeight {
 
-  var prefHeightProperty = new SimpleDoubleProperty(-1)
-  var maxHeightProperty = new SimpleDoubleProperty(-1)
-  var minHeightProperty = new SimpleDoubleProperty(-1)
+  var prefHeightProperty: SimpleDoubleProperty = new SimpleDoubleProperty(-1)
+  var maxHeightProperty: SimpleDoubleProperty = new SimpleDoubleProperty(-1)
+  var minHeightProperty: SimpleDoubleProperty = new SimpleDoubleProperty(-1)
 
 }
 
