@@ -10,7 +10,7 @@ import javafx.scene.control.{Menu, MenuBar as JfxMenuBar}
 
 class menuBar extends ChildNodeBuilder[JfxMenuBar, Menu] {
 
-  def create() : JfxMenuBar = new JfxMenuBar()
+  lazy val node  : JfxMenuBar = new JfxMenuBar()
 
   def build(): JfxMenuBar = node
 

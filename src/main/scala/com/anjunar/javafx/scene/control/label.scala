@@ -8,7 +8,7 @@ import javafx.scene.{Node, control}
 
 class label extends NodeBuilder[control.Label], HasLabeled, HasText {
 
-  def create() : control.Label = new control.Label()
+  lazy val node  : control.Label = new control.Label()
   
   override def build(): control.Label = node
 }

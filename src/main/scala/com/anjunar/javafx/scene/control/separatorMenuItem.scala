@@ -5,7 +5,7 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.control.{MenuItem as JfxMenuItem, SeparatorMenuItem as JfxSeparator}
 
 class separatorMenuItem extends ElementBuilder[JfxMenuItem] {
-  def create(): JfxSeparator = new JfxSeparator()
+  lazy val node : JfxSeparator = new JfxSeparator()
 
   def build(): JfxMenuItem = node
 }

@@ -8,7 +8,7 @@ import javafx.scene.control.{Button, CheckBox}
 
 class checkbox extends NodeBuilder[CheckBox], HasText {
 
-  def create() : CheckBox = new CheckBox()
+  lazy val node  : CheckBox = new CheckBox()
 
   override def build(): CheckBox = node
   

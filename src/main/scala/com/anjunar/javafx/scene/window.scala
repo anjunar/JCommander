@@ -28,7 +28,7 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
 
   private var resizableFlag = true
 
-  def create() : Stage = {
+  lazy val node  : Stage = {
     stage.setResizable(resizableFlag)
     stage.initStyle(StageStyle.UNDECORATED)
 

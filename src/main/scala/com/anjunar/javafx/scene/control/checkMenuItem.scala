@@ -6,7 +6,7 @@ import javafx.scene.control.{Button, CheckMenuItem as JfxCheckMenuItem}
 
 class checkMenuItem extends ElementBuilder[JfxCheckMenuItem] {
 
-  def create() : JfxCheckMenuItem =  new JfxCheckMenuItem()
+  lazy val node  : JfxCheckMenuItem =  new JfxCheckMenuItem()
 
   def build(): JfxCheckMenuItem = node
 }

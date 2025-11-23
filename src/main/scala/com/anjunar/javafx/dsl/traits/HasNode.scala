@@ -6,7 +6,6 @@ import javafx.event.{Event, EventHandler, EventType}
 import javafx.scene.Node
 import javafx.scene.input.{KeyEvent, MouseEvent}
 import javafx.scene.layout.{HBox, Priority, VBox}
-import javafx.beans.property.ObjectProperty
 
 import scala.collection.mutable
 import scala.compiletime.uninitialized
@@ -14,78 +13,58 @@ import scala.jdk.CollectionConverters.*
 
 trait HasNode {
 
-  lazy val node: Node
-  
-  val getStyleClass: ObservableList[String] = node.getStyleClass
-  val styleProperty: StringProperty = new SimpleStringProperty("")
-  val mouseTransparentProperty: BooleanProperty = new SimpleBooleanProperty(false)
-  val pickOnBoundsProperty: BooleanProperty = new SimpleBooleanProperty(false)
-  
-  val onKeyPressedProperty: ObjectProperty[EventHandler[KeyEvent]] = new SimpleObjectProperty[EventHandler[KeyEvent]]()
-  
-  val onMouseClickedProperty: ObjectProperty[EventHandler[MouseEvent]] = new SimpleObjectProperty[EventHandler[MouseEvent]]()
-  val onMouseDraggedProperty: ObjectProperty[EventHandler[MouseEvent]] = new SimpleObjectProperty[EventHandler[MouseEvent]]()
-  val onMousePressedProperty: ObjectProperty[EventHandler[MouseEvent]] = new SimpleObjectProperty[EventHandler[MouseEvent]]()
+  lazy val node : Node
 
 }
 
 object HasNode {
 
-  def addEventHandler[T <: Event](eventType: EventType[T], eventHandler: EventHandler[? >: T])(using h: HasNode): Unit =
-    h.node.addEventHandler(eventType, eventHandler)
+  def css()(using h: HasNode): mutable.Buffer[String] = h.node.getStyleClass.asScala
+  def css_=(values : mutable.Buffer[String])(using h: HasNode): Unit = {
+    h.node.getStyleClass.clear()
+    h.node.getStyleClass.asScala.addAll(values)
+  }
 
-  def vgrow(using h: HasNode): Priority = VBox.getVgrow(h.node)
+  def style()(using h: HasNode): String = h.node.getStyle()
+  def style_=(v: String)(using h: HasNode): Unit = h.node.setStyle(v)
+
+  def vgrow()(using h: HasNode): Priority = VBox.getVgrow(h.node)
   def vgrow_=(v: Priority)(using h: HasNode): Unit = VBox.setVgrow(h.node, v)
 
-  def hgrow(using h: HasNode): Priority = HBox.getHgrow(h.node)
+  def hgrow()(using h: HasNode): Priority = HBox.getHgrow(h.node)
   def hgrow_=(v: Priority)(using h: HasNode): Unit = HBox.setHgrow(h.node, v)
 
   
-  
-  def css(using h: HasNode): mutable.Buffer[String] = h.getStyleClass.asScala
-  def css_=(values : mutable.Buffer[String])(using h: HasNode): Unit = {
-    h.getStyleClass.clear()
-    h.getStyleClass.asScala.addAll(values)
-  }
+  def addEventHandler[T <: Event](eventType: EventType[T], eventHandler: EventHandler[? >: T])(using h: HasNode) : Unit =
+    h.node.addEventHandler(eventType, eventHandler)
 
-  def style(using h: HasNode): String = h.styleProperty.get()
-  def style_=(v: String)(using h: HasNode): Unit = h.styleProperty.set(v)
+  def onKeyPressed(using h: HasNode): EventHandler[? >: KeyEvent] = h.node.getOnKeyPressed
 
-  def mouseTransparent(using h: HasNode): Boolean = h.mouseTransparentProperty.get()
-  def mouseTransparent_=(v: Boolean)(using h: HasNode): Unit = h.mouseTransparentProperty.set(v)  
-
-  def pickOnBounds(using h: HasNode): Boolean = h.pickOnBoundsProperty.get()
-  def pickOnBounds_=(v: Boolean)(using h: HasNode): Unit = h.pickOnBoundsProperty.set(v)
-
-
-  def onKeyPressed(using h: HasNode): EventHandler[KeyEvent] =
-    h.onKeyPressedProperty.get()
-
-  def onKeyPressed_=(f: EventHandler[KeyEvent])(using h: HasNode): Unit = {
-    h.onKeyPressedProperty.set(f)
+  def onKeyPressed_=(f: EventHandler[? >: KeyEvent])(using h: HasNode): Unit = {
+    h.node.setOnKeyPressed(f)
   }
   
   
   
 
-  def onMouseClicked(using h: HasNode): EventHandler[MouseEvent] =
-    h.onMouseClickedProperty.get()
+  def onMouseClicked(using h: HasNode): EventHandler[? >: MouseEvent] =
+    h.node.getOnMouseClicked
 
-  def onMouseClicked_=(f: EventHandler[MouseEvent])(using h: HasNode): Unit = {
+  def onMouseClicked_=(f: EventHandler[? >: MouseEvent])(using h: HasNode): Unit = {
     h.node.setOnMouseClicked(f)
   }
 
-  def onMouseDragged(using h: HasNode): EventHandler[MouseEvent] =
-    h.onMouseDraggedProperty.get()
+  def onMouseDragged(using h: HasNode): EventHandler[? >: MouseEvent] =
+    h.node.getOnMouseDragged
 
-  def onMouseDragged_=(f: EventHandler[MouseEvent])(using h: HasNode): Unit = {
+  def onMouseDragged_=(f: EventHandler[? >: MouseEvent])(using h: HasNode): Unit = {
     h.node.setOnMouseDragged(f)
   }
 
-  def onMousePressed(using h: HasNode): EventHandler[MouseEvent] =
-    h.onMousePressedProperty.get()
+  def onMousePressed(using h: HasNode): EventHandler[? >: MouseEvent] =
+    h.node.getOnMousePressed
 
-  def onMousePressed_=(f: EventHandler[MouseEvent])(using h: HasNode): Unit = {
+  def onMousePressed_=(f: EventHandler[? >: MouseEvent])(using h: HasNode): Unit = {
     h.node.setOnMousePressed(f)
   }
 

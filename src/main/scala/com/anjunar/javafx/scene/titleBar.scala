@@ -64,7 +64,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
     }
   }
 
-  def create(): HBox = {
+  lazy val node : HBox = {
     val titleBar = component[HBox] {
       hbox() {
         css = mutable.ListBuffer("main-title-bar")

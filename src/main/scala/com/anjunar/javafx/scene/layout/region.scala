@@ -5,7 +5,7 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.layout
 
 class region extends NodeBuilder[layout.Region] {
-  def create(): layout.Region = new layout.Region()
+  lazy val node : layout.Region = new layout.Region()
 
   override def build(): layout.Region = node
 }

@@ -6,7 +6,7 @@ import javafx.scene.layout.HBox
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 class MainMenu extends NodeBuilder[HBox] {
 
-  def create(): HBox = {
+  lazy val node : HBox = {
     val mainMenu = component[HBox] {
       hbox() {
         spacing = 10
