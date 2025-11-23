@@ -67,7 +67,6 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
   lazy val node: HBox = {
     val titleBar = component[HBox] {
       hbox() {
-        pickOnBounds = true
         css = mutable.ListBuffer("main-title-bar")
         alignment = Pos.CENTER
         spacing = 5
@@ -93,6 +92,13 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
 
         region() {
           hgrow = Priority.ALWAYS
+        }
+
+        button() {
+          text = "TEST"
+          onAction = _ => {
+            minimizableProperty.set(!minimizableProperty.get())
+          }
         }
 
         val minimizeButton = button.build() {

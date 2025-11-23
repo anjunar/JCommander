@@ -12,8 +12,8 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 class Icon extends NodeBuilder[FontIcon], HasFontIcon {
 
   val darkMode = inject(classOf[DarkModeConf])
-  
-  lazy val node = AutoBindObservableProperties.bind(this, new FontIcon())
+
+  lazy val node = new FontIcon()
 
   node.setIconColor(if (darkMode.value) Color.WHITE else Color.BLACK)
 

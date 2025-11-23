@@ -2,13 +2,9 @@ package com.anjunar.jcommander.utils
 
 import com.anjunar.javafx.dsl.ElementBuilder
 import com.anjunar.scala.universe.TypeResolver
-import com.anjunar.scala.universe.introspector.BeanIntrospector
 import javafx.beans.property.{Property, SimpleListProperty}
 import javafx.collections.ListChangeListener.Change
 import javafx.collections.ObservableList
-import scalafx.Includes.jfxProperty2sfx
-
-import scala.reflect.ClassTag
 
 object AutoBindObservableProperties {
 
@@ -27,11 +23,13 @@ object AutoBindObservableProperties {
               list.remove(elem.build().asInstanceOf[E])
             )
       )
+    } else {
+      println("List is null")
     }
   }
 
 
-  def bind[S,T](source: S, target: T): T = {
+  def bind[S, T](source: S, target: T): T = {
     try {
       val sourceResolvedClass = TypeResolver.resolve(source.getClass)
       val targetResolvedClass = TypeResolver.resolve(target.getClass)
@@ -42,17 +40,17 @@ object AutoBindObservableProperties {
           val resolvedMethod = targetResolvedClass.findMethod(method.name)
 
           if (resolvedMethod == null) {
-//            println(s"Error Binding property ${method.name} from ${sourceResolvedClass.name}")
+            //            println(s"Error Binding property ${method.name} from ${sourceResolvedClass.name}")
           } else {
             val targetBindableProperty = resolvedMethod.invoke(target.asInstanceOf[AnyRef]).asInstanceOf[Property[AnyRef]]
             targetBindableProperty.bindBidirectional(sourceBindableProperty)
-//            sourceBindableProperty.bindBidirectional(targetBindableProperty)
+            //            sourceBindableProperty.bindBidirectional(targetBindableProperty)
           }
         })
 
       target
     } catch {
-      case ex : Exception => ex.printStackTrace(); target
+      case ex: Exception => ex.printStackTrace(); target
     }
   }
 

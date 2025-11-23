@@ -22,6 +22,12 @@ class Test extends Application:
             text = "Hello World"
           }
 
+          val label2 = label.build() {
+            text = "Hello World 2"
+          }
+
+          register(label2)
+
           button() {
             text = "Click Me"
             onAction = event =>

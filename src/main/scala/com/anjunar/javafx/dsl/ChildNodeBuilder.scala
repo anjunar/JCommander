@@ -11,8 +11,8 @@ trait ChildNodeBuilder[C <: Node, I] extends NodeBuilder[C] {
 
   def add(child: ElementBuilder[?]): Unit =
     children.add(child)
-    
-  def fxObservableList : ObservableList[I]  
+
+  def fxObservableList : ObservableList[I]
 
 }
 
@@ -39,7 +39,8 @@ object ChildNodeBuilder {
     prop.addListener((_, _, newValue) => f(newValue))
 
   def reactTo[T <: ElementBuilder[?]](prop: ObservableList[T])
-                                     (using parent: ChildNodeBuilder[?,?]): Unit =
+                                     (using parent: ChildNodeBuilder[?,?]): Unit = {
+    prop.forEach(elem => parent.add(elem))
     prop.addListener(new ListChangeListener[T] {
       override def onChanged(change: ListChangeListener.Change[? <: T]): Unit = {
         while change.next() do
@@ -53,5 +54,6 @@ object ChildNodeBuilder {
             )
       }
     })
+  }
 
 }
