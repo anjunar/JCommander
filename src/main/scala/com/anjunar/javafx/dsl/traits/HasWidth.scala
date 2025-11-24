@@ -8,15 +8,9 @@ import scala.language.reflectiveCalls
 
 trait HasWidth {
 
-  lazy val node : AnyRef
-
-}
-
-object HasWidth {
-
-  private type W = {
+  lazy val node : AnyRef {
     def widthProperty(): ReadOnlyDoubleProperty
-      
+
     def getWidth(): Double
 
     def getPrefWidth() : Double
@@ -29,21 +23,22 @@ object HasWidth {
     def setMaxWidth(v: Double): Unit
   }
 
-  private inline def w(using h: HasWidth): W =
-    h.node.asInstanceOf[W]
+}
 
-  def widthProperty()(using h: HasWidth): ReadOnlyDoubleProperty = w.widthProperty()
+object HasWidth {
+
+  def widthProperty()(using h: HasWidth): ReadOnlyDoubleProperty = h.node.widthProperty()
   
-  def width()(using h: HasWidth): Double = w.getWidth()
+  def width()(using h: HasWidth): Double = h.node.getWidth()
 
-  def prefWidth()(using h: HasWidth): Double = w.getPrefWidth()
-  def prefWidth_=(v: Double)(using h: HasWidth): Unit = w.setPrefWidth(v)
+  def prefWidth()(using h: HasWidth): Double = h.node.getPrefWidth()
+  def prefWidth_=(v: Double)(using h: HasWidth): Unit = h.node.setPrefWidth(v)
 
-  def maxWidth()(using h: HasWidth): Double = w.getMaxWidth()
-  def maxWidth_=(v: Double)(using h: HasWidth): Unit = w.setMaxWidth(v)
+  def maxWidth()(using h: HasWidth): Double = h.node.getMaxWidth()
+  def maxWidth_=(v: Double)(using h: HasWidth): Unit = h.node.setMaxWidth(v)
 
-  def minWidth()(using h: HasWidth): Double = w.getMinWidth()
-  def minWidth_=(v: Double)(using h: HasWidth): Unit = w.setMinWidth(v)
+  def minWidth()(using h: HasWidth): Double = h.node.getMinWidth()
+  def minWidth_=(v: Double)(using h: HasWidth): Unit = h.node.setMinWidth(v)
 
 
 }

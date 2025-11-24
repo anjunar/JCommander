@@ -4,13 +4,7 @@ import scala.language.reflectiveCalls
 
 trait HasHeight {
 
-  lazy val node: AnyRef
-
-}
-
-object HasHeight {
-
-  private type H = {
+  lazy val node: AnyRef {
     def getPrefHeight(): Double
     def setPrefHeight(v: Double): Unit
 
@@ -21,18 +15,16 @@ object HasHeight {
     def setMaxHeight(v: Double): Unit
   }
 
-  private inline def w(using h: HasHeight): H =
-    h.node.asInstanceOf[H]
+}
 
-  def prefHeight()(using h: HasHeight): Double = w.getPrefHeight()
+object HasHeight {
 
-  def prefHeight_=(v: Double)(using h: HasHeight): Unit = w.setPrefHeight(v)
+  def prefHeight()(using h: HasHeight): Double = h.node.getPrefHeight()
+  def prefHeight_=(v: Double)(using h: HasHeight): Unit = h.node.setPrefHeight(v)
 
-  def maxHeight()(using h: HasHeight): Double = w.getMaxHeight()
+  def maxHeight()(using h: HasHeight): Double = h.node.getMaxHeight()
+  def maxHeight_=(v: Double)(using h: HasHeight): Unit = h.node.setMaxHeight(v)
 
-  def maxHeight_=(v: Double)(using h: HasHeight): Unit = w.setMaxHeight(v)
-
-  def minHeight()(using h: HasHeight): Double = w.getMinHeight()
-
-  def minHeight_=(v: Double)(using h: HasHeight): Unit = w.setMinHeight(v)
+  def minHeight()(using h: HasHeight): Double = h.node.getMinHeight()
+  def minHeight_=(v: Double)(using h: HasHeight): Unit = h.node.setMinHeight(v)
 }

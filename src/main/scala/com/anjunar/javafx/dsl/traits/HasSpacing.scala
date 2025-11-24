@@ -5,32 +5,26 @@ import javafx.geometry.{Insets, Pos}
 import scala.language.reflectiveCalls
 
 trait HasSpacing {
-  lazy val node : AnyRef
-}
-object HasSpacing {
-  
-  private type H = {
+  lazy val node : AnyRef {
     def getSpacing(): Double
     def setSpacing(v: Double): Unit
-  
+
     def getPadding() : Insets
     def setPadding(value : Insets) : Unit
 
     def getAlignment() : Pos
     def setAlignment(value : Pos) : Unit
   }
+}
+object HasSpacing {
+  
+  def spacing()(using h: HasSpacing): Double = h.node.getSpacing()
+  def spacing_=(v: Double)(using h: HasSpacing): Unit = h.node.setSpacing(v)
 
-  private inline def w(using h: HasSpacing): H =
-    h.node.asInstanceOf[H]
+  def padding()(using h: HasSpacing): Insets = h.node.getPadding()
+  def padding_=(v: Insets)(using h: HasSpacing): Unit = h.node.setPadding(v)
 
-
-  def spacing()(using h: HasSpacing): Double = w.getSpacing()
-  def spacing_=(v: Double)(using h: HasSpacing): Unit = w.setSpacing(v)
-
-  def padding()(using h: HasSpacing): Insets = w.getPadding()
-  def padding_=(v: Insets)(using h: HasSpacing): Unit = w.setPadding(v)
-
-  def alignment()(using h: HasSpacing): Pos = w.getAlignment()
-  def alignment_=(v: Pos)(using h: HasSpacing): Unit = w.setAlignment(v)
+  def alignment()(using h: HasSpacing): Pos = h.node.getAlignment()
+  def alignment_=(v: Pos)(using h: HasSpacing): Unit = h.node.setAlignment(v)
 
 }

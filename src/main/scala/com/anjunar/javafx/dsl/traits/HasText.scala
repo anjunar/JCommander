@@ -5,26 +5,20 @@ import javafx.beans.property.StringProperty
 import scala.language.reflectiveCalls
 
 trait HasText {
-  lazy val node : AnyRef
+  lazy val node : AnyRef {
+    def textProperty(): StringProperty
+
+    def getText(): String
+    def setText(v: String): Unit
+  }
 }
 
 object HasText {
   
-  private type T = {
+
+  def textProperty(using h: HasText): StringProperty = h.node.textProperty()
   
-    def textProperty(): StringProperty
-  
-    def getText(): String
+  def text()(using h: HasText): String = h.node.getText()
 
-    def setText(v: String): Unit
-  }
-
-  private inline def t(using h: HasText): T =
-    h.node.asInstanceOf[T]
-
-  def textProperty(using h: HasText): StringProperty = t.textProperty()
-  
-  def text()(using h: HasText): String = t.getText()
-
-  def text_=(v: String)(using h: HasText): Unit = t.setText(v)
+  def text_=(v: String)(using h: HasText): Unit = h.node.setText(v)
 }

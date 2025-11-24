@@ -10,25 +10,18 @@ import scala.language.reflectiveCalls
 
 trait HasOnAction {
   
-  lazy val node : AnyRef
+  lazy val node : AnyRef {
+    def getOnAction(): EventHandler[ActionEvent]
+    def setOnAction(value: EventHandler[ActionEvent]): Unit
+  }
   
-  var onAction : ActionEvent => Unit = uninitialized
 }
 
 object HasOnAction {
   
-  private type H = {
-    def getOnAction(): EventHandler[ActionEvent]
-    def setOnAction(value: EventHandler[ActionEvent]): Unit
-  }
+  def onAction()(using h: HasOnAction): EventHandler[ActionEvent] = h.node.getOnAction()
 
-  private inline def w(using h: HasOnAction): H =
-    h.node.asInstanceOf[H]
-
-  def onAction()(using h: HasOnAction): ActionEvent => Unit = h.onAction
-
-  def onAction_=(f: ActionEvent => Unit)(using h: HasOnAction): Unit = {
-    h.onAction = f
-    w.setOnAction((e: ActionEvent) => f(e))
+  def onAction_=(f: EventHandler[ActionEvent])(using h: HasOnAction): Unit = {
+    h.node.setOnAction(f)
   }
 }

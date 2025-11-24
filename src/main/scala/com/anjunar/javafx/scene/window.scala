@@ -20,7 +20,7 @@ import javafx.stage.{Stage, StageStyle}
 import scala.compiletime.uninitialized
 import scala.concurrent.Promise
 
-class window[E](width: Double, height: Double, stage : Stage) extends ElementBuilder[Stage], HasText, HasHeaderButtons {
+class window[E](width: Double, height: Double, stage : Stage) extends ElementBuilder[Stage], HasHeaderButtons {
 
   private val darkMode: DarkModeConf = inject(classOf[DarkModeConf])
 
@@ -32,7 +32,7 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
 
   private var resizableFlag = true
 
-  lazy val node  : Stage = {
+  lazy val node : Stage = {
     stage.setResizable(resizableFlag)
     stage.initStyle(StageStyle.UNDECORATED)
 
