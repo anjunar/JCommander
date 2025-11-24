@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.dsl
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.traits.IsNode.addEventHandler
+import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.HasWidth.{prefWidth, widthProperty}
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer}

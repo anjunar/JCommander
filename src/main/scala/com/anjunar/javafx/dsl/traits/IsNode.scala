@@ -10,24 +10,25 @@ import javafx.scene.layout.{HBox, Priority, VBox}
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
+import scala.language.reflectiveCalls
 
 trait IsNode {
 
   lazy val node : Node
+  
+  var gridPaneX : Int = uninitialized
+  var gridPaneY : Int = uninitialized
 
 }
 
 object IsNode {
-
-  def css()(using h: IsNode): mutable.Buffer[String] = h.node.getStyleClass.asScala
-  def css_=(values : mutable.Buffer[String])(using h: IsNode): Unit = {
-    h.node.getStyleClass.clear()
-    h.node.getStyleClass.asScala.addAll(values)
-  }
-
-  def style()(using h: IsNode): String = h.node.getStyle()
-  def style_=(v: String)(using h: IsNode): Unit = h.node.setStyle(v)
-
+  
+  def gridX()(using h: IsNode): Int = h.gridPaneX
+  def gridX_=(v: Int)(using h: IsNode): Unit = h.gridPaneX = v
+  
+  def gridY()(using h: IsNode): Int = h.gridPaneY
+  def gridY_=(v: Int)(using h: IsNode): Unit = h.gridPaneY = v
+  
   def vgrow()(using h: IsNode): Priority = VBox.getVgrow(h.node)
   def vgrow_=(v: Priority)(using h: IsNode): Unit = VBox.setVgrow(h.node, v)
 
@@ -35,10 +36,7 @@ object IsNode {
   def hgrow_=(v: Priority)(using h: IsNode): Unit = HBox.setHgrow(h.node, v)
 
   
-  def addEventHandler[T <: Event](eventType: EventType[T], eventHandler: EventHandler[? >: T])(using h: IsNode) : Unit =
-    h.node.addEventHandler(eventType, eventHandler)
-
-  def onKeyPressed(using h: IsNode): EventHandler[? >: KeyEvent] = h.node.getOnKeyPressed
+  def onKeyPressed(using h: IsNode): EventHandler[? >: KeyEvent] = h.node.getOnKeyPressed()
 
   def onKeyPressed_=(f: EventHandler[? >: KeyEvent])(using h: IsNode): Unit = {
     h.node.setOnKeyPressed(f)
@@ -48,21 +46,21 @@ object IsNode {
   
 
   def onMouseClicked(using h: IsNode): EventHandler[? >: MouseEvent] =
-    h.node.getOnMouseClicked
+    h.node.getOnMouseClicked()
 
   def onMouseClicked_=(f: EventHandler[? >: MouseEvent])(using h: IsNode): Unit = {
     h.node.setOnMouseClicked(f)
   }
 
   def onMouseDragged(using h: IsNode): EventHandler[? >: MouseEvent] =
-    h.node.getOnMouseDragged
+    h.node.getOnMouseDragged()
 
   def onMouseDragged_=(f: EventHandler[? >: MouseEvent])(using h: IsNode): Unit = {
     h.node.setOnMouseDragged(f)
   }
 
   def onMousePressed(using h: IsNode): EventHandler[? >: MouseEvent] =
-    h.node.getOnMousePressed
+    h.node.getOnMousePressed()
 
   def onMousePressed_=(f: EventHandler[? >: MouseEvent])(using h: IsNode): Unit = {
     h.node.setOnMousePressed(f)

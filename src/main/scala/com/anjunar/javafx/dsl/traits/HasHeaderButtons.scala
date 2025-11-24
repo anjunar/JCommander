@@ -1,9 +1,11 @@
 package com.anjunar.javafx.dsl.traits
 
-import javafx.beans.property.{BooleanProperty, SimpleBooleanProperty}
+import javafx.beans.property.{BooleanProperty, SimpleBooleanProperty, SimpleStringProperty, StringProperty}
 
 trait HasHeaderButtons {
 
+  var titleProperty: StringProperty = new SimpleStringProperty("")
+  
   var minimizableProperty: BooleanProperty = new SimpleBooleanProperty(false)
   var maximizableProperty: BooleanProperty = new SimpleBooleanProperty(false)
   var closeableProperty: BooleanProperty = new SimpleBooleanProperty(true)
@@ -15,6 +17,7 @@ object HasHeaderButtons {
   def minimizableProp[T](using h: HasHeaderButtons): BooleanProperty = h.minimizableProperty
   def maximizableProp[T](using h: HasHeaderButtons): BooleanProperty = h.maximizableProperty
   def closeableProp[T](using h: HasHeaderButtons): BooleanProperty = h.closeableProperty
+  def titleProp[T](using h: HasHeaderButtons): StringProperty = h.titleProperty
 
   def minimizable[T](using h: HasHeaderButtons): Boolean = h.minimizableProperty.get()
 

@@ -1,13 +1,13 @@
 package com.anjunar.javafx.scene.layout
 
-import com.anjunar.javafx.dsl.traits.{HasHeight, HasSpacing, HasWidth}
+import com.anjunar.javafx.dsl.traits.{HasHeight, HasPadding, HasSpacing, HasStyle, HasWidth}
 import com.anjunar.javafx.dsl.{ChildNodeBuilder, ElementBuilder, Producer}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.collections.ObservableList
 import javafx.scene.layout.HBox
 import javafx.scene.{Node, layout}
 
-class hbox extends ChildNodeBuilder[layout.HBox, Node], HasSpacing, HasWidth, HasHeight {
+class hbox extends ChildNodeBuilder[layout.HBox, Node], HasSpacing, HasPadding, HasWidth, HasHeight {
   lazy val node : layout.HBox = new HBox()
 
   override def build(): layout.HBox = node

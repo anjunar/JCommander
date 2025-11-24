@@ -2,12 +2,13 @@ package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.dsl.traits.HasHeaderButtons
-import com.anjunar.javafx.dsl.traits.IsNode.{css, hgrow, onMouseClicked, onMouseDragged, onMousePressed, style}
+import com.anjunar.javafx.dsl.traits.IsNode.{hgrow, onMouseClicked, onMouseDragged, onMousePressed}
+import com.anjunar.javafx.dsl.traits.HasStyle.css
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.text
-import com.anjunar.javafx.dsl.traits.IsLabeled.graphic
+import com.anjunar.javafx.dsl.traits.HasGraphic.graphic
 import com.anjunar.javafx.dsl.ChildNodeBuilder.{reactTo, register, deregister}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import com.anjunar.javafx.scene.control.button
@@ -100,13 +101,6 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
             if (event.getClickCount == 2) toggleMaximize()
           }
 
-        }
-
-        button() {
-          text = "TEST"
-          onAction = _ => {
-            minimizableProperty.set(!minimizableProperty.get())
-          }
         }
 
         val minimizeButton = button.build() {

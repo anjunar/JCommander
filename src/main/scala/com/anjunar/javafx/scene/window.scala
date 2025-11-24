@@ -1,11 +1,12 @@
 package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.traits.HasHeaderButtons.{closeableProp, maximizableProp, minimizableProp}
-import com.anjunar.javafx.dsl.traits.IsNode.{style, vgrow}
+import com.anjunar.javafx.dsl.traits.HasHeaderButtons.{closeableProp, maximizableProp, minimizableProp, titleProp}
+import com.anjunar.javafx.dsl.traits.IsNode.vgrow
 import com.anjunar.javafx.dsl.traits.{HasHeaderButtons, HasText}
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
-import com.anjunar.javafx.dsl.ChildNodeBuilder.{reactTo, register, deregister}
+import com.anjunar.javafx.dsl.ChildNodeBuilder.{deregister, reactTo, register}
+import com.anjunar.javafx.dsl.traits.HasStyle.style
 import com.anjunar.javafx.scene.layout.vbox
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.configuration.DarkModeConf
@@ -40,6 +41,8 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
       vbox() {
         style = "-fx-border-color: #444; -fx-border-width: 1;"
         titleBar(stage) {
+          titleProp <-> titleProperty
+
           minimizableProp <-> minimizableProperty
           maximizableProp <-> maximizableProperty
           closeableProp <-> closeableProperty
@@ -114,8 +117,6 @@ object window {
 
     def resizable[T](using h: window[T]) : Boolean = h.resizableFlag
     def resizable_=[T](value : Boolean)(using h: window[T]) : Unit = h.resizableFlag = value
-
-
 
   }
 

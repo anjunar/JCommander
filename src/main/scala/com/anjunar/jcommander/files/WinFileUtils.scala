@@ -2,7 +2,8 @@ package com.anjunar.jcommander.files
 
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
-import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, padding, spacing}
+import com.anjunar.javafx.dsl.traits.HasPadding.padding
+import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
 import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow
@@ -187,9 +188,6 @@ class WinFileUtils extends AbstractFileUtils {
 
         val cancelledFlag = new AtomicBoolean(false)
 
-        val progressBar3 = new ProgressBar {
-          prefWidth = 350
-        }
         val progressString = new SimpleStringProperty()
         val fileString = new SimpleStringProperty()
 

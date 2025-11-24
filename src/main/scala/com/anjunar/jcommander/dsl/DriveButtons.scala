@@ -4,9 +4,9 @@ import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasSpacing.spacing
-import com.anjunar.javafx.dsl.traits.IsLabeled.graphic
+import com.anjunar.javafx.dsl.traits.HasGraphic.graphic
 import com.anjunar.javafx.dsl.traits.HasText.text
-import com.anjunar.javafx.dsl.traits.IsNode.style
+import com.anjunar.javafx.dsl.traits.HasStyle.style
 import com.anjunar.javafx.scene.control.{button, label}
 import com.anjunar.javafx.scene.image.imageView
 import com.anjunar.javafx.scene.image.imageView.*

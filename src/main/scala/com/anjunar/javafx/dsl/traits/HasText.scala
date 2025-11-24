@@ -18,7 +18,7 @@ object HasText {
 
   def textProperty(using h: HasText): StringProperty = h.node.textProperty()
   
-  def text()(using h: HasText): String = h.node.getText()
+  def text(using h: HasText): String = h.node.getText()
 
   def text_=(v: String)(using h: HasText): Unit = h.node.setText(v)
 }
