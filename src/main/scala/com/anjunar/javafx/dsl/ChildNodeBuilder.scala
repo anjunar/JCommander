@@ -5,7 +5,7 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.{FXCollections, ListChangeListener, ObservableList}
 import javafx.scene.{Node, layout}
 
-trait ChildNodeBuilder[C <: Node, I] extends NodeBuilder[C] {
+trait ChildNodeBuilder[C <: Node, I] extends NodeBuilder[C], ChildBuilder[C] {
 
   var children = new SimpleListProperty[ElementBuilder[?]](FXCollections.observableArrayList[ElementBuilder[?]]())
 
@@ -13,49 +13,5 @@ trait ChildNodeBuilder[C <: Node, I] extends NodeBuilder[C] {
     children.add(child)
 
   def fxObservableList : ObservableList[I]
-
-}
-
-object ChildNodeBuilder {
-
-  def register(child: ElementBuilder[?])
-              (using parent: ChildNodeBuilder[?,?]): Unit =
-    parent.add(child)
-
-  def register[C <: ElementBuilder[?]](child: C)
-                                          (body: (C, BuildContext) ?=> Unit)
-                                          (using parent: ChildNodeBuilder[?,?], ctx: BuildContext): Unit =
-    parent.add(child)
-    body(using child, ctx)
-
-  def deregister(child: ElementBuilder[?])
-                (using parent: ChildNodeBuilder[?,?]): Unit =
-    parent.children.remove(child)
-
-  def reactTo[T](prop: ObservableValue[T])
-                (f: T => Unit)
-                (using parent: ChildNodeBuilder[?,?]): Unit =
-    if (prop.getValue != null) {
-      f(prop.getValue)  
-    }
-    prop.addListener((_, _, newValue) => f(newValue))
-
-  def reactTo[T <: ElementBuilder[?]](prop: ObservableList[T])
-                                     (using parent: ChildNodeBuilder[?,?]): Unit = {
-    prop.forEach(elem => parent.add(elem))
-    prop.addListener(new ListChangeListener[T] {
-      override def onChanged(change: ListChangeListener.Change[? <: T]): Unit = {
-        while change.next() do
-          if change.wasAdded() then
-            change.getAddedSubList.forEach(elem =>
-              parent.children.add(elem)
-            )
-          if change.wasRemoved() then
-            change.getRemoved.forEach(elem =>
-              parent.children.remove(elem)
-            )
-      }
-    })
-  }
 
 }

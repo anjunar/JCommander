@@ -2,11 +2,13 @@ package com.anjunar.jcommander
 
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasHeaderButtons.{closeable, maximizable, minimizable}
+import com.anjunar.javafx.dsl.traits.HasPadding.padding
+import com.anjunar.javafx.dsl.traits.HasSpacing.alignment
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow
 import com.anjunar.javafx.scene.control.splitPane.dividerPositions
 import com.anjunar.javafx.scene.control.{label, splitPane}
-import com.anjunar.javafx.scene.layout.vbox
+import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.scene.window.resizable
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf}
@@ -21,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.enterprise.inject.se.SeContainerInitializer
 import jakarta.inject.Inject
 import javafx.application.Application
+import javafx.geometry.{Insets, Pos}
 import javafx.scene.Scene
 import javafx.scene.layout.{Priority, VBox}
 import javafx.stage.{Stage, StageStyle}
@@ -75,10 +78,14 @@ class App extends Application {
         resizable = true
 
         header() {
-          label() {
-            text = "JCommander"
+          hbox() {
+            padding = new Insets(0, 0, 0, 10)
+            alignment = Pos.CENTER_LEFT
+            label() {
+              text = "JCommander"
+            }
+            MainMenu() {}
           }
-          MainMenu() {}
         }
         vbox() {
           vgrow = Priority.ALWAYS

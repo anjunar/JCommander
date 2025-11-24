@@ -4,7 +4,7 @@ import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasHeaderButtons.{closeableProp, maximizableProp, minimizableProp, titleProp}
 import com.anjunar.javafx.dsl.traits.{HasHeaderButtons, HasText}
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
-import com.anjunar.javafx.dsl.ChildNodeBuilder.{deregister, reactTo, register}
+import com.anjunar.javafx.dsl.ChildBuilder.{deregister, reactTo, register}
 import com.anjunar.javafx.dsl.traits.HasStyle.style
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow
 import com.anjunar.javafx.scene.layout.vbox

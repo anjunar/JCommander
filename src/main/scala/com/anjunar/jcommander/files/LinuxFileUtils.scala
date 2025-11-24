@@ -7,7 +7,7 @@ import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing, spacing_=}
 import com.anjunar.javafx.dsl.traits.HasStyle.style
 import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
 import com.anjunar.javafx.dsl.traits.HasGraphic.graphic
-import com.anjunar.javafx.dsl.ChildElementBuilder.register
+import com.anjunar.javafx.dsl.ChildBuilder.register
 import com.anjunar.javafx.dsl.traits.HasPadding.padding
 import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow

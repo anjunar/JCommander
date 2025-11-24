@@ -64,14 +64,15 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
       currentWatcher = Some(watcher)
     }
 
+    node.getItems.clear()
+    node.getItems.addAll((parent ++ fileItems) *)
+
     node.getSortOrder.clear()
     val option = node.getColumns.asScala.find(_.getText == "Name")
     if (option.nonEmpty) {
       node.getSortOrder.add(option.get)
       node.sort()
     }
-    node.getItems.clear()
-    node.getItems.addAll((parent ++ fileItems) *)
   }
 
   def updateFile(file: Path, kind: WatchEvent.Kind[?]): Unit = {

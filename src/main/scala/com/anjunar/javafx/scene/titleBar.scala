@@ -8,7 +8,7 @@ import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.HasGraphic.graphic
-import com.anjunar.javafx.dsl.ChildNodeBuilder.{deregister, reactTo, register}
+import com.anjunar.javafx.dsl.ChildBuilder.{deregister, reactTo, register}
 import com.anjunar.javafx.dsl.traits.IsNode.{hgrow, onMouseClicked, onMouseDragged, onMousePressed}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import com.anjunar.javafx.scene.control.button
@@ -104,7 +104,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         val minimizeButton = button.build() {
-          css = mutable.ListBuffer("title-button")
+          css = mutable.ListBuffer("button", "title-button")
           onAction = event => {
             stage.setIconified(true)
           }
@@ -125,7 +125,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         val maximizeButton = button.build() {
-          css = mutable.ListBuffer("title-button")
+          css = mutable.ListBuffer("button", "title-button")
           onAction = event => {
             toggleMaximize()
           }
@@ -146,7 +146,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         }
 
         val closeButton = button.build() {
-          css = mutable.ListBuffer("title-button")
+          css = mutable.ListBuffer("button", "title-button")
           onAction = event => {
             stage.close()
           }
