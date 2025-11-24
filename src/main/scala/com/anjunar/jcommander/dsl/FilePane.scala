@@ -10,12 +10,13 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.layout.{Priority, VBox}
 
 import java.io.File
+import scala.compiletime.uninitialized
 
 class FilePane extends NodeBuilder[VBox] {
 
   private val fileTableRef = Ref[LocalFileTable]()
 
-  private var onTableChange : FileTable => Unit = FileTable => {}
+  private var onTableChange : FileTable => Unit = uninitialized
 
   lazy val node : VBox = {
     val filePane = component[VBox] {
@@ -28,7 +29,9 @@ class FilePane extends NodeBuilder[VBox] {
             }
           }
           unmount = drive => {
-
+            fileTableRef {
+              directory = System.getProperty("user.home")
+            }
           }
         }
 
@@ -44,6 +47,8 @@ class FilePane extends NodeBuilder[VBox] {
   }
 
   override def build(): VBox = node
+
+  override def afterBuild(): Unit = onTableChange(fileTableRef.get)
 
 }
 

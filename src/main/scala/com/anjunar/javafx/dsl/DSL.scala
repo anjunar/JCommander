@@ -60,6 +60,8 @@ object DSL {
         AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
       case _ => ()
     }
+    
+    builder.afterBuild()
 
     node
 

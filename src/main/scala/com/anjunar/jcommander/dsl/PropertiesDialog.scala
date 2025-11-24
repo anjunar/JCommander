@@ -243,7 +243,7 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
       else s"${files.size} files"
 
     component[Window[Unit]] {
-      window(400, 500) {
+      window(400) {
 
         header() {
           label() {

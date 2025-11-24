@@ -22,6 +22,9 @@ import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.beans.value.{ChangeListener, ObservableValue}
+
+import java.lang
 class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
 
   var directory: String = uninitialized
@@ -132,7 +135,6 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
         addEventHandler(MouseEvent.MOUSE_CLICKED, { (event: MouseEvent) => {
           if (event.getButton == MouseButton.SECONDARY) {
             fileManager.fileContext(this, event)
-            event.consume()
           } else if (event.getClickCount == 2) {
             val selectedItem = node.getSelectionModel.getSelectedItem
             if (selectedItem.isDir || selectedItem.isUpDir) {
@@ -140,13 +142,11 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
             } else {
               fileManager.executeFile(this)
             }
-            event.consume()
           }
         }
         })
       }
     }
-
 
     localFileTable
   }

@@ -7,7 +7,7 @@ import com.anjunar.jcommander.utils.CdiUtils.*
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.beans.value.{ChangeListener, ObservableValue}
 import javafx.event.EventHandler
-import javafx.scene.input.{KeyCode, KeyEvent}
+import javafx.scene.input.{KeyCode, KeyEvent, MouseEvent}
 
 import scala.compiletime.uninitialized
 

@@ -97,7 +97,7 @@ class App extends Application {
               FilePane() {
                 vgrow = Priority.ALWAYS
                 onTableChange = table => {
-                  fileTableManager.loadRight(table, true)
+                  fileTableManager.loadRight(table)
                 }
               }
             }
