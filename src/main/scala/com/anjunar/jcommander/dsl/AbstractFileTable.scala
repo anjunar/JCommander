@@ -6,10 +6,10 @@ import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.HasWidth.{prefWidth, widthProperty}
 import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
 import com.anjunar.javafx.scene.control.{tableColumn, tableView}
-import com.anjunar.javafx.scene.control.tableView.IsTableView.{selectionModel, sortPolicy}
-import com.anjunar.javafx.scene.control.tableColumn.IsTableColumn.{cellFactory, cellValueFactory}
+import com.anjunar.javafx.scene.control.tableView.{selectionModel, sortPolicy}
+import com.anjunar.javafx.scene.control.tableColumn.{cellFactory, cellValueFactory}
 import com.anjunar.javafx.scene.image.imageView
-import com.anjunar.javafx.scene.image.imageView.IsImageView.{fitHeight, fitWidth, image}
+import com.anjunar.javafx.scene.image.imageView.{fitHeight, fitWidth, image}
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
 import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
@@ -182,12 +182,8 @@ object AbstractFileTable extends Producer[AbstractFileTable, TableView[FileItem]
 
   override def createBuilder: AbstractFileTable = new AbstractFileTable()
 
-  object IsAbstractFileTable {
+  def loadImages()(using l: AbstractFileTable): Boolean = l.loadImages
 
-    def loadImages()(using l: AbstractFileTable): Boolean = l.loadImages
-
-    def loadImages_=(value: Boolean)(using l: AbstractFileTable): Unit = l.loadImages = value
-
-  }
+  def loadImages_=(value: Boolean)(using l: AbstractFileTable): Unit = l.loadImages = value
 
 }

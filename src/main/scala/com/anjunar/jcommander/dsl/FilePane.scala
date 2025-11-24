@@ -5,7 +5,7 @@ import com.anjunar.javafx.dsl.traits.IsNode.vgrow
 import com.anjunar.javafx.dsl.{ChildNodeBuilder, ElementBuilder, NodeBuilder, Producer, Ref}
 import com.anjunar.javafx.scene.layout.vbox
 import com.anjunar.jcommander.dsl.DriveButtons.*
-import com.anjunar.jcommander.dsl.LocalFileTable.IsLocalFileTable.*
+import com.anjunar.jcommander.dsl.LocalFileTable.*
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.layout.{Priority, VBox}
 
@@ -56,11 +56,8 @@ object FilePane extends Producer[FilePane, VBox] {
 
   override def createBuilder: FilePane = new FilePane
 
-  object IsFilePane {
+  def onTableChange()(using h: FilePane): FileTable => Unit = h.onTableChange
 
-    def onTableChange()(using h: FilePane) : FileTable => Unit = h.onTableChange
-    def onTableChange_=(v: FileTable => Unit)(using h: FilePane) : Unit = h.onTableChange = v
-
-  }
+  def onTableChange_=(v: FileTable => Unit)(using h: FilePane): Unit = h.onTableChange = v
 
 }

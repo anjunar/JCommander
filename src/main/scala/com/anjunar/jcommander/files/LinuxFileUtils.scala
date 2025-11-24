@@ -11,15 +11,15 @@ import com.anjunar.javafx.dsl.ChildElementBuilder.register
 import com.anjunar.javafx.dsl.traits.HasPadding.padding
 import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow
-import com.anjunar.javafx.scene.control.checkbox.IsCheckBox.{selected, selectedProperty}
-import com.anjunar.javafx.scene.control.progressBar.HasProgressBar.progressProperty
+import com.anjunar.javafx.scene.control.checkbox.{selected, selectedProperty}
+import com.anjunar.javafx.scene.control.progressBar.progressProperty
 import com.anjunar.javafx.scene.control.{button, checkbox, contextMenu, label, menu, menuItem, progressBar, separatorMenuItem}
 import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
-import com.anjunar.javafx.scene.window.IsWindow.{close, closeWithResult}
+import com.anjunar.javafx.scene.window.{close, closeWithResult}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
-import com.anjunar.jcommander.dsl.Icon.IsIcon.{iconLiteral, iconSize}
+import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
 import com.anjunar.jcommander.dsl.{FileTable, Icon, PropertiesDialog}
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.inject

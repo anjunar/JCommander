@@ -2,20 +2,20 @@ package com.anjunar.javafx.scene
 
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.dsl.traits.HasHeaderButtons
-import com.anjunar.javafx.dsl.traits.IsNode.{hgrow, onMouseClicked, onMouseDragged, onMousePressed}
 import com.anjunar.javafx.dsl.traits.HasStyle.css
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.HasGraphic.graphic
-import com.anjunar.javafx.dsl.ChildNodeBuilder.{reactTo, register, deregister}
+import com.anjunar.javafx.dsl.ChildNodeBuilder.{deregister, reactTo, register}
+import com.anjunar.javafx.dsl.traits.IsNode.{hgrow, onMouseClicked, onMouseDragged, onMousePressed}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import com.anjunar.javafx.scene.control.button
 import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.dsl.Icon
-import com.anjunar.jcommander.dsl.Icon.IsIcon.*
+import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.beans.property.SimpleListProperty
 import javafx.collections.{FXCollections, ObservableList}

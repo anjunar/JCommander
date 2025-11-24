@@ -10,7 +10,7 @@ import com.anjunar.javafx.dsl.traits.HasStyle.style
 import com.anjunar.javafx.scene.control.{button, label}
 import com.anjunar.javafx.scene.image.imageView
 import com.anjunar.javafx.scene.image.imageView.*
-import com.anjunar.javafx.scene.image.imageView.IsImageView.{fitHeight, fitWidth, image}
+import com.anjunar.javafx.scene.image.imageView.{fitHeight, fitWidth, image}
 import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.jcommander.manager.{Drive, DriveDetectionService, FileManager}
 import com.anjunar.jcommander.utils.CdiUtils.*
@@ -152,17 +152,12 @@ object DriveButtons extends Producer[DriveButtons, HBox] {
 
   override def createBuilder: DriveButtons = new DriveButtons()
 
-  object IsDriveButtons {
-    
-    def change()(using d : DriveButtons) : File => Unit = d.change
-    def change_=(v : File => Unit)(using d : DriveButtons) : Unit = d.change = v
+  def change()(using d: DriveButtons): File => Unit = d.change
 
-    def unmount()(using d: DriveButtons): Drive => Unit = d.unmount
-    def unmount_=(v: Drive => Unit)(using d: DriveButtons): Unit = d.unmount = v
+  def change_=(v: File => Unit)(using d: DriveButtons): Unit = d.change = v
 
+  def unmount()(using d: DriveButtons): Drive => Unit = d.unmount
 
-  }
-  
-  export IsDriveButtons.*
-    
+  def unmount_=(v: Drive => Unit)(using d: DriveButtons): Unit = d.unmount = v
+
 }

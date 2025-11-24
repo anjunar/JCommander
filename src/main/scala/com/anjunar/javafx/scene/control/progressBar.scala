@@ -17,8 +17,6 @@ class progressBar extends NodeBuilder[ProgressBar], HasWidth, HasHeight {
 
 object progressBar extends Producer[progressBar, ProgressBar] {
   override def createBuilder: progressBar = new progressBar()
-  
-  object HasProgressBar {
-    def progressProperty(using pb: progressBar): DoubleProperty = pb.node.progressProperty()
-   }
+
+  def progressProperty(using pb: progressBar): DoubleProperty = pb.node.progressProperty()
 }

@@ -19,10 +19,8 @@ object splitPane extends Producer[splitPane, control.SplitPane] {
 
   override def createBuilder: splitPane = new splitPane()
 
-  object IsSplitPane {
-    def dividerPositions()(using h: splitPane): Array[Double] = h.node.getDividerPositions()
+  def dividerPositions()(using h: splitPane): Array[Double] = h.node.getDividerPositions()
 
-    def dividerPositions_=(v: Array[Double])(using h: splitPane): Unit = h.node.setDividerPositions(v *)
-  }
+  def dividerPositions_=(v: Array[Double])(using h: splitPane): Unit = h.node.setDividerPositions(v *)
 
 }

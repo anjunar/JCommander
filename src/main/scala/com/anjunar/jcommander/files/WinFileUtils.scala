@@ -7,9 +7,9 @@ import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
 import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow
-import com.anjunar.javafx.scene.window.IsWindow.{close, closeWithResult}
-import com.anjunar.javafx.scene.control.checkbox.IsCheckBox.selectedProperty
-import com.anjunar.javafx.scene.control.progressBar.HasProgressBar.progressProperty
+import com.anjunar.javafx.scene.window.{close, closeWithResult}
+import com.anjunar.javafx.scene.control.checkbox.selectedProperty
+import com.anjunar.javafx.scene.control.progressBar.progressProperty
 import com.anjunar.javafx.scene.control.{button, checkbox, label, progressBar}
 import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
 import com.anjunar.javafx.scene.{header, window}

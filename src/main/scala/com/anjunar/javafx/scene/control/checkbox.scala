@@ -16,18 +16,19 @@ class checkbox extends NodeBuilder[CheckBox], HasText, HasOnAction, HasPadding {
 
 object checkbox extends Producer[checkbox, CheckBox] {
   override def createBuilder: checkbox = new checkbox()
-  
-  object IsCheckBox {
-    def selected(using cb: checkbox): Boolean = cb.node.isSelected
-    def selected_=(v: Boolean)(using cb: checkbox): Unit = cb.node.setSelected(v)
-    
-    def allowIndeterminate(using cb: checkbox): Boolean = cb.node.isAllowIndeterminate
-    def allowIndeterminate_=(v: Boolean)(using cb: checkbox): Unit = cb.node.setAllowIndeterminate(v)
-    
-    def indeterminate(using cb: checkbox): Boolean = cb.node.isIndeterminate
-    def indeterminate_=(v: Boolean)(using cb: checkbox): Unit = cb.node.setIndeterminate(v)
-    
-    def selectedProperty(using cb: checkbox): BooleanProperty = cb.node.selectedProperty()
-  }
-  
+
+  def selected(using cb: checkbox): Boolean = cb.node.isSelected
+
+  def selected_=(v: Boolean)(using cb: checkbox): Unit = cb.node.setSelected(v)
+
+  def allowIndeterminate(using cb: checkbox): Boolean = cb.node.isAllowIndeterminate
+
+  def allowIndeterminate_=(v: Boolean)(using cb: checkbox): Unit = cb.node.setAllowIndeterminate(v)
+
+  def indeterminate(using cb: checkbox): Boolean = cb.node.isIndeterminate
+
+  def indeterminate_=(v: Boolean)(using cb: checkbox): Unit = cb.node.setIndeterminate(v)
+
+  def selectedProperty(using cb: checkbox): BooleanProperty = cb.node.selectedProperty()
+
 }

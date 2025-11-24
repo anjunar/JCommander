@@ -9,12 +9,12 @@ import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
 import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
 import com.anjunar.javafx.dsl.traits.IsNode.{gridX, gridY}
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, NodeBuilder, Ref}
-import com.anjunar.javafx.scene.control.checkbox.IsCheckBox.{allowIndeterminate, indeterminate, selected}
+import com.anjunar.javafx.scene.control.checkbox.{allowIndeterminate, indeterminate, selected}
 import com.anjunar.javafx.scene.control.textField.promptText
 import com.anjunar.javafx.scene.control.{button, checkbox, label, textField}
 import com.anjunar.javafx.scene.layout.gridPane.{hgap, vgap}
 import com.anjunar.javafx.scene.layout.{gridPane, hbox, vbox}
-import com.anjunar.javafx.scene.window.IsWindow.close
+import com.anjunar.javafx.scene.window.close
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import javafx.geometry.Pos
