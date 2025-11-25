@@ -16,13 +16,20 @@ object DSL {
 
   def createBuilder[T, B <: ElementBuilder[? <: T]](ref : Ref[B], construct: B)(body: (B, BuildContext) ?=> Unit)
                                             (using ctx: BuildContext): B =
-
+    
     val builder = construct
     ref.value = builder
-
+    builder.lifeCycle = LifeCycle.Build
+    
     val node = builder.build()
-
+    
     body(using builder, ctx)
+    
+    builder.lifeCycle = LifeCycle.Apply
+    builder.applyValues.foreach(fn => fn())
+    builder.applyValues.clear()
+    
+    builder.lifeCycle = LifeCycle.Bind
 
     builder match {
       case builder : ChildNodeBuilder[?,?] =>
@@ -40,9 +47,17 @@ object DSL {
     val builder = construct
     ref.value = builder
 
+    builder.lifeCycle = LifeCycle.Build
+
     val node = builder.build()
 
     body(using builder, ctx)
+
+    builder.lifeCycle = LifeCycle.Apply
+    builder.applyValues.foreach(fn => fn())
+    builder.applyValues.clear()
+
+    builder.lifeCycle = LifeCycle.Hook
 
     parent match {
       case children: ChildNodeBuilder[?, ?] => children.add(builder)
@@ -53,6 +68,8 @@ object DSL {
       case _ => ()
     }
 
+    builder.lifeCycle = LifeCycle.Bind
+
     builder match {
       case builder : ChildNodeBuilder[?,?] =>
         AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
@@ -60,7 +77,8 @@ object DSL {
         AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
       case _ => ()
     }
-    
+
+    builder.lifeCycle = LifeCycle.Finished
     builder.afterBuild()
 
     node

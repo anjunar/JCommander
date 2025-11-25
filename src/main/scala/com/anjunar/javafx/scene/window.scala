@@ -41,11 +41,11 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
       vbox() {
         style = "-fx-border-color: #444; -fx-border-width: 1;"
         titleBar(stage) {
-          titleProp <-> titleProperty
+          titleProp(prop => prop <-> titleProperty)
 
-          minimizableProp <-> minimizableProperty
-          maximizableProp <-> maximizableProperty
-          closeableProp <-> closeableProperty
+          minimizableProp(prop => prop <-> minimizableProperty)
+          maximizableProp(prop => prop <-> maximizableProperty)
+          closeableProp(prop => prop <-> closeableProperty)
 
           reactTo(header) { header => {
             header.children.foreach(child => register(child))

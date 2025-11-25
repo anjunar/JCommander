@@ -547,11 +547,11 @@ class LinuxFileUtils extends AbstractFileUtils {
               }
 
               label() {
-                textProperty.bind(progressString)
+                textProperty(prop => prop.bindBidirectional(progressString))
               }
 
               label() {
-                textProperty.bind(fileString)
+                textProperty(prop => prop.bindBidirectional(fileString))
               }
 
               region() {

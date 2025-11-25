@@ -15,14 +15,18 @@ trait ChildBuilder[C] {
 object ChildBuilder {
 
   def register(child: ElementBuilder[?])
-              (using parent: ChildBuilder[?]): Unit =
+              (using parent: ChildBuilder[?]): Unit = {
     parent.add(child)
+    child.lifeCycle = LifeCycle.Finished
+  }
 
   def register[C <: ElementBuilder[?]](child: C)
                                       (body: (C, BuildContext) ?=> Unit)
                                       (using parent: ChildBuilder[?], ctx: BuildContext): Unit =
     parent.add(child)
+    child.lifeCycle = LifeCycle.Finished
     body(using child, ctx)
+
 
   def deregister(child: ElementBuilder[?])
                 (using parent: ChildBuilder[?]): Unit =

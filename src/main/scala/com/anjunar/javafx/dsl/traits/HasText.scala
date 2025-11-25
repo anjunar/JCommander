@@ -16,10 +16,13 @@ trait HasText {
 
 object HasText {
   
+  def textProperty(using h: HasText & ElementBuilder[?], ctx : BuildContext): (StringProperty => Unit) => Unit = {
+    (f: StringProperty => Unit) => h.write( () => f(h.node.textProperty() ))
+  }
 
-  def textProperty(using h: HasText & ElementBuilder[?], ctx : BuildContext): StringProperty = h.node.textProperty()
-  
-  def text(using h: HasText & ElementBuilder[?], ctx : BuildContext): String = h.node.getText()
+  def text(using h: HasText & ElementBuilder[?], ctx : BuildContext): String = 
+    h.read(h.node.getText())
 
-  def text_=(v: String)(using h: HasText & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setText(v)
+  def text_=(v: String)(using h: HasText & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setText(v))
 }

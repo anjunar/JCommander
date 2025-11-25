@@ -269,11 +269,11 @@ class WinFileUtils extends AbstractFileUtils {
               }
 
               label() {
-                textProperty.bind(progressString)
+                textProperty(prop => prop.bind(progressString))
               }
 
               label() {
-                textProperty.bind(fileString)
+                textProperty(prop => prop.bind(fileString))
               }
 
               region() {

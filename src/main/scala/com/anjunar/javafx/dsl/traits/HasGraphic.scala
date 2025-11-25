@@ -13,7 +13,9 @@ trait HasGraphic {
 }
 
 object HasGraphic {
-  def graphic()(using h: HasGraphic & ElementBuilder[?], ctx : BuildContext): Node = h.node.getGraphic()
+  def graphic()(using h: HasGraphic & ElementBuilder[?], ctx : BuildContext): Node = 
+    h.read(h.node.getGraphic())
 
-  def graphic_=(v: Node)(using h: HasGraphic & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setGraphic(v)
+  def graphic_=(v: Node)(using h: HasGraphic & ElementBuilder[?], ctx : BuildContext): Unit = 
+    h.write(() => h.node.setGraphic(v))
 }

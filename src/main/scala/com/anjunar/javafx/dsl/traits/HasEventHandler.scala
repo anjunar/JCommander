@@ -17,7 +17,7 @@ object HasEventHandler {
   }
   
   def addEventHandler[T <: Event](eventType: EventType[T], eventHandler: EventHandler[? >: T])(using h: HasEventHandler & ElementBuilder[?], ctx : BuildContext): Unit =
-    h.node.asInstanceOf[A].addEventHandler(eventType, eventHandler)
+    h.write(() => h.node.asInstanceOf[A].addEventHandler(eventType, eventHandler))
 
 
 }
