@@ -16,19 +16,22 @@ object DSL {
 
   def createBuilder[T, B <: ElementBuilder[? <: T]](ref : Ref[B], construct: B)(body: (B, BuildContext) ?=> Unit)
                                             (using ctx: BuildContext): B =
-    
+
     val builder = construct
+
+    ctx.stack.push(builder)
+
     ref.value = builder
     builder.lifeCycle = LifeCycle.Build
-    
+
     val node = builder.build()
-    
+
     body(using builder, ctx)
-    
+
     builder.lifeCycle = LifeCycle.Apply
     builder.applyValues.foreach(fn => fn())
     builder.applyValues.clear()
-    
+
     builder.lifeCycle = LifeCycle.Bind
 
     builder match {
