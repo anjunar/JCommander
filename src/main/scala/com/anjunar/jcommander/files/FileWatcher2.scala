@@ -38,6 +38,7 @@ class FileWatcher2(val path: Path, table: LocalFileTable) {
       case _: InterruptedException =>
         log.info("FileWatcher interrupted")
       case ex : NoSuchFileException =>
+        log.error(ex.getMessage, ex)
         stop()
     } finally watcher.close()
   }, s"watcher-${path.getFileName}")

@@ -81,7 +81,7 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
       case ENTRY_CREATE =>
         if (itemOpt.isEmpty) node.getItems.add(createFileItem(file.toFile))
       case ENTRY_DELETE =>
-        itemOpt.foreach(node.getColumns.remove)
+        itemOpt.foreach(item => node.getItems.remove(item))
       case ENTRY_MODIFY =>
         itemOpt.foreach { old =>
           val buffer = node.getItems
