@@ -40,7 +40,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
   private val maximizeIconRef = Ref[Icon]()
   private val content = new SimpleListProperty[ElementBuilder[?]](FXCollections.observableArrayList[ElementBuilder[?]]())
 
-  private def toggleMaximize(): Unit = {
+  private def toggleMaximize()(using BuildContext): Unit = {
     if (!maximized) {
       savedX = stage.getX
       savedY = stage.getY

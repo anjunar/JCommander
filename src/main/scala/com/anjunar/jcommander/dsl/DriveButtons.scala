@@ -152,12 +152,12 @@ object DriveButtons extends Producer[DriveButtons, HBox] {
 
   override def createBuilder: DriveButtons = new DriveButtons()
 
-  def change()(using d: DriveButtons): File => Unit = d.change
+  def change()(using d: DriveButtons, b : BuildContext): File => Unit = d.change
 
-  def change_=(v: File => Unit)(using d: DriveButtons): Unit = d.change = v
+  def change_=(v: File => Unit)(using d: DriveButtons, b : BuildContext): Unit = d.change = v
 
-  def unmount()(using d: DriveButtons): Drive => Unit = d.unmount
+  def unmount()(using d: DriveButtons, b : BuildContext): Drive => Unit = d.unmount
 
-  def unmount_=(v: Drive => Unit)(using d: DriveButtons): Unit = d.unmount = v
+  def unmount_=(v: Drive => Unit)(using d: DriveButtons, b : BuildContext): Unit = d.unmount = v
 
 }

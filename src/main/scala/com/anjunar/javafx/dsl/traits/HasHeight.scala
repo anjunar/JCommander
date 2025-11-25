@@ -1,5 +1,7 @@
 package com.anjunar.javafx.dsl.traits
 
+import com.anjunar.javafx.dsl.BuildContext
+
 import scala.language.reflectiveCalls
 
 trait HasHeight {
@@ -19,12 +21,12 @@ trait HasHeight {
 
 object HasHeight {
 
-  def prefHeight()(using h: HasHeight): Double = h.node.getPrefHeight()
-  def prefHeight_=(v: Double)(using h: HasHeight): Unit = h.node.setPrefHeight(v)
+  def prefHeight()(using h: HasHeight, b : BuildContext): Double = h.node.getPrefHeight()
+  def prefHeight_=(v: Double)(using h: HasHeight, b : BuildContext): Unit = h.node.setPrefHeight(v)
 
-  def maxHeight()(using h: HasHeight): Double = h.node.getMaxHeight()
-  def maxHeight_=(v: Double)(using h: HasHeight): Unit = h.node.setMaxHeight(v)
+  def maxHeight()(using h: HasHeight, b : BuildContext): Double = h.node.getMaxHeight()
+  def maxHeight_=(v: Double)(using h: HasHeight, b : BuildContext): Unit = h.node.setMaxHeight(v)
 
-  def minHeight()(using h: HasHeight): Double = h.node.getMinHeight()
-  def minHeight_=(v: Double)(using h: HasHeight): Unit = h.node.setMinHeight(v)
+  def minHeight()(using h: HasHeight, b : BuildContext): Double = h.node.getMinHeight()
+  def minHeight_=(v: Double)(using h: HasHeight, b : BuildContext): Unit = h.node.setMinHeight(v)
 }

@@ -1,6 +1,6 @@
 package com.anjunar.javafx.scene.control
 
-import com.anjunar.javafx.dsl.{ChildNodeBuilder, ElementBuilder, Producer}
+import com.anjunar.javafx.dsl.{BuildContext, ChildNodeBuilder, ElementBuilder, Producer}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.collections.ObservableList
 import javafx.scene.control.SplitPane
@@ -19,8 +19,8 @@ object splitPane extends Producer[splitPane, control.SplitPane] {
 
   override def createBuilder: splitPane = new splitPane()
 
-  def dividerPositions()(using h: splitPane): Array[Double] = h.node.getDividerPositions()
+  def dividerPositions()(using h: splitPane, b : BuildContext): Array[Double] = h.node.getDividerPositions()
 
-  def dividerPositions_=(v: Array[Double])(using h: splitPane): Unit = h.node.setDividerPositions(v *)
+  def dividerPositions_=(v: Array[Double])(using h: splitPane, b : BuildContext): Unit = h.node.setDividerPositions(v *)
 
 }

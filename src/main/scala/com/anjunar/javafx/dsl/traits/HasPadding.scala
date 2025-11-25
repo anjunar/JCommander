@@ -1,5 +1,6 @@
 package com.anjunar.javafx.dsl.traits
 
+import com.anjunar.javafx.dsl.BuildContext
 import javafx.geometry.Insets
 
 import scala.language.reflectiveCalls
@@ -17,9 +18,9 @@ trait HasPadding {
 
 object HasPadding {
 
-  def padding()(using h: HasPadding): Insets = h.node.getPadding()
+  def padding()(using h: HasPadding, b : BuildContext): Insets = h.node.getPadding()
 
-  def padding_=(v: Insets)(using h: HasPadding): Unit = h.node.setPadding(v)
+  def padding_=(v: Insets)(using h: HasPadding, b : BuildContext): Unit = h.node.setPadding(v)
 
 
 }

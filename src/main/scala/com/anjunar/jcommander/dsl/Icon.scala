@@ -28,12 +28,12 @@ object Icon extends Producer[Icon, FontIcon] {
 
   override def createBuilder: Icon = new Icon()
 
-  def iconLiteral()(using h: Icon): String = h.node.getIconLiteral()
+  def iconLiteral()(using h: Icon, b : BuildContext): String = h.node.getIconLiteral()
 
-  def iconLiteral_=(v: String)(using h: Icon): Unit = h.node.setIconLiteral(v)
+  def iconLiteral_=(v: String)(using h: Icon, b : BuildContext): Unit = h.node.setIconLiteral(v)
 
-  def iconSize()(using h: Icon): Int = h.node.getIconSize
+  def iconSize()(using h: Icon, b : BuildContext): Int = h.node.getIconSize
 
-  def iconSize_=(v: Int)(using h: Icon): Unit = h.node.setIconSize(v)
+  def iconSize_=(v: Int)(using h: Icon, b : BuildContext): Unit = h.node.setIconSize(v)
 
 }

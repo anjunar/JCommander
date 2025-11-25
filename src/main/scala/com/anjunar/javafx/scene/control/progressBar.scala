@@ -1,7 +1,7 @@
 package com.anjunar.javafx.scene.control
 
 import com.anjunar.javafx.dsl.traits.{HasHeight, HasWidth}
-import com.anjunar.javafx.dsl.{NodeBuilder, Producer}
+import com.anjunar.javafx.dsl.{BuildContext, NodeBuilder, Producer}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.beans.property.DoubleProperty
 import javafx.scene.Node
@@ -18,5 +18,5 @@ class progressBar extends NodeBuilder[ProgressBar], HasWidth, HasHeight {
 object progressBar extends Producer[progressBar, ProgressBar] {
   override def createBuilder: progressBar = new progressBar()
 
-  def progressProperty(using pb: progressBar): DoubleProperty = pb.node.progressProperty()
+  def progressProperty(using pb: progressBar, b : BuildContext): DoubleProperty = pb.node.progressProperty()
 }

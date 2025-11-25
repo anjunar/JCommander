@@ -31,14 +31,14 @@ object tableColumn {
     DSL.create[control.TableColumn[E,T], tableColumn[E,T]](ref, new tableColumn[E,T]())(body)
 
 
-  def reorderable[E, T]()(using h: tableColumn[E, T]): Boolean = h.node.isReorderable
+  def reorderable[E, T]()(using h: tableColumn[E, T], b : BuildContext): Boolean = h.node.isReorderable
 
-  def reorderable_=[E, T](v: Boolean)(using h: tableColumn[E, T]): Unit = h.node.setReorderable(v)
+  def reorderable_=[E, T](v: Boolean)(using h: tableColumn[E, T], b : BuildContext): Unit = h.node.setReorderable(v)
 
-  def cellFactory[E, T]()(using h: tableColumn[E, T]): (T, Boolean, TableCell[E, T]) => Unit =
+  def cellFactory[E, T]()(using h: tableColumn[E, T], b : BuildContext): (T, Boolean, TableCell[E, T]) => Unit =
     h.cellFactory
 
-  def cellFactory_=[E, T](v: (T, Boolean, TableCell[E, T]) => Unit)(using h: tableColumn[E, T]): Unit = {
+  def cellFactory_=[E, T](v: (T, Boolean, TableCell[E, T]) => Unit)(using h: tableColumn[E, T], b : BuildContext): Unit = {
     h.cellFactory = v
     h.node.setCellFactory((p: control.TableColumn[E, T]) => new TableCell[E, T]() {
       override def updateItem(item: T, empty: Boolean): Unit = {
@@ -48,9 +48,9 @@ object tableColumn {
     })
   }
 
-  def cellValueFactory[E, T]()(using h: tableColumn[E, T]): E => T = h.cellValueFactory
+  def cellValueFactory[E, T]()(using h: tableColumn[E, T], b : BuildContext): E => T = h.cellValueFactory
 
-  def cellValueFactory_=[E, T](converter: E => T)(using h: tableColumn[E, T]): Unit = {
+  def cellValueFactory_=[E, T](converter: E => T)(using h: tableColumn[E, T], b : BuildContext): Unit = {
     h.cellValueFactory = converter
     h.node.setCellValueFactory((p: control.TableColumn.CellDataFeatures[E, T]) => new SimpleObjectProperty[T](converter(p.getValue)))
   }

@@ -1,7 +1,7 @@
 package com.anjunar.javafx.scene.layout
 
 import com.anjunar.javafx.dsl.traits.{HasPadding, HasSpacing, IsNode}
-import com.anjunar.javafx.dsl.{ChildNodeBuilder, ElementBuilder, NodeBuilder, Producer}
+import com.anjunar.javafx.dsl.{BuildContext, ChildNodeBuilder, ElementBuilder, NodeBuilder, Producer}
 import javafx.collections.ObservableList
 import javafx.scene.Node
 import javafx.scene.layout.GridPane
@@ -23,9 +23,9 @@ object gridPane extends Producer[gridPane, GridPane] {
 
   override def createBuilder: gridPane = new gridPane()
 
-  def hgap(using gp: gridPane): Double = gp.node.getHgap
-  def hgap_=(v: Double)(using gp: gridPane): Unit = gp.node.setHgap(v)
-  def vgap(using gp: gridPane): Double = gp.node.getVgap
-  def vgap_=(v: Double)(using gp: gridPane): Unit = gp.node.setVgap(v)
+  def hgap(using gp: gridPane, b : BuildContext): Double = gp.node.getHgap
+  def hgap_=(v: Double)(using gp: gridPane, b : BuildContext): Unit = gp.node.setHgap(v)
+  def vgap(using gp: gridPane, b : BuildContext): Double = gp.node.getVgap
+  def vgap_=(v: Double)(using gp: gridPane, b : BuildContext): Unit = gp.node.setVgap(v)
 
 }

@@ -48,7 +48,7 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
     val recursive = Ref[checkbox]()
     val applyButton = Ref[button]()
 
-    def setState(cb: Ref[checkbox], values: Seq[Boolean]): Unit =
+    def setState(cb: Ref[checkbox], values: Seq[Boolean])(using BuildContext): Unit =
       cb {
         allowIndeterminate = true
         val allTrue = values.forall(_ == true)
@@ -65,7 +65,7 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
 
     def readAllPermissions(fs: Seq[String]): Seq[String] = fs.map(readPermissions)
 
-    def applyMixedPermissions(perms: Seq[String]): Unit =
+    def applyMixedPermissions(perms: Seq[String])(using BuildContext): Unit =
       def col(i: Int): Seq[Boolean] = perms.map(_.charAt(i) != '-')
 
       setState(ownerR, col(0))
@@ -78,7 +78,7 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
       setState(otherW, col(7))
       setState(otherX, col(8))
 
-    def clearIndeterminateAll(): Unit =
+    def clearIndeterminateAll()(using BuildContext): Unit =
       Seq(ownerR, ownerW, ownerX,
         groupR, groupW, groupX,
         otherR, otherW, otherX).foreach { cb =>
@@ -88,7 +88,7 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
         }
       }
 
-    def applyPermissionsToChecks(perm: String): Unit =
+    def applyPermissionsToChecks(perm: String)(using BuildContext): Unit =
       clearIndeterminateAll()
       ownerR {
         selected = perm.charAt(0) == 'r'
@@ -119,7 +119,7 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
       }
       updateFromChecks()
 
-    def installMixedFix(cb: Ref[checkbox]): Unit =
+    def installMixedFix(cb: Ref[checkbox])(using BuildContext): Unit =
       cb {
         onAction = _ => {
           if indeterminate then
@@ -129,7 +129,7 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
         }
       }
 
-    def updateFromChecks(): Unit =
+    def updateFromChecks()(using BuildContext): Unit =
       val anyIndeterminate =
         Seq(ownerR, ownerW, ownerX,
           groupR, groupW, groupX,
@@ -177,7 +177,7 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
           text = s"$o$g$ot"
         }
 
-    def computeFinalMode(old: String): String =
+    def computeFinalMode(old: String)(using BuildContext): String =
       def bit(cbR: Ref[checkbox], cbW: Ref[checkbox], cbX: Ref[checkbox], base: String): String =
         val r =
           if indeterminate(using cbR.get) then base.charAt(0)

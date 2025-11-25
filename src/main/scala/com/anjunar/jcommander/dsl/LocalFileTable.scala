@@ -2,7 +2,7 @@ package com.anjunar.jcommander.dsl
 
 
 import com.anjunar.javafx.dsl.DSL.*
-import com.anjunar.javafx.dsl.{NodeBuilder, Producer, Ref}
+import com.anjunar.javafx.dsl.{BuildContext, NodeBuilder, Producer, Ref}
 import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
 import com.anjunar.jcommander.dsl.AbstractFileTable.loadImages
 import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
@@ -160,8 +160,8 @@ object LocalFileTable extends Producer[LocalFileTable, TableView[FileItem]] {
 
   override def createBuilder: LocalFileTable = new LocalFileTable()
 
-  def directory()(using l: LocalFileTable): String = l.directory
+  def directory()(using l: LocalFileTable, b : BuildContext): String = l.directory
 
-  def directory_=(value: String)(using l: LocalFileTable): Unit = l.loadDirectory(value)
+  def directory_=(value: String)(using l: LocalFileTable, b : BuildContext): Unit = l.loadDirectory(value)
 
 }
