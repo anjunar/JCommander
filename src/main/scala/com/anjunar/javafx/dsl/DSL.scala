@@ -56,10 +56,6 @@ object DSL {
 
     body(using builder, ctx)
 
-    builder.lifeCycle = LifeCycle.Apply
-    builder.applyValues.foreach(fn => fn())
-    builder.applyValues.clear()
-
     builder.lifeCycle = LifeCycle.Hook
 
     parent match {
@@ -70,6 +66,11 @@ object DSL {
       case header: header => header.add(builder)
       case _ => ()
     }
+
+    builder.lifeCycle = LifeCycle.Apply
+    builder.applyValues.foreach(fn => fn())
+    builder.applyValues.clear()
+
 
     builder.lifeCycle = LifeCycle.Bind
 
