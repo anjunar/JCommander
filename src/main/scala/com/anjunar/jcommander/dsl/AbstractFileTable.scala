@@ -4,7 +4,7 @@ import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.HasWidth.{prefWidth, widthProperty}
-import com.anjunar.javafx.dsl.{BuildContext, NodeBuilder, Producer}
+import com.anjunar.javafx.dsl.{BuildContext, ElementBuilder, NodeBuilder, Producer}
 import com.anjunar.javafx.scene.control.{tableColumn, tableView}
 import com.anjunar.javafx.scene.control.tableView.{selectionModel, sortPolicy}
 import com.anjunar.javafx.scene.control.tableColumn.{cellFactory, cellValueFactory}
@@ -182,8 +182,8 @@ object AbstractFileTable extends Producer[AbstractFileTable, TableView[FileItem]
 
   override def createBuilder: AbstractFileTable = new AbstractFileTable()
 
-  def loadImages()(using l: AbstractFileTable, b : BuildContext): Boolean = l.loadImages
+  def loadImages()(using l: AbstractFileTable & ElementBuilder[?], ctx : BuildContext): Boolean = l.loadImages
 
-  def loadImages_=(value: Boolean)(using l: AbstractFileTable, b : BuildContext): Unit = l.loadImages = value
+  def loadImages_=(value: Boolean)(using l: AbstractFileTable & ElementBuilder[?], ctx : BuildContext): Unit = l.loadImages = value
 
 }

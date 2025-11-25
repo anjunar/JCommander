@@ -109,12 +109,12 @@ object window {
               (using ctx: BuildContext, parent: ElementBuilder[?]): Stage =
     DSL.create[Stage, window[T]](Ref(), new window[T](width, height, stage))(body)
 
-  def closeWithResult[T](value: T)(using h: window[T], b : BuildContext): Unit = h.closeWithResult(value)
+  def closeWithResult[T](value: T)(using h: window[T], b : ElementBuilder[?], ctx : BuildContext): Unit = h.closeWithResult(value)
 
-  def close[T]()(using h: window[T], b : BuildContext): Unit = h.node.close()
+  def close[T]()(using h: window[T], b : ElementBuilder[?], ctx : BuildContext): Unit = h.node.close()
 
-  def resizable[T](using h: window[T], b : BuildContext): Boolean = h.resizableFlag
+  def resizable[T](using h: window[T], b : ElementBuilder[?], ctx : BuildContext): Boolean = h.resizableFlag
 
-  def resizable_=[T](value: Boolean)(using h: window[T], b : BuildContext): Unit = h.resizableFlag = value
+  def resizable_=[T](value: Boolean)(using h: window[T], b : ElementBuilder[?], ctx : BuildContext): Unit = h.resizableFlag = value
 
 }

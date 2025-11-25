@@ -1,6 +1,6 @@
 package com.anjunar.javafx.dsl.traits
 
-import com.anjunar.javafx.dsl.BuildContext
+import com.anjunar.javafx.dsl.{BuildContext, ElementBuilder}
 import javafx.collections.ObservableList
 
 import scala.collection.mutable
@@ -20,13 +20,13 @@ trait HasStyle {
 
 object HasStyle {
 
-  def css()(using h: HasStyle, b : BuildContext): mutable.Buffer[String] = h.node.getStyleClass().asScala
-  def css_=(values: mutable.Buffer[String])(using h: HasStyle, b : BuildContext): Unit = {
+  def css()(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): mutable.Buffer[String] = h.node.getStyleClass().asScala
+  def css_=(values: mutable.Buffer[String])(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): Unit = {
     h.node.getStyleClass().clear()
     h.node.getStyleClass().asScala.addAll(values)
   }
 
-  def style()(using h: HasStyle, b : BuildContext): String = h.node.getStyle()
-  def style_=(v: String)(using h: HasStyle, b : BuildContext): Unit = h.node.setStyle(v)
+  def style()(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): String = h.node.getStyle()
+  def style_=(v: String)(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setStyle(v)
 
 }

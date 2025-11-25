@@ -1,7 +1,7 @@
 package com.anjunar.javafx.dsl.traits
 
 import com.anjunar.javafx.dsl.LifeCycle.Apply
-import com.anjunar.javafx.dsl.BuildContext
+import com.anjunar.javafx.dsl.{BuildContext, ElementBuilder}
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.{ActionEvent, EventHandler}
 import javafx.scene.Node
@@ -21,9 +21,10 @@ trait HasOnAction {
 
 object HasOnAction {
   
-  def onAction()(using h: HasOnAction, b : BuildContext): EventHandler[ActionEvent] = h.node.getOnAction()
+  def onAction()(using h: HasOnAction,b : ElementBuilder[?], ctx : BuildContext): EventHandler[ActionEvent] =
+    h.node.getOnAction()
 
-  def onAction_=(f: EventHandler[ActionEvent])(using h: HasOnAction, b : BuildContext): Unit = {
+  def onAction_=(f: EventHandler[ActionEvent])(using h: HasOnAction & ElementBuilder[?], ctx : BuildContext): Unit = {
       h.node.setOnAction(f)
   }
 }

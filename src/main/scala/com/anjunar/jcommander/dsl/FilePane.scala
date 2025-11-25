@@ -56,8 +56,8 @@ object FilePane extends Producer[FilePane, VBox] {
 
   override def createBuilder: FilePane = new FilePane
 
-  def onTableChange()(using h: FilePane, b : BuildContext): FileTable => Unit = h.onTableChange
+  def onTableChange()(using h: FilePane & ElementBuilder[?], ctx : BuildContext): FileTable => Unit = h.onTableChange
 
-  def onTableChange_=(v: FileTable => Unit)(using h: FilePane, b : BuildContext): Unit = h.onTableChange = v
+  def onTableChange_=(v: FileTable => Unit)(using h: FilePane & ElementBuilder[?], ctx : BuildContext): Unit = h.onTableChange = v
 
 }

@@ -1,7 +1,7 @@
 package com.anjunar.javafx.scene.control
 
 import com.anjunar.javafx.dsl.traits.HasText
-import com.anjunar.javafx.dsl.{BuildContext, NodeBuilder, Producer}
+import com.anjunar.javafx.dsl.{BuildContext, ElementBuilder, NodeBuilder, Producer}
 import javafx.scene.Node
 import javafx.scene.control.TextField
 
@@ -15,6 +15,6 @@ object textField extends Producer[textField, TextField] {
 
   override def createBuilder: textField = new textField()
 
-  def promptText(using tf: textField, b : BuildContext): String = tf.node.getPromptText
-  def promptText_=(v: String)(using tf: textField, b : BuildContext): Unit = tf.node.setPromptText(v)
+  def promptText(using tf: textField & ElementBuilder[?], ctx : BuildContext): String = tf.node.getPromptText
+  def promptText_=(v: String)(using tf: textField & ElementBuilder[?], ctx : BuildContext): Unit = tf.node.setPromptText(v)
 }
