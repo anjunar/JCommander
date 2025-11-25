@@ -18,9 +18,11 @@ trait HasPadding {
 
 object HasPadding {
 
-  def padding()(using h: HasPadding & ElementBuilder[?], ctx : BuildContext): Insets = h.node.getPadding()
+  def padding()(using h: HasPadding & ElementBuilder[?], ctx : BuildContext): Insets = 
+    h.read(h.node.getPadding())
 
-  def padding_=(v: Insets)(using h: HasPadding & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setPadding(v)
+  def padding_=(v: Insets)(using h: HasPadding & ElementBuilder[?], ctx : BuildContext): Unit = 
+    h.write(() => h.node.setPadding(v))
 
 
 }

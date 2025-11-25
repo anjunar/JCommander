@@ -31,28 +31,35 @@ object tableColumn {
     DSL.create[control.TableColumn[E,T], tableColumn[E,T]](ref, new tableColumn[E,T]())(body)
 
 
-  def reorderable[E, T]()(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): Boolean = h.node.isReorderable
+  def reorderable[E, T]()(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): Boolean = 
+    h.read(h.node.isReorderable)
 
-  def reorderable_=[E, T](v: Boolean)(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): Unit = h.node.setReorderable(v)
+  def reorderable_=[E, T](v: Boolean)(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setReorderable(v))
 
   def cellFactory[E, T]()(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): (T, Boolean, TableCell[E, T]) => Unit =
-    h.cellFactory
+    h.read(h.cellFactory)
 
   def cellFactory_=[E, T](v: (T, Boolean, TableCell[E, T]) => Unit)(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): Unit = {
-    h.cellFactory = v
-    h.node.setCellFactory((p: control.TableColumn[E, T]) => new TableCell[E, T]() {
-      override def updateItem(item: T, empty: Boolean): Unit = {
-        super.updateItem(item, empty)
-        v(item, empty, this)
-      }
+    h.write(() => {
+      h.cellFactory = v
+      h.node.setCellFactory((p: control.TableColumn[E, T]) => new TableCell[E, T]() {
+        override def updateItem(item: T, empty: Boolean): Unit = {
+          super.updateItem(item, empty)
+          v(item, empty, this)
+        }
+      })
     })
   }
 
-  def cellValueFactory[E, T]()(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): E => T = h.cellValueFactory
+  def cellValueFactory[E, T]()(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): E => T =
+    h.read(h.cellValueFactory)
 
   def cellValueFactory_=[E, T](converter: E => T)(using h: tableColumn[E, T], b : ElementBuilder[?], ctx : BuildContext): Unit = {
-    h.cellValueFactory = converter
-    h.node.setCellValueFactory((p: control.TableColumn.CellDataFeatures[E, T]) => new SimpleObjectProperty[T](converter(p.getValue)))
+    h.write(() => {
+      h.cellValueFactory = converter
+      h.node.setCellValueFactory((p: control.TableColumn.CellDataFeatures[E, T]) => new SimpleObjectProperty[T](converter(p.getValue)))
+    })
   }
 
 }

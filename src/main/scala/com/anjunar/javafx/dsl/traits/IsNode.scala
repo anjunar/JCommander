@@ -24,47 +24,56 @@ trait IsNode {
 
 object IsNode {
   
-  def gridX()(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Int = h.gridPaneX
-  def gridX_=(v: Int)(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit = h.gridPaneX = v
+  def gridX()(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Int =
+    h.read(h.gridPaneX)
+  def gridX_=(v: Int)(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.gridPaneX = v)
   
-  def gridY()(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Int = h.gridPaneY
-  def gridY_=(v: Int)(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit = h.gridPaneY = v
+  def gridY()(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Int =
+    h.read(h.gridPaneY)
+  def gridY_=(v: Int)(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.gridPaneY = v)
   
-  def vgrow()(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Priority = VBox.getVgrow(h.node)
-  def vgrow_=(v: Priority)(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit = VBox.setVgrow(h.node, v)
+  def vgrow()(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Priority =
+    h.read(VBox.getVgrow(h.node))
+  def vgrow_=(v: Priority)(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => VBox.setVgrow(h.node, v))
 
-  def hgrow()(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Priority = HBox.getHgrow(h.node)
-  def hgrow_=(v: Priority)(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit = HBox.setHgrow(h.node, v)
+  def hgrow()(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Priority =
+    h.read(HBox.getHgrow(h.node))
+  def hgrow_=(v: Priority)(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => HBox.setHgrow(h.node, v))
 
   
-  def onKeyPressed(using h: IsNode & ElementBuilder[?], ctx : BuildContext): EventHandler[? >: KeyEvent] = h.node.getOnKeyPressed()
+  def onKeyPressed(using h: IsNode & ElementBuilder[?], ctx : BuildContext): EventHandler[? >: KeyEvent] =
+    h.read(h.node.getOnKeyPressed())
 
   def onKeyPressed_=(f: EventHandler[? >: KeyEvent])(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit = {
-    h.node.setOnKeyPressed(f)
+    h.write(() => h.node.setOnKeyPressed(f))
   }
   
   
   
 
   def onMouseClicked(using h: IsNode & ElementBuilder[?], ctx : BuildContext): EventHandler[? >: MouseEvent] =
-    h.node.getOnMouseClicked()
+    h.read(h.node.getOnMouseClicked())
 
   def onMouseClicked_=(f: EventHandler[? >: MouseEvent])(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit = {
-    h.node.setOnMouseClicked(f)
+    h.write(() => h.node.setOnMouseClicked(f))
   }
 
   def onMouseDragged(using h: IsNode & ElementBuilder[?], ctx : BuildContext): EventHandler[? >: MouseEvent] =
-    h.node.getOnMouseDragged()
+    h.read(h.node.getOnMouseDragged())
 
   def onMouseDragged_=(f: EventHandler[? >: MouseEvent])(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit = {
-    h.node.setOnMouseDragged(f)
+    h.write(() => h.node.setOnMouseDragged(f))
   }
 
   def onMousePressed(using h: IsNode & ElementBuilder[?], ctx : BuildContext): EventHandler[? >: MouseEvent] =
-    h.node.getOnMousePressed()
+    h.read(h.node.getOnMousePressed())
 
   def onMousePressed_=(f: EventHandler[? >: MouseEvent])(using h: IsNode & ElementBuilder[?], ctx : BuildContext): Unit = {
-    h.node.setOnMousePressed(f)
+   h.write(() => h.node.setOnMousePressed(f))
   }
 
 }

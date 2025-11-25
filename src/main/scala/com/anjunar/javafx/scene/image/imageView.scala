@@ -15,16 +15,22 @@ class imageView extends NodeBuilder[jFxImageView] {
 object imageView extends Producer[imageView, jFxImageView] {
   override def createBuilder: imageView = new imageView
 
-  def fitWidth()(using h: imageView & ElementBuilder[?], ctx : BuildContext): Double = h.node.getFitWidth
+  def fitWidth()(using h: imageView & ElementBuilder[?], ctx : BuildContext): Double =
+    h.read(h.node.getFitWidth)
 
-  def fitWidth_=(v: Double)(using h: imageView & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setFitWidth(v)
+  def fitWidth_=(v: Double)(using h: imageView & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setFitWidth(v))
 
-  def fitHeight()(using h: imageView & ElementBuilder[?], ctx : BuildContext): Double = h.node.getFitHeight
+  def fitHeight()(using h: imageView & ElementBuilder[?], ctx : BuildContext): Double =
+    h.read(h.node.getFitHeight)
 
-  def fitHeight_=(v: Double)(using h: imageView & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setFitHeight(v)
+  def fitHeight_=(v: Double)(using h: imageView & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setFitHeight(v))
 
-  def image()(using h: imageView & ElementBuilder[?], ctx : BuildContext): jFxImage = h.node.getImage
+  def image()(using h: imageView & ElementBuilder[?], ctx : BuildContext): jFxImage =
+    h.read(h.node.getImage)
 
-  def image_=(v: jFxImage)(using h: imageView & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setImage(v)
+  def image_=(v: jFxImage)(using h: imageView & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setImage(v))
 
 }

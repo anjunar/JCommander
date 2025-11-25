@@ -28,18 +28,26 @@ trait HasWidth {
 
 object HasWidth {
 
-  def widthProperty()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): ReadOnlyDoubleProperty = h.node.widthProperty()
+  def widthProperty(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): (ReadOnlyDoubleProperty => Unit) => Unit =
+    (f: ReadOnlyDoubleProperty => Unit) => h.write(() => f(h.node.widthProperty()))
   
-  def width()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Double = h.node.getWidth()
+  def width()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Double =
+    h.read(h.node.getWidth())
 
-  def prefWidth()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Double = h.node.getPrefWidth()
-  def prefWidth_=(v: Double)(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setPrefWidth(v)
+  def prefWidth()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Double =
+    h.node.getPrefWidth()
+  def prefWidth_=(v: Double)(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setPrefWidth(v))
 
-  def maxWidth()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Double = h.node.getMaxWidth()
-  def maxWidth_=(v: Double)(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setMaxWidth(v)
+  def maxWidth()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Double =
+    h.read(h.node.getMaxWidth())
+  def maxWidth_=(v: Double)(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setMaxWidth(v))
 
-  def minWidth()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Double = h.node.getMinWidth()
-  def minWidth_=(v: Double)(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setMinWidth(v)
+  def minWidth()(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Double =
+    h.read(h.node.getMinWidth())
+  def minWidth_=(v: Double)(using h: HasWidth & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setMinWidth(v))
 
 
 }

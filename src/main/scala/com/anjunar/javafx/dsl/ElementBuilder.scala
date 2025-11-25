@@ -1,6 +1,7 @@
 package com.anjunar.javafx.dsl
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 trait ElementBuilder[E] {
   def build(): E
@@ -28,6 +29,5 @@ trait ElementBuilder[E] {
       )
     }
   }
-
 
 }

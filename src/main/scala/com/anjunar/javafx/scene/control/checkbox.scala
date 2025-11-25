@@ -17,18 +17,25 @@ class checkbox extends NodeBuilder[CheckBox], HasText, HasOnAction, HasPadding {
 object checkbox extends Producer[checkbox, CheckBox] {
   override def createBuilder: checkbox = new checkbox()
 
-  def selected(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Boolean = cb.node.isSelected
+  def selected(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Boolean =
+    cb.read(cb.node.isSelected)
 
-  def selected_=(v: Boolean)(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Unit = cb.node.setSelected(v)
+  def selected_=(v: Boolean)(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Unit =
+    cb.write(() => cb.node.setSelected(v))
 
-  def allowIndeterminate(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Boolean = cb.node.isAllowIndeterminate
+  def allowIndeterminate(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Boolean =
+    cb.read(cb.node.isAllowIndeterminate)
 
-  def allowIndeterminate_=(v: Boolean)(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Unit = cb.node.setAllowIndeterminate(v)
+  def allowIndeterminate_=(v: Boolean)(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Unit =
+    cb.write(() => cb.node.setAllowIndeterminate(v))
 
-  def indeterminate(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Boolean = cb.node.isIndeterminate
+  def indeterminate(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Boolean =
+    cb.read(cb.node.isIndeterminate)
 
-  def indeterminate_=(v: Boolean)(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Unit = cb.node.setIndeterminate(v)
+  def indeterminate_=(v: Boolean)(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): Unit =
+    cb.write(() => cb.node.setIndeterminate(v))
 
-  def selectedProperty(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): BooleanProperty = cb.node.selectedProperty()
+  def selectedProperty(using cb: checkbox & ElementBuilder[?], ctx : BuildContext): (BooleanProperty => Unit) => Unit =
+    (f : BooleanProperty => Unit) => cb.write(() => f(cb.node.selectedProperty()))
 
 }

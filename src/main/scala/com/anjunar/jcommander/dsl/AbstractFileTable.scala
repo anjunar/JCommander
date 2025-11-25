@@ -104,16 +104,21 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
 
         tableColumns.foreach(column => column.setReorderable(false))
 
-        widthProperty().addListener({ (_, oldValue, newValue) => {
-          val totalFixed = extCol.getWidth + sizeCol.getWidth + dateCol.getWidth + 2
-          val newPref = newValue.doubleValue() - totalFixed
-          if (newPref > 100) nameCol.setPrefWidth(newPref)
-        } })
+        widthProperty(prop => {
+          prop.addListener({ (_, oldValue, newValue) => {
+              val totalFixed = extCol.getWidth + sizeCol.getWidth + dateCol.getWidth + 2
+              val newPref = newValue.doubleValue() - totalFixed
+              if (newPref > 100) nameCol.setPrefWidth(newPref)
+            }
+          })
+        })
 
-        selectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) => {
-          if (newValue != null && newValue.file != null && newValue.parent != null) {
-            lastSelections.update(newValue.parent, newValue.file)
-          }
+        selectionModel(prop => {
+          prop.selectedItemProperty().addListener((observable, oldValue, newValue) => {
+            if (newValue != null && newValue.file != null && newValue.parent != null) {
+              lastSelections.update(newValue.parent, newValue.file)
+            }
+          })
         })
 
         sortPolicy = (tv : TableView[FileItem]) => {

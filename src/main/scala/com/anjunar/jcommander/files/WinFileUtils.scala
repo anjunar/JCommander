@@ -147,12 +147,12 @@ class WinFileUtils extends AbstractFileUtils {
           if (isDelete) {
             checkbox() {
               text = "Move to Recycle Bin"
-              selectedProperty.bindBidirectional(moveToRecycleBinBox)
+              selectedProperty(prop => prop.bindBidirectional(moveToRecycleBinBox))
             }
           } else {
             checkbox() {
               text = "Replace existing files"
-              selectedProperty.bindBidirectional(replaceExistingBox)
+              selectedProperty(prop => prop.bindBidirectional(replaceExistingBox))
             }
           }
 
@@ -265,7 +265,7 @@ class WinFileUtils extends AbstractFileUtils {
 
               progressBar() {
                 prefWidth = 380
-                progressProperty.bind(task.progressProperty())
+                progressProperty(prop => prop.bind(task.progressProperty()))
               }
 
               label() {

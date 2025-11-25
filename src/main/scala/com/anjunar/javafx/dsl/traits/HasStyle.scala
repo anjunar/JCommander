@@ -20,13 +20,18 @@ trait HasStyle {
 
 object HasStyle {
 
-  def css()(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): mutable.Buffer[String] = h.node.getStyleClass().asScala
+  def css()(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): mutable.Buffer[String] = 
+    h.read(h.node.getStyleClass().asScala)
   def css_=(values: mutable.Buffer[String])(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): Unit = {
-    h.node.getStyleClass().clear()
-    h.node.getStyleClass().asScala.addAll(values)
+    h.write(() => {
+      h.node.getStyleClass().clear()
+      h.node.getStyleClass().asScala.addAll(values)
+    })
   }
 
-  def style()(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): String = h.node.getStyle()
-  def style_=(v: String)(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setStyle(v)
+  def style()(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): String = 
+    h.read(h.node.getStyle())
+  def style_=(v: String)(using h: HasStyle & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setStyle(v))
 
 }

@@ -16,10 +16,14 @@ trait HasSpacing {
 }
 object HasSpacing {
   
-  def spacing()(using h: HasSpacing & ElementBuilder[?], ctx : BuildContext): Double = h.node.getSpacing()
-  def spacing_=(v: Double)(using h: HasSpacing & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setSpacing(v)
+  def spacing()(using h: HasSpacing & ElementBuilder[?], ctx : BuildContext): Double = 
+    h.read(h.node.getSpacing())
+  def spacing_=(v: Double)(using h: HasSpacing & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setSpacing(v))
 
-  def alignment()(using h: HasSpacing & ElementBuilder[?], ctx : BuildContext): Pos = h.node.getAlignment()
-  def alignment_=(v: Pos)(using h: HasSpacing & ElementBuilder[?], ctx : BuildContext): Unit = h.node.setAlignment(v)
+  def alignment()(using h: HasSpacing & ElementBuilder[?], ctx : BuildContext): Pos =
+    h.read(h.node.getAlignment())
+  def alignment_=(v: Pos)(using h: HasSpacing & ElementBuilder[?], ctx : BuildContext): Unit =
+    h.write(() => h.node.setAlignment(v))
 
 }

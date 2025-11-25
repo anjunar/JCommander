@@ -23,9 +23,13 @@ object gridPane extends Producer[gridPane, GridPane] {
 
   override def createBuilder: gridPane = new gridPane()
 
-  def hgap(using gp: gridPane & ElementBuilder[?], ctx : BuildContext): Double = gp.node.getHgap
-  def hgap_=(v: Double)(using gp: gridPane & ElementBuilder[?], ctx : BuildContext): Unit = gp.node.setHgap(v)
-  def vgap(using gp: gridPane & ElementBuilder[?], ctx : BuildContext): Double = gp.node.getVgap
-  def vgap_=(v: Double)(using gp: gridPane & ElementBuilder[?], ctx : BuildContext): Unit = gp.node.setVgap(v)
+  def hgap(using gp: gridPane & ElementBuilder[?], ctx : BuildContext): Double =
+    gp.read(gp.node.getHgap)
+  def hgap_=(v: Double)(using gp: gridPane & ElementBuilder[?], ctx : BuildContext): Unit =
+    gp.write(() => gp.node.setHgap(v))
+  def vgap(using gp: gridPane & ElementBuilder[?], ctx : BuildContext): Double =
+    gp.read(gp.node.getVgap)
+  def vgap_=(v: Double)(using gp: gridPane & ElementBuilder[?], ctx : BuildContext): Unit =
+    gp.write(() => gp.node.setVgap(v))
 
 }

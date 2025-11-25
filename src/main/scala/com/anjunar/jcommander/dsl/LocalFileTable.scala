@@ -154,14 +154,17 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
 
   override def build(): TableView[FileItem] = node
 
+  override def afterBuild(): Unit = loadDirectory(directory)
 }
 
 object LocalFileTable extends Producer[LocalFileTable, TableView[FileItem]] {
 
   override def createBuilder: LocalFileTable = new LocalFileTable()
 
-  def directory()(using l: LocalFileTable & ElementBuilder[?], ctx : BuildContext): String = l.directory
+  def directory()(using l: LocalFileTable & ElementBuilder[?], ctx : BuildContext): String =
+    l.read(l.directory)
 
-  def directory_=(value: String)(using l: LocalFileTable & ElementBuilder[?], ctx : BuildContext): Unit = l.loadDirectory(value)
+  def directory_=(value: String)(using l: LocalFileTable & ElementBuilder[?], ctx : BuildContext): Unit =
+    l.write(() => l.directory = value)
 
 }

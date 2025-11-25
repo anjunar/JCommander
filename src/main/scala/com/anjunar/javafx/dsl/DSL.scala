@@ -84,6 +84,11 @@ object DSL {
 
     builder.lifeCycle = LifeCycle.Finished
     builder.afterBuild()
+    
+    builder match {
+      case builder : NodeBuilder[?] => builder.registerLayoutListener()
+      case _ => ()
+    }
 
     node
 

@@ -15,6 +15,8 @@ object textField extends Producer[textField, TextField] {
 
   override def createBuilder: textField = new textField()
 
-  def promptText(using tf: textField & ElementBuilder[?], ctx : BuildContext): String = tf.node.getPromptText
-  def promptText_=(v: String)(using tf: textField & ElementBuilder[?], ctx : BuildContext): Unit = tf.node.setPromptText(v)
+  def promptText(using tf: textField & ElementBuilder[?], ctx : BuildContext): String =
+    tf.read(tf.node.getPromptText)
+  def promptText_=(v: String)(using tf: textField & ElementBuilder[?], ctx : BuildContext): Unit =
+    tf.write(() => tf.node.setPromptText(v))
 }

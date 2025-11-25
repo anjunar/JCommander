@@ -27,13 +27,17 @@ object tableView {
               (using ctx: BuildContext, parent: ElementBuilder[?]): control.TableView[E] =
     DSL.create[control.TableView[E], tableView[E]](ref, new tableView[E]())(body)
 
-  def sortPolicy[E]()(using h: tableView[E], b : ElementBuilder[?], ctx : BuildContext): TableView[E] => Boolean = h.sortPolicy
+  def sortPolicy[E]()(using h: tableView[E], b : ElementBuilder[?], ctx : BuildContext): TableView[E] => Boolean = 
+    h.read(h.sortPolicy)
 
   def sortPolicy_=[E](v: TableView[E] => Boolean)(using h: tableView[E], b : ElementBuilder[?], ctx : BuildContext): Unit = {
-    h.sortPolicy = v
-    h.node.setSortPolicy((param: TableView[E]) => v(param))
+    h.write(() => {
+      h.sortPolicy = v
+      h.node.setSortPolicy((param: TableView[E]) => v(param))
+    })
   }
 
-  def selectionModel[E]()(using h: tableView[E], b : ElementBuilder[?], ctx : BuildContext): control.TableView.TableViewSelectionModel[E] = h.node.getSelectionModel
+  def selectionModel[E](using h: tableView[E], b : ElementBuilder[?], ctx : BuildContext): (TableView.TableViewSelectionModel[E] => Unit) => Unit =
+    (f : TableView.TableViewSelectionModel[E] => Unit) => h.write(() => f(h.node.getSelectionModel))
 
 }

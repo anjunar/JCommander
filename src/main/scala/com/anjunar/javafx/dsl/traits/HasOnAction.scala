@@ -21,10 +21,10 @@ trait HasOnAction {
 
 object HasOnAction {
   
-  def onAction()(using h: HasOnAction,b : ElementBuilder[?], ctx : BuildContext): EventHandler[ActionEvent] =
-    h.node.getOnAction()
+  def onAction()(using h: HasOnAction & ElementBuilder[?], ctx : BuildContext): EventHandler[ActionEvent] =
+    h.read(h.node.getOnAction())
 
   def onAction_=(f: EventHandler[ActionEvent])(using h: HasOnAction & ElementBuilder[?], ctx : BuildContext): Unit = {
-      h.node.setOnAction(f)
+    h.write(() => h.node.setOnAction(f))
   }
 }
