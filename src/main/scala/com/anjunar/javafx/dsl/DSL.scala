@@ -1,8 +1,12 @@
 package com.anjunar.javafx.dsl
 
+import com.anjunar.javafx.dsl.traits.IsNode
+import com.anjunar.javafx.scene.layout.gridPane
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.scene.Node
 import javafx.scene.control.Button
+import javafx.scene.layout.GridPane
 
 object DSL {
 
@@ -35,10 +39,17 @@ object DSL {
     builder.lifeCycle = LifeCycle.Bind
 
     builder match {
-      case builder : ChildNodeBuilder[?,?] =>
-        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
-      case builder : ChildElementBuilder[?, ?] =>
-        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
+      case gridPane : gridPane =>
+        AutoBindObservableProperties.observeList(gridPane.children, gridPane.fxObservableList, elem => {
+          println(s"${gridPane.gridPaneX} ${gridPane.gridPaneY}")
+          val node = elem.build().asInstanceOf[Node]
+          GridPane.setConstraints(node, elem.asInstanceOf[IsNode].gridPaneX, elem.asInstanceOf[IsNode].gridPaneY)
+          node
+        })
+      case builder : ChildNodeBuilder[?,Any] =>
+        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList, elem => elem.build())
+      case builder : ChildElementBuilder[?, Any] =>
+        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList, elem => elem.build())
       case _ => ()
     }
 
@@ -75,10 +86,17 @@ object DSL {
     builder.lifeCycle = LifeCycle.Bind
 
     builder match {
-      case builder : ChildNodeBuilder[?,?] =>
-        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
-      case builder : ChildElementBuilder[?, ?] =>
-        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList)
+      case gridPane : gridPane =>
+        AutoBindObservableProperties.observeList(gridPane.children, gridPane.fxObservableList, elem => {
+          println(s"${gridPane.gridPaneX} ${gridPane.gridPaneY}")
+          val node = elem.build().asInstanceOf[Node]
+          GridPane.setConstraints(node, elem.asInstanceOf[IsNode].gridPaneX, elem.asInstanceOf[IsNode].gridPaneY)
+          node
+        })
+      case builder : ChildNodeBuilder[?,Any] =>
+        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList, elem => elem.build())
+      case builder : ChildElementBuilder[?, Any] =>
+        AutoBindObservableProperties.observeList(builder.children, builder.fxObservableList, elem => elem.build())
       case _ => ()
     }
 

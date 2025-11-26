@@ -12,11 +12,8 @@ class gridPane extends ChildNodeBuilder[GridPane, Node], HasPadding {
 
   override def build(): GridPane = node
 
-  override def add(child: ElementBuilder[?]): Unit = child match {
-    case isNode : (IsNode & ElementBuilder[?]) => node.add(isNode.build().asInstanceOf[Node], isNode.gridPaneX, isNode.gridPaneY)
-  }
-
-  override def fxObservableList: ObservableList[Node] = null
+  override def fxObservableList: ObservableList[Node] = node.getChildren
+  
 }
 
 object gridPane extends Producer[gridPane, GridPane] {
