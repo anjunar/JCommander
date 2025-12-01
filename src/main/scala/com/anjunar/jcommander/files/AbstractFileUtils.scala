@@ -51,7 +51,7 @@ abstract class AbstractFileUtils extends FileUtils {
     mkDirDialog.showAndWaitDialog().foreach { result =>
       if (result == ButtonType.OK) {
         val newFileName = textField.text.value
-        Files.createDirectory(new File(activeTable.directory).toPath.resolve(newFileName))
+        Files.createDirectory(new File(activeTable.directoryProperty.get()).toPath.resolve(newFileName))
       }
     }
   }

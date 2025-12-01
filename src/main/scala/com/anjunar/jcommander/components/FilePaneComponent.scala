@@ -60,7 +60,7 @@ class FilePaneComponent(position: String, newTable: AbstractFileTableComponent =
 
   val breadcrumbBox = new HBox {
     style = "-fx-background-color: -fx-table-cell-border-color; -fx-padding: 0 0 0 5 ; -fx-alignment: CENTER_LEFT;"
-    minHeight = 14
+    minHeight = 14  
     prefHeight = 14
     maxHeight = 14
     spacing = 2

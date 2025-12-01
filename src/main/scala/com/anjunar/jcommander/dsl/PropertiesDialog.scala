@@ -5,12 +5,12 @@ import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasPadding.padding
 import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasStyle.style
+import com.anjunar.javafx.dsl.traits.IstTextInput.promptText
 import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
 import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
 import com.anjunar.javafx.dsl.traits.IsNode.{gridX, gridY}
 import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, NodeBuilder, Ref}
 import com.anjunar.javafx.scene.control.checkbox.{allowIndeterminate, indeterminate, selected}
-import com.anjunar.javafx.scene.control.textField.promptText
 import com.anjunar.javafx.scene.control.{button, checkbox, label, textField}
 import com.anjunar.javafx.scene.layout.gridPane.{hgap, vgap}
 import com.anjunar.javafx.scene.layout.{gridPane, hbox, vbox}

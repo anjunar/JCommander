@@ -177,7 +177,7 @@ class FallBackFileUtils extends AbstractFileUtils {
             override def call(): Unit = {
               val total = allFiles.size
               val baseSource = selectedItems.head.parent
-              val targetRoot = Path.of(otherTable.directory)
+              val targetRoot = Path.of(otherTable.directoryProperty.get())
 
               var totalBytesCopied: Long = 0
               val startTime = System.nanoTime()

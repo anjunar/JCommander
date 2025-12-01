@@ -5,6 +5,7 @@ import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.{BuildContext, ElementBuilder, NodeBuilder, Producer, Ref}
 import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
 import com.anjunar.jcommander.dsl.AbstractFileTable.loadImages
+import com.anjunar.jcommander.dsl.traits.HasDirectory
 import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
 import com.anjunar.jcommander.manager.FileManager
 import com.anjunar.jcommander.utils.CdiUtils.inject
@@ -22,12 +23,14 @@ import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.beans.property.{SimpleStringProperty, StringProperty}
 import javafx.beans.value.{ChangeListener, ObservableValue}
 
 import java.lang
-class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
 
-  var directory: String = uninitialized
+class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDirectory {
+
+  val directoryProperty = new SimpleStringProperty("")
 
   override val manager: FileSystemManager = FileSystemManagerBuilder.build()
 
@@ -42,13 +45,13 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
   private val abstractFileTableRef = Ref[AbstractFileTable]()
 
   override def resolveDirectory: FileObject =
-    manager.toFileObject(Path.of(normalize(directory)))
+    manager.toFileObject(Path.of(normalize(directoryProperty.get())))
 
 
   def loadDirectory(value: String): Unit = {
     val clean = normalize(value)
     val dir = File(clean)
-    directory = dir.getAbsolutePath
+    directoryProperty.set(dir.getAbsolutePath)
 
     val files = Option(dir.listFiles()).getOrElse(Array.empty[File])
     val parent = Option(dir.getParentFile).map(p => FileItem("..", "<UP-DIR>", "<UP-DIR>", 0, "", 0, p.getAbsolutePath, true, p.getParent)).toSeq
@@ -57,7 +60,7 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
       .filter(f => !(f.isDirectory && !Files.isReadable(f.toPath)))
       .map { f => createFileItem(f) }
 
-    if (currentWatcher.isEmpty || directory != currentWatcher.get.path.toAbsolutePath.toString) {
+    if (currentWatcher.isEmpty || directoryProperty.get() != currentWatcher.get.path.toAbsolutePath.toString) {
       currentWatcher.foreach(_.stop())
       val watcher = new FileWatcher2(dir.toPath, this)
       watcher.start()
@@ -154,17 +157,13 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable {
 
   override def build(): TableView[FileItem] = node
 
-  override def afterBuild(): Unit = loadDirectory(directory)
+  override def afterBuild(): Unit = {
+    loadDirectory(directoryProperty.get())
+  }
 }
 
 object LocalFileTable extends Producer[LocalFileTable, TableView[FileItem]] {
 
   override def createBuilder: LocalFileTable = new LocalFileTable()
-
-  def directory()(using l: LocalFileTable & ElementBuilder[?], ctx : BuildContext): String =
-    l.read(l.directory)
-
-  def directory_=(value: String)(using l: LocalFileTable & ElementBuilder[?], ctx : BuildContext): Unit =
-    l.write(() => l.directory = value)
 
 }

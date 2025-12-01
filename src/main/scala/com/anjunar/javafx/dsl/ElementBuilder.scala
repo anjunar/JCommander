@@ -13,7 +13,7 @@ trait ElementBuilder[E] {
   var lifeCycle: LifeCycle = LifeCycle.Build
 
   def write(f: () => Unit): Unit = {
-    if (lifeCycle == LifeCycle.Finished) {
+    if (lifeCycle == LifeCycle.Finished || lifeCycle == LifeCycle.Layout) {
       f()
     } else {
       applyValues.append(f)
@@ -21,7 +21,7 @@ trait ElementBuilder[E] {
   }
 
   def read[E](value: E): E = {
-    if (lifeCycle == LifeCycle.Finished) {
+    if (lifeCycle == LifeCycle.Finished || lifeCycle == LifeCycle.Layout) {
       value
     } else {
       throw new IllegalStateException(

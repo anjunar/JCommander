@@ -23,7 +23,7 @@ class WinFileManager extends FileManager {
   }
 
   override def console(activeTable: FileTable): Unit = activeTable match {
-    case source: LocalFileTable => fileUtils.console(source.directory)
+    case source: LocalFileTable => fileUtils.console(source.directoryProperty.get())
   }
 
   override def executeFile(activeTable: FileTable): Unit = activeTable match {

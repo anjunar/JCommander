@@ -70,13 +70,15 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
               tableCell.setGraphic(null)
             } else {
               tableCell.setText(item.name)
-              tableCell.setGraphic(component {
-                imageView() {
-                  fitWidth = 18
-                  fitHeight = 18
-                  image = SwingFXUtils.toFXImage(fileManager.getFileIcon(item.file, false), null)
-                }
-              })
+              if (loadImages) {
+                tableCell.setGraphic(component {
+                  imageView() {
+                    fitWidth = 18
+                    fitHeight = 18
+                    image = SwingFXUtils.toFXImage(fileManager.getFileIcon(item.file, false), null)
+                  }
+                })
+              }
             }
           }
         }

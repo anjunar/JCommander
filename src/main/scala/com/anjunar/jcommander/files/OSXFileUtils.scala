@@ -347,7 +347,7 @@ class OSXFileUtils extends AbstractFileUtils {
         val moveToRecycleBin = moveToRecycleBinBox.selected.value
 
         val selectedFiles = activeTable.node.selectionModel.value.getSelectedItems.asScala.map(item => Path.of(item.file)).toSeq
-        val targetDir = if isDelete then Path.of(activeTable.directory) else Path.of(otherTable.directory)
+        val targetDir = if isDelete then Path.of(activeTable.directoryProperty.get()) else Path.of(otherTable.directoryProperty.get())
 
         val cancelledFlag = new AtomicBoolean(false)
 

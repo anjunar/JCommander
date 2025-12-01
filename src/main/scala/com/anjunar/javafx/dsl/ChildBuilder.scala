@@ -42,13 +42,19 @@ object ChildBuilder {
 
   def reactTo[T <: ElementBuilder[?]](prop: ObservableList[T])
                                      (using parent: ChildBuilder[?]): Unit = {
-    prop.forEach(elem => parent.add(elem))
+    prop.forEach(elem => {
+      parent.add(elem)
+      elem.lifeCycle = LifeCycle.Finished
+      elem.afterBuild()
+    })
     prop.addListener(new ListChangeListener[T] {
       override def onChanged(change: ListChangeListener.Change[? <: T]): Unit = {
         while change.next() do
           if change.wasAdded() then
             change.getAddedSubList.forEach(elem =>
               parent.children.add(elem)
+              elem.lifeCycle = LifeCycle.Finished
+              elem.afterBuild()
             )
           if change.wasRemoved() then
             change.getRemoved.forEach(elem =>

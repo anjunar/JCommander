@@ -7,6 +7,8 @@ class Ref[R] {
   var value : R = uninitialized
   
   def get: R = value
+  
+  def set(v: R): Unit = value = v
 
   inline def apply(body: R ?=> Unit): Unit =
     body(using value)

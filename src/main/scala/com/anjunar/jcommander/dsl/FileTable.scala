@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.dsl
 
 import com.anjunar.jcommander.files.FileItem
+import javafx.beans.property.StringProperty
 import javafx.scene.control.TableView
 import org.apache.commons.vfs2.{FileObject, FileSystemManager}
 
@@ -12,7 +13,7 @@ trait FileTable {
 
   val manager : FileSystemManager
   
-  def directory : String
+  def directoryProperty : StringProperty
 
   def resolveDirectory: FileObject
 

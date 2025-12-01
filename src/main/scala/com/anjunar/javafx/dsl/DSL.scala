@@ -16,7 +16,14 @@ object DSL {
     val root = ComponentBuilder[C]()
 
     body(using root, ctx)
-    root.build()
+
+    val node = root.build()
+
+    ctx.stack.foreach(elem => {
+      elem.afterBuild()
+    })
+
+    node
 
   def createBuilder[T, B <: ElementBuilder[? <: T]](ref : Ref[B], construct: B)(body: (B, BuildContext) ?=> Unit)
                                             (using ctx: BuildContext): B =
@@ -41,7 +48,6 @@ object DSL {
     builder match {
       case gridPane : gridPane =>
         AutoBindObservableProperties.observeList(gridPane.children, gridPane.fxObservableList, elem => {
-          println(s"${gridPane.gridPaneX} ${gridPane.gridPaneY}")
           val node = elem.build().asInstanceOf[Node]
           GridPane.setConstraints(node, elem.asInstanceOf[IsNode].gridPaneX, elem.asInstanceOf[IsNode].gridPaneY)
           node
@@ -60,6 +66,8 @@ object DSL {
 
     val builder = construct
     ref.value = builder
+
+    ctx.stack.push(builder)
 
     builder.lifeCycle = LifeCycle.Build
 
@@ -88,7 +96,6 @@ object DSL {
     builder match {
       case gridPane : gridPane =>
         AutoBindObservableProperties.observeList(gridPane.children, gridPane.fxObservableList, elem => {
-          println(s"${gridPane.gridPaneX} ${gridPane.gridPaneY}")
           val node = elem.build().asInstanceOf[Node]
           GridPane.setConstraints(node, elem.asInstanceOf[IsNode].gridPaneX, elem.asInstanceOf[IsNode].gridPaneY)
           node
@@ -101,8 +108,7 @@ object DSL {
     }
 
     builder.lifeCycle = LifeCycle.Finished
-    builder.afterBuild()
-    
+
     builder match {
       case builder : NodeBuilder[?] => builder.registerLayoutListener()
       case _ => ()

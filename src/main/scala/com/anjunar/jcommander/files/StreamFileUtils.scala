@@ -191,8 +191,8 @@ class StreamFileUtils extends FileUtils {
             })
 
             Platform.runLater {
-              activeTable.loadDirectory(activeTable.directory)
-              otherTable.loadDirectory(otherTable.directory)
+              activeTable.loadDirectory(activeTable.directoryProperty.get())
+              otherTable.loadDirectory(otherTable.directoryProperty.get())
             }
           }
         }

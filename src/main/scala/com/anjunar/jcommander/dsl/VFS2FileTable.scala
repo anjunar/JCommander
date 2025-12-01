@@ -3,10 +3,12 @@ package com.anjunar.jcommander.dsl
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
+import com.anjunar.jcommander.components.VFS2ClientComponent.Connection
 import com.anjunar.jcommander.dsl.AbstractFileTable.loadImages
+import com.anjunar.jcommander.dsl.traits.HasDirectory
 import com.anjunar.jcommander.files.FileItem
 import javafx.scene.control.TableView
-import javafx.scene.input.{KeyCode, KeyEvent}
+import javafx.scene.input.{KeyCode, KeyEvent, MouseEvent}
 import org.apache.commons.vfs2.{FileObject, FileSystemManager, FileType}
 import scalafx.scene.control.TableColumn.SortType
 
@@ -14,13 +16,17 @@ import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
-class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableView[FileItem]], FileTable {
+import javafx.beans.property.SimpleStringProperty
 
-  var directory: String = uninitialized
+class VFS2FileTable(connection: Connection) extends NodeBuilder[TableView[FileItem]], FileTable, HasDirectory {
+
+  val manager: FileSystemManager = connection.manager
+
+  var directoryProperty = new SimpleStringProperty("")
 
   override def lastSelections: mutable.Map[String, String] = abstractFileTableRef.value.lastSelections
 
-  override def resolveDirectory: FileObject = manager.resolveFile(directory)
+  override def resolveDirectory: FileObject = manager.resolveFile(directoryProperty.get())
 
   private val abstractFileTableRef = Ref[AbstractFileTable]()
 
@@ -31,7 +37,7 @@ class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableVie
       return
     }
 
-    this.directory = folder.getName.getURI
+    directoryProperty.set(folder.getName.getURI)
 
     val children = folder.getChildren.toSeq
 
@@ -104,7 +110,7 @@ class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableVie
   lazy val node : TableView[FileItem] = {
     val vsf2FileTable = component[TableView[FileItem]] {
       AbstractFileTable(abstractFileTableRef) {
-        loadImages = true
+        loadImages = false
         addEventHandler(KeyEvent.KEY_PRESSED, { event => {
           if (event.getCode == KeyCode.ENTER) {
             val selectedItem = node.getSelectionModel.getSelectedItem
@@ -112,13 +118,22 @@ class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableVie
               loadDirectory(selectedItem.file)
             }
           }
-        }
-        })
+        }})
+        addEventHandler(MouseEvent.MOUSE_CLICKED, { (event: MouseEvent) => {
+          if (event.getClickCount == 2) {
+            val selectedItem = node.getSelectionModel.getSelectedItem
+            if (selectedItem.isDir || selectedItem.isUpDir) {
+              loadDirectory(selectedItem.file)
+            }
+          }
+        }})
       }
     }
 
     vsf2FileTable
   }
+
+  override def afterBuild(): Unit = loadDirectory(directoryProperty.get())
 
   override def build(): TableView[FileItem] = node
 
@@ -126,9 +141,13 @@ class VFS2FileTable(val manager: FileSystemManager) extends NodeBuilder[TableVie
 
 object VFS2FileTable {
 
-  def apply(manager: FileSystemManager, ref: Ref[VFS2FileTable] = Ref())(body: (VFS2FileTable, BuildContext) ?=> Unit)
+  def apply(manager: Connection, ref: Ref[VFS2FileTable] = Ref())(body: (VFS2FileTable, BuildContext) ?=> Unit)
            (using ctx: BuildContext, parent: ElementBuilder[?]): TableView[FileItem] =
     DSL.create[TableView[FileItem], VFS2FileTable](ref, new VFS2FileTable(manager))(body)
+
+  def build(manager: Connection, ref: Ref[VFS2FileTable] = Ref[VFS2FileTable]())(body: (VFS2FileTable, BuildContext) ?=> Unit): VFS2FileTable = {
+    DSL.createBuilder[TableView[FileItem], VFS2FileTable](ref, new VFS2FileTable(manager))(body)(using ctx = new BuildContext)
+  }
 
 
 }

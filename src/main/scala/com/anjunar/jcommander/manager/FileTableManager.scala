@@ -45,7 +45,7 @@ class FileTableManager {
         val newSource = source
         newSource.node.requestFocus()
 
-        val lastSelectionName = newSource.lastSelections(newSource.directory)
+        val lastSelectionName = newSource.lastSelections(newSource.directoryProperty.get())
 
         val itemOpt = newSource.node.getItems.stream()
           .filter(item => item.file == lastSelectionName)
