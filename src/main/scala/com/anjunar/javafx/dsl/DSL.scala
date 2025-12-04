@@ -1,12 +1,13 @@
 package com.anjunar.javafx.dsl
 
 import com.anjunar.javafx.dsl.traits.IsNode
+import com.anjunar.javafx.scene.control.borderPane
 import com.anjunar.javafx.scene.layout.gridPane
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.scene.Node
 import javafx.scene.control.Button
-import javafx.scene.layout.GridPane
+import javafx.scene.layout.{BorderPane, GridPane, Pane}
 
 object DSL {
 
@@ -46,6 +47,12 @@ object DSL {
     builder.lifeCycle = LifeCycle.Bind
 
     builder match {
+      case borderPane: borderPane =>
+        AutoBindObservableProperties.observeList(borderPane.children, borderPane.fxObservableList, elem => {
+          val node = elem.build().asInstanceOf[Node]
+          BorderPane.setAlignment(node, elem.asInstanceOf[IsNode].borderPaneAlignment)
+          node
+        })
       case gridPane : gridPane =>
         AutoBindObservableProperties.observeList(gridPane.children, gridPane.fxObservableList, elem => {
           val node = elem.build().asInstanceOf[Node]

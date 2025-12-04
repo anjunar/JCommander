@@ -1,13 +1,13 @@
 package com.anjunar.javafx.scene.control
 
-import com.anjunar.javafx.dsl.traits.HasItems
+import com.anjunar.javafx.dsl.traits.{HasHeight, HasItems, HasWidth}
 import com.anjunar.javafx.dsl.{BuildContext, ChildElementBuilder, DSL, ElementBuilder, NodeBuilder, Ref}
 import javafx.collections.ObservableList
 import javafx.scene.control.{ListCell, ListView}
 import javafx.util.Callback
 import javafx.scene.control.MultipleSelectionModel
 
-class listView[E] extends NodeBuilder[ListView[E]], HasItems[E] {
+class listView[E] extends NodeBuilder[ListView[E]], HasItems[E], HasHeight, HasWidth {
 
   lazy val node: ListView[E] = new ListView[E]()
 

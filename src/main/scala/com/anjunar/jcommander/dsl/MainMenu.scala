@@ -7,6 +7,7 @@ import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasSpacing.spacing
 import com.anjunar.javafx.scene.control.{menu, menuBar, menuItem}
 import com.anjunar.javafx.scene.layout.hbox
+import com.anjunar.javafx.stage.Window
 import javafx.scene.layout.HBox
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 
@@ -28,7 +29,13 @@ class MainMenu extends NodeBuilder[HBox] {
             menuItem() {
               text = "Configuration"
               onAction = event => {
+                val dialog = component[Window[Unit]] {
+                  ConfigurationWindow() {
 
+                  }
+                }
+
+                dialog.show()
               }
             }
           }

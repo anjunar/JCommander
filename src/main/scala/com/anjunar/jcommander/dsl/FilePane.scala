@@ -45,7 +45,7 @@ class FilePane extends NodeBuilder[VBox] {
 
         hbox() {
           padding = new Insets(10)
-          alignment = Pos.CENTER_LEFT
+          borderPaneAlignment = Pos.CENTER_LEFT
 
           DriveButtons() {
             change = (file: File) => {

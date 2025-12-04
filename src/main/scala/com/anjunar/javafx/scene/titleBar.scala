@@ -76,7 +76,7 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
     val titleBar = component[HBox] {
       hbox() {
         css = mutable.ListBuffer("main-title-bar")
-        alignment = Pos.CENTER
+        borderPaneAlignment = Pos.CENTER
         spacing = 5
 
         hbox() {
