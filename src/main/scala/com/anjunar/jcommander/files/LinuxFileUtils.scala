@@ -21,7 +21,6 @@ import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
 import com.anjunar.jcommander.dsl.{ConfirmDialog, FileTable, Icon, ProgressDialog, PropertiesDialog}
-import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.{Icons, LinuxNativeCopy}
 import javafx.application.Platform

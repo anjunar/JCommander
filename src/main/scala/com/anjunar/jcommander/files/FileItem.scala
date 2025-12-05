@@ -1,7 +1,6 @@
 package com.anjunar.jcommander.files
 
 import javafx.beans.property.SimpleObjectProperty
-import scalafx.beans.property.ObjectProperty
 
 import java.awt.image.BufferedImage
 import java.io.File

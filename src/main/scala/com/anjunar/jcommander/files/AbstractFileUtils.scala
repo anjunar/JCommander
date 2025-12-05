@@ -14,7 +14,6 @@ import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.dsl.RenameFileWindow.directoryName
 import com.anjunar.jcommander.dsl.{FileTable, MakeDirectoryWindow, RenameFileWindow}
-import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 
@@ -42,11 +41,11 @@ abstract class AbstractFileUtils extends FileUtils {
   }
 
   def mkDir(activeTable: FileTable): Unit = {
-    
+
     val dialog = component[Window[String]] {
       MakeDirectoryWindow() { }
     }
-    
+
     dialog.showAndWaitResult().foreach { result =>
       val newFileName = result
       Files.createDirectory(new File(activeTable.directoryProperty.get()).toPath.resolve(newFileName))
@@ -54,13 +53,13 @@ abstract class AbstractFileUtils extends FileUtils {
   }
 
   def renameFile(activeTable: FileTable): Unit = {
-    
+
     val dialog = component[Window[String]] {
       RenameFileWindow() {
         directoryName = activeTable.node.getSelectionModel.getSelectedItem.name
       }
     }
-    
+
     dialog.showAndWaitResult().foreach { result =>
       val newFileName = result
       val oldPath = activeTable.node.getSelectionModel.getSelectedItems.get(0)

@@ -4,7 +4,6 @@ import com.anjunar.jcommander.components.LocalFileTableComponent
 import com.anjunar.jcommander.dsl.LocalFileTable
 import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
-import scalafx.scene.control.TableView
 
 import java.io.File
 import java.nio.file.*

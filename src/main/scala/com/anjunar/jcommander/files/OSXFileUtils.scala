@@ -11,7 +11,6 @@ import com.anjunar.javafx.scene.window.close
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.dsl.{ConfirmDialog, FileTable, ProgressDialog}
-import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.{Icons, OSXNativeCopy}
 import javafx.application.Platform
@@ -58,7 +57,7 @@ class OSXFileUtils extends AbstractFileUtils, UnixFileUtils {
               label() {
                 text = msg
               }
-              
+
               hbox() {
                 button() {
                   text = "Ok"
@@ -67,7 +66,7 @@ class OSXFileUtils extends AbstractFileUtils, UnixFileUtils {
                   }
                 }
               }
-              
+
             }
           }
           dialog.showAndWait()

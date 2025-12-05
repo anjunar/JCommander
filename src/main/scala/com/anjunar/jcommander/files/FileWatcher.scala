@@ -3,7 +3,6 @@ package com.anjunar.jcommander.files
 import com.anjunar.jcommander.components.LocalFileTableComponent
 import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
-import scalafx.scene.control.TableView
 
 import java.io.File
 import java.nio.file.*

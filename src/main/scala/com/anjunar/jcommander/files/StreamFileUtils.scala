@@ -11,7 +11,6 @@ import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.components.{LocalFileTableComponent, VFS2FileTableComponent}
 import com.anjunar.jcommander.dsl.RenameFileWindow.directoryName
 import com.anjunar.jcommander.dsl.{FileTable, MakeDirectoryWindow, ProgressDialog, RenameFileWindow}
-import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.{ProgressListener, VFSUtils}
 import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
@@ -26,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import scala.jdk.CollectionConverters.*
 
 class StreamFileUtils extends FileUtils {
-  
+
   private val log = Logger[StreamFileUtils]
 
   override def fileContext(files: Seq[String], event: MouseEvent): Unit = throw new NotImplementedError("Will not be implemented in Future")

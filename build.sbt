@@ -21,7 +21,6 @@ lazy val root = (project in file("."))
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.20.1",
       "com.fasterxml.jackson.core" % "jackson-core" % "2.20.1",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.20.1",
-      "org.scalafx" %% "scalafx" % "24.0.2-R36",
       "com.jcraft" % "jsch" % "0.1.55",
       "com.github.oshi" % "oshi-core" % "6.9.1",
       "commons-net" % "commons-net" % "3.12.0",
