@@ -17,9 +17,8 @@ import com.anjunar.javafx.scene.layout.{gridPane, hbox, vbox}
 import com.anjunar.javafx.scene.window.close
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
-import javafx.geometry.Pos
+import javafx.geometry.{Insets, Pos}
 import javafx.scene.Node
-import scalafx.geometry.Insets
 
 import java.io.File
 import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermissions}

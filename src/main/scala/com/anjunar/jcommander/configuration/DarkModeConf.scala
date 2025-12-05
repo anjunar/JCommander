@@ -2,7 +2,7 @@ package com.anjunar.jcommander.configuration
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.enterprise.context.ApplicationScoped
-import scalafx.beans.property.BooleanProperty
+import javafx.beans.property.SimpleBooleanProperty
 
 import scala.beans.BeanProperty
 
@@ -13,6 +13,6 @@ class DarkModeConf {
   @BeanProperty  
   var value : Boolean = false
   
-  val valueProperty = new BooleanProperty {}
+  val valueProperty = new SimpleBooleanProperty(value)
 
 }

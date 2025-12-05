@@ -10,13 +10,13 @@ import com.anjunar.jcommander.files.FileItem
 import javafx.scene.control.TableView
 import javafx.scene.input.{KeyCode, KeyEvent, MouseEvent}
 import org.apache.commons.vfs2.{FileObject, FileSystemManager, FileType}
-import scalafx.scene.control.TableColumn.SortType
 
 import scala.collection.mutable
 import scala.compiletime.uninitialized
 import scala.jdk.CollectionConverters.*
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.control.TableColumn.SortType
 
 class VFS2FileTable(connection: Connection) extends NodeBuilder[TableView[FileItem]], FileTable, HasDirectory {
 

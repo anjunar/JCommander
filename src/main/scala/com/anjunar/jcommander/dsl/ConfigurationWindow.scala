@@ -6,11 +6,11 @@ import com.anjunar.javafx.dsl.traits.HasItems.items
 import com.anjunar.javafx.dsl.traits.HasSpacing.alignment
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
-import com.anjunar.javafx.dsl.traits.IsNode.position
+import com.anjunar.javafx.dsl.traits.IsNode.{hgrow, position, vgrow, vgrow_=}
 import com.anjunar.javafx.dsl.{ElementBuilder, Producer}
 import com.anjunar.javafx.scene.control.listView.selectionModel
 import com.anjunar.javafx.scene.control.{borderPane, label, listView}
-import com.anjunar.javafx.scene.layout.vbox
+import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.dsl.config.ConfigModule
@@ -18,6 +18,7 @@ import com.anjunar.jcommander.utils.CdiUtils.*
 import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.control.MultipleSelectionModel
+import javafx.scene.layout.Priority
 
 class ConfigurationWindow extends ElementBuilder[Window[Unit]] {
 
@@ -33,11 +34,11 @@ class ConfigurationWindow extends ElementBuilder[Window[Unit]] {
         }
       }
 
-      borderPane() {
+      hbox() {
+        vgrow = Priority.ALWAYS
 
         listView[String]() {
           prefWidth = 200
-          position = Pos.CENTER_LEFT
           items = FXCollections.observableArrayList(modules.map(_.name) *)
           selectionModel((selectionModel : MultipleSelectionModel[String]) => {
             selectionModel.selectedIndexProperty().addListener((_, _, newValue) => {
@@ -47,14 +48,13 @@ class ConfigurationWindow extends ElementBuilder[Window[Unit]] {
           })
         }
 
-      }
+        vbox() {
+          hgrow = Priority.ALWAYS
+          alignment = Pos.CENTER
+          reactTo(content)
+        }
 
-      vbox() {
-        position = Pos.CENTER
-        alignment = Pos.CENTER
-        reactTo(content)
       }
-
     }
   }
 

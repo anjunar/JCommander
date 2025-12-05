@@ -17,8 +17,6 @@ import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 import javafx.scene.Node
 import javafx.scene.layout.HBox
-import scalafx.application.Platform
-import scalafx.embed.swing.SwingFXUtils
 
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
@@ -26,6 +24,8 @@ import scala.compiletime.uninitialized
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
+import javafx.application.Platform
+import javafx.embed.swing.SwingFXUtils
 
 class DriveButtons extends NodeBuilder[HBox] {
 

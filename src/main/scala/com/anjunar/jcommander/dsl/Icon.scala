@@ -17,7 +17,7 @@ class Icon extends NodeBuilder[FontIcon] {
 
   node.setIconColor(if (darkMode.value) Color.WHITE else Color.BLACK)
 
-  darkMode.valueProperty.onChange { (_, _, isDark) =>
+  darkMode.valueProperty.addListener { (_, _, isDark) =>
     node.setIconColor(if (isDark) Color.WHITE else Color.BLACK)
   }
 

@@ -15,15 +15,15 @@ import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.WinNativeCopy
-import com.anjunar.jcommander.dsl.FileTable
+import com.anjunar.jcommander.dsl.ConfirmDialog.{confirmHeader, confirmText, moveToRecycle, replaceExisting}
+import com.anjunar.jcommander.dsl.{ConfirmDialog, FileTable, ProgressDialog}
 import com.typesafe.scalalogging.Logger
+import javafx.application.Platform
 import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}
 import javafx.concurrent
 import javafx.geometry.{Insets, Pos}
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Priority
-import scalafx.application.Platform
-import scalafx.scene.control.*
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayInputStream, File}
@@ -118,9 +118,9 @@ class WinFileUtils extends AbstractFileUtils {
 
   def processFiles(
                     strategy: WinFileStrategy,
-                    confirmTitle: String,
-                    confirmHeader: String,
-                    progressText: String,
+                    confirmTitleText: String,
+                    confirmHeaderText: String,
+                    progressTextText: String,
                     isDelete: Boolean,
                     activeTable: FileTable,
                     otherTable: FileTable
@@ -130,50 +130,12 @@ class WinFileUtils extends AbstractFileUtils {
     val moveToRecycleBinBox = new SimpleBooleanProperty(true)
 
     val confirmDialog = component[Window[String]] {
-      window() {
-        header() {
-          label() {
-            text = confirmTitle
-          }
-        }
-        vbox() {
-          spacing = 12
-          padding = new Insets(10)
+      ConfirmDialog(isDelete) {
+        confirmHeader = confirmHeaderText
+        confirmText = confirmTitleText
 
-          label() {
-            text = confirmHeader
-          }
-
-          if (isDelete) {
-            checkbox() {
-              text = "Move to Recycle Bin"
-              selectedProperty(prop => prop.bindBidirectional(moveToRecycleBinBox))
-            }
-          } else {
-            checkbox() {
-              text = "Replace existing files"
-              selectedProperty(prop => prop.bindBidirectional(replaceExistingBox))
-            }
-          }
-
-          region() {
-            vgrow = Priority.ALWAYS
-          }
-
-          hbox() {
-            spacing = 10
-            alignment = Pos.CENTER_RIGHT
-
-            button() {
-              text = "Cancel"
-              onAction = _ => closeWithResult("Cancel")
-            }
-            button() {
-              text = "OK"
-              onAction = _ => closeWithResult("Ok")
-            }
-          }
-        }
+        moveToRecycle(prop => moveToRecycleBinBox.bindBidirectional(prop))
+        replaceExisting(prop => replaceExistingBox.bindBidirectional(prop))
       }
     }
 
@@ -203,7 +165,7 @@ class WinFileUtils extends AbstractFileUtils {
                     updateProgress(event.percent, 1.0)
 
                     if (isDelete) {
-                      Platform.runLater {
+                      Platform.runLater { () =>
                         fileString.set(event.source)
                       }
                     }
@@ -212,18 +174,18 @@ class WinFileUtils extends AbstractFileUtils {
                     val eta = if (event.percent > 0) (elapsed / event.percent) - elapsed else 0
                     val etaSec = (eta / 1000).toInt
 
-                    Platform.runLater {
+                    Platform.runLater { () => 
                       val text = f"${(event.percent * 100).toInt}%% copied  –  (${formatEta(etaSec)})"
                       progressString.set(text)
                     }
 
                   case WinNativeCopy.ProgressEvent.Type.PRE_COPY =>
-                    Platform.runLater {
+                    Platform.runLater { () => 
                       fileString.set(event.source)
                     }
 
                   case WinNativeCopy.ProgressEvent.Type.FINISH =>
-                    Platform.runLater {
+                    Platform.runLater { () => 
                       progressString.set("Finishing...")
                     }
 
@@ -237,7 +199,7 @@ class WinFileUtils extends AbstractFileUtils {
 
               override def onComplete(): Unit = {
                 log.info("Operation completed successfully.")
-                Platform.runLater {
+                Platform.runLater { () => 
                   progressString.set("Completed!")
                 }
               }
@@ -248,50 +210,18 @@ class WinFileUtils extends AbstractFileUtils {
         }
 
         val progressDialog = component[Window[Unit]] {
-          window() {
-            header() {
-              label() {
-                text = "Progress"
-              }
+          ProgressDialog(cancelledFlag, task) {
+            
+            label.unwrap("progressText") {
+              text = progressTextText
             }
-
-            vbox() {
-              spacing = 14
-              padding = new Insets(20)
-
-              label() {
-                text = progressText
-              }
-
-              progressBar() {
-                prefWidth = 380
-                progressProperty(prop => prop.bind(task.progressProperty()))
-              }
-
-              label() {
-                textProperty(prop => prop.bind(progressString))
-              }
-
-              label() {
-                textProperty(prop => prop.bind(fileString))
-              }
-
-              region() {
-                vgrow = Priority.ALWAYS
-              }
-
-              hbox() {
-                alignment = Pos.CENTER_RIGHT
-                button() {
-                  text = "Cancel"
-                  onAction = _ => {
-                    cancelledFlag.set(true)
-                    task.cancel()
-                    close()
-                    log.info("Operation cancelledFlag by user.")
-                  }
-                }
-              }
+            
+            label.unwrap("progress") {
+              textProperty(prop => progressString.bindBidirectional(prop))
+            }
+            
+            label.unwrap("file") {
+              textProperty(prop => fileString.bindBidirectional(prop))
             }
           }
         }
@@ -310,7 +240,7 @@ class WinFileUtils extends AbstractFileUtils {
           log.info("Task was cancelledFlag.")
         }
 
-        Platform.runLater {
+        Platform.runLater { () => 
           progressDialog.show()
         }
         new Thread(task).start()

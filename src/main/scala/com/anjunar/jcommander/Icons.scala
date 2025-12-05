@@ -2,8 +2,8 @@ package com.anjunar.jcommander
 
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.utils.CdiUtils.*
+import javafx.scene.paint.Color
 import org.kordamp.ikonli.javafx.FontIcon
-import scalafx.scene.paint.Color
 
 object Icons {
 
@@ -13,11 +13,10 @@ object Icons {
     
     val icon = new FontIcon(iconName)
     icon.setIconSize(size)
-    icon.setIconColor(if (darkMode.value) Color.White else Color.Black)
+    icon.setIconColor(if (darkMode.value) Color.WHITE else Color.BLACK)
 
-    // reaktiv anpassen, wenn das Theme wechselt
-    darkMode.valueProperty.onChange { (_, _, isDark) =>
-      icon.setIconColor(if (isDark) Color.White else Color.Black)
+    darkMode.valueProperty.addListener { (_, _, isDark) =>
+      icon.setIconColor(if (isDark) Color.WHITE else Color.BLACK)
     }
 
     icon

@@ -1,15 +1,22 @@
 package com.anjunar.jcommander.files
 
+import com.anjunar.javafx.dsl.DSL.component
+import com.anjunar.javafx.dsl.Ref
+import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
+import com.anjunar.javafx.dsl.traits.HasText.text
+import com.anjunar.javafx.dsl.traits.IstTextInput.promptText
+import com.anjunar.javafx.scene.control.{button, label, textField}
+import com.anjunar.javafx.scene.layout.hbox
+import com.anjunar.javafx.scene.window.{close, closeWithResult}
+import com.anjunar.javafx.scene.{header, window}
+import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.configuration.DarkModeConf
-import com.anjunar.jcommander.dsl.FileTable
+import com.anjunar.jcommander.dsl.RenameFileWindow.directoryName
+import com.anjunar.jcommander.dsl.{FileTable, MakeDirectoryWindow, RenameFileWindow}
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
-import scalafx.Includes.{jfxDialogPane2sfx, observableList2ObservableBuffer}
-import scalafx.beans.property.{BooleanProperty, ObjectProperty}
-import scalafx.scene.control.*
-import scalafx.scene.layout.VBox
 
 import java.io.File
 import java.nio.file.{Files, Path}
@@ -35,48 +42,30 @@ abstract class AbstractFileUtils extends FileUtils {
   }
 
   def mkDir(activeTable: FileTable): Unit = {
-    val textField: TextField = new TextField {
-      promptText = "Directory Name"
+    
+    val dialog = component[Window[String]] {
+      MakeDirectoryWindow() { }
     }
-
-    val mkDirDialog = new ThemedDialog[ButtonType]() {
-      title = "Create Directory"
-      headerText = "Create Directory"
-      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      dialogPane.content = new VBox(10, textField)
-    }
-
-    mkDirDialog.resultConverter = btn => btn
-
-    mkDirDialog.showAndWaitDialog().foreach { result =>
-      if (result == ButtonType.OK) {
-        val newFileName = textField.text.value
-        Files.createDirectory(new File(activeTable.directoryProperty.get()).toPath.resolve(newFileName))
-      }
+    
+    dialog.showAndWaitResult().foreach { result =>
+      val newFileName = result
+      Files.createDirectory(new File(activeTable.directoryProperty.get()).toPath.resolve(newFileName))
     }
   }
 
   def renameFile(activeTable: FileTable): Unit = {
-    val textField: TextField = new TextField {
-      text = activeTable.node.getSelectionModel.getSelectedItem.name
-    }
-
-    val renameDialog = new ThemedDialog[ButtonType]() {
-      title = "Rename File"
-      headerText = "Rename File"
-      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      dialogPane.content = new VBox(10, textField)
-    }
-
-    renameDialog.resultConverter = btn => btn
-
-    renameDialog.showAndWaitDialog().foreach { result =>
-      if (result == ButtonType.OK) {
-        val newFileName = textField.text.value
-        val oldPath = activeTable.node.getSelectionModel.getSelectedItems.head
-        val newPath = Path.of(oldPath.parent).resolve(newFileName)
-        Files.move(Path.of(oldPath.file), newPath)
+    
+    val dialog = component[Window[String]] {
+      RenameFileWindow() {
+        directoryName = activeTable.node.getSelectionModel.getSelectedItem.name
       }
+    }
+    
+    dialog.showAndWaitResult().foreach { result =>
+      val newFileName = result
+      val oldPath = activeTable.node.getSelectionModel.getSelectedItems.get(0)
+      val newPath = Path.of(oldPath.parent).resolve(newFileName)
+      Files.move(Path.of(oldPath.file), newPath)
     }
   }
 

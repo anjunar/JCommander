@@ -48,7 +48,7 @@ abstract class ThemedDialog[T] extends Stage {
     stylesheets.add(getClass.getResource(s"/$theme-theme.css").toExternalForm)
   }
 
-  darkMode.valueProperty.onChange { (_, _, isDark) => {
+  darkMode.valueProperty.addListener { (_, _, isDark) => {
     val theme = if (darkMode.value) "dark" else "light"
     scene.value.getStylesheets.clear()
     scene.value.getStylesheets.add(getClass.getResource(s"/$theme-theme.css").toExternalForm)
