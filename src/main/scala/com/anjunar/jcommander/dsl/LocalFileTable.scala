@@ -6,7 +6,7 @@ import com.anjunar.javafx.dsl.{BuildContext, ElementBuilder, NodeBuilder, Produc
 import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
 import com.anjunar.jcommander.dsl.AbstractFileTable.loadImages
 import com.anjunar.jcommander.dsl.traits.HasDirectory
-import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
+import com.anjunar.jcommander.files.{FileItem, FileWatcher}
 import com.anjunar.jcommander.manager.FileManager
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.utils.FileSystemManagerBuilder
@@ -36,7 +36,7 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
 
   override def lastSelections: mutable.Map[String, String] = abstractFileTableRef.value.lastSelections
 
-  private var currentWatcher: Option[FileWatcher2] = None
+  private var currentWatcher: Option[FileWatcher] = None
 
   private val fileManager: FileManager = inject(classOf[FileManager])
 
@@ -62,7 +62,7 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
 
     if (currentWatcher.isEmpty || directoryProperty.get() != currentWatcher.get.path.toAbsolutePath.toString) {
       currentWatcher.foreach(_.stop())
-      val watcher = new FileWatcher2(dir.toPath, this)
+      val watcher = new FileWatcher(dir.toPath, this)
       watcher.start()
       currentWatcher = Some(watcher)
     }

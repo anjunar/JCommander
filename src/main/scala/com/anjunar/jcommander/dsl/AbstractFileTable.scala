@@ -11,7 +11,7 @@ import com.anjunar.javafx.scene.control.tableColumn.{cellFactory, cellValueFacto
 import com.anjunar.javafx.scene.image.imageView
 import com.anjunar.javafx.scene.image.imageView.{fitHeight, fitWidth, image}
 import com.anjunar.jcommander.commands.*
-import com.anjunar.jcommander.files.{FileItem, FileWatcher2}
+import com.anjunar.jcommander.files.{FileItem, FileWatcher}
 import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.utils.AutoBindObservableProperties

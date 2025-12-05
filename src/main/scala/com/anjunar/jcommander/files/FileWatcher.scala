@@ -1,6 +1,7 @@
 package com.anjunar.jcommander.files
 
 import com.anjunar.jcommander.components.LocalFileTableComponent
+import com.anjunar.jcommander.dsl.LocalFileTable
 import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
 
@@ -9,7 +10,7 @@ import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.*
 import scala.jdk.CollectionConverters.*
 
-class FileWatcher(val path: Path, table: LocalFileTableComponent) {
+class FileWatcher(val path: Path, table: LocalFileTable) {
   private val log = Logger[FileWatcher]
   private val watcher = FileSystems.getDefault.newWatchService()
   path.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
@@ -36,6 +37,7 @@ class FileWatcher(val path: Path, table: LocalFileTableComponent) {
       case _: InterruptedException =>
         log.info("FileWatcher interrupted")
       case ex : NoSuchFileException =>
+        log.error(ex.getMessage, ex)
         stop()
     } finally watcher.close()
   }, s"watcher-${path.getFileName}")
