@@ -20,7 +20,7 @@ import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
-import com.anjunar.jcommander.dsl.{FileTable, Icon, PropertiesDialog}
+import com.anjunar.jcommander.dsl.{ConfirmDialog, FileTable, Icon, ProgressDialog, PropertiesDialog}
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.{Icons, LinuxNativeCopy}
@@ -44,9 +44,7 @@ import javax.imageio.ImageIO
 import scala.jdk.CollectionConverters.*
 import scala.sys.process.*
 
-class LinuxFileUtils extends AbstractFileUtils {
-
-  private var contextMenuOpen = false
+class LinuxFileUtils extends AbstractFileUtils, UnixFileUtils {
 
   override def console(workingDir: String): Unit = {
     val term = detectTerminal()
@@ -110,234 +108,6 @@ class LinuxFileUtils extends AbstractFileUtils {
       }
     }).start()
 
-  def ctxItem(text1: String, iconName: String)(action: EventHandler[ActionEvent])(using BuildContext, ElementBuilder[?]): MenuItem = {
-    menuItem() {
-      style = "-fx-padding: 4 10;"
-      onAction = action
-      graphic = hbox() {
-        spacing = 10
-        alignment = Pos.CENTER_LEFT
-        style = "-fx-padding: 6 4 6 4;"
-        Icon() {
-          iconSize = 18
-          iconLiteral = iconName
-        }
-        label() {
-          style = "-fx-font-size: 13px;"
-          text = text1
-        }
-      }
-    }
-  }
-
-  def ctxSubMenu(text1: String, iconName: String, items: Seq[(BuildContext, ElementBuilder[Menu]) => MenuItem])(using BuildContext, ElementBuilder[?]): Menu = {
-      menu() {
-        graphic = component[HBox] {
-          hbox() {
-            spacing = 10
-            alignment = Pos.CENTER_LEFT
-            style = "-fx-padding: 6 4 6 4;"
-            Icon() {
-              iconSize = 18
-              iconLiteral = iconName
-            }
-            label() {
-              style = "-fx-font-size: 13px;"
-              text = text1
-            }
-          }
-        }
-        items.foreach(item => item(summon[BuildContext], summon[ElementBuilder[Menu]]))
-      }
-  }
-
-  override def fileContext(files: Seq[String], event: MouseEvent): Unit = {
-    if (files.isEmpty) return
-    if (contextMenuOpen) return
-
-    val single = files.size == 1
-    val fHead = files.head
-    val parentDir = Path.of(fHead).getParent.toString
-
-
-    val openWithApps = Seq("subl", "code", "gedit", "nano", "vim", "xdg-open")
-
-    val menu = component[ContextMenu] {
-      contextMenu() {
-        if single then ctxItem("Execute", "mdi2p-play")(_ => {
-          executeFile(fHead)
-        })
-        ctxSubMenu(
-          "Open With…",
-          "mdi2o-open-in-new",
-          openWithApps.map(app =>
-            (elementBuilder, buildContext) => ctxItem(app, "mdi2a-application")(_ => {
-              new Thread(() => {
-                Seq(app, fHead).!
-                ()
-              }).start()
-            })(using elementBuilder, buildContext)
-          )
-        )
-        separatorMenuItem() {}
-        ctxItem("Copy", "mdi2c-content-copy")(_ => {
-          FileClipboard.copyMany(files)
-        })
-        ctxItem("Paste", "mdi2c-content-paste")(_ => {
-          FileClipboard.pasteToDirectory(parentDir)
-        })
-        if single then
-          ctxItem("Rename", "mdi2r-rename-box")(_ => {
-            val command = inject(classOf[RenameCommand])
-            command.execute()
-          })
-        ctxItem("Duplicate", "mdi2c-content-copy")(_ => {
-          new Thread(() => duplicateFiles(files)).start()
-        })
-        ctxItem("Delete", "mdi2d-delete")(_ => {
-          val command = inject(classOf[DeleteCommand])
-          command.execute()
-        })
-        separatorMenuItem() {}
-        ctxSubMenu(
-          "Compress",
-          "mdi2z-zip-box",
-          Seq(
-            (elementBuilder, buildContext) => ctxItem("Create tar.gz", "mdi2f-folder-download")(_ => {
-              new Thread(() => {
-                val dir = new File(files.head).getParent
-                val names = files.map(f => new File(f).getName)
-                val cmd = Seq("tar", "-czf", s"$dir/archive.tar.gz", "-C", dir) ++ names
-                cmd.!
-                ()
-              }).start()
-            })(using elementBuilder, buildContext),
-            (elementBuilder, buildContext) => ctxItem("Create zip", "mdi2z-zip-box")(_ => {
-              new Thread(() => {
-                val dir = new File(files.head).getParent
-                val names = files.map(f => new File(f).getName)
-                val cmd = Seq("zip", "-j", s"$dir/archive.zip") ++ names.map(n => s"$dir/$n")
-                cmd.!
-                ()
-              }).start()
-            })(using elementBuilder, buildContext)
-          )
-        )
-        ctxItem("Extract here", "mdi2f-folder-open")(_ => {
-          new Thread(() => extractFiles(files)).start()
-        })
-        ctxItem("Create symlink", "mdi2l-link")(_ => {
-          new Thread(() => createSymlink(files)).start()
-        })
-        separatorMenuItem() {}
-        ctxItem("Open Terminal Here", "mdi2c-console")(_ => {
-          new Thread(() => console(Paths.get(files.head).getParent.toAbsolutePath.toString)).start()
-        })
-        ctxItem("Properties", "mdi2c-cog")(_ => {
-          showPropertiesDialog(files)
-        })
-      }
-    }
-
-    Platform.runLater { () =>
-      val node = event.getSource.asInstanceOf[Node]
-      val scene = node.getScene
-
-      contextMenuOpen = true
-
-      val closer = new javafx.event.EventHandler[javafx.scene.input.MouseEvent] {
-        override def handle(ev: javafx.scene.input.MouseEvent): Unit = {
-          if (ev.isPrimaryButtonDown) menu.hide()
-        }
-      }
-
-      scene.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, closer)
-
-      menu.setOnHidden(_ => {
-        scene.removeEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, closer)
-        contextMenuOpen = false
-      })
-
-      menu.show(node, event.getScreenX, event.getScreenY)
-    }
-  }
-
-
-  def showOpenWithDialog(files: Seq[String]): Unit = {
-    val apps = Seq("subl", "code", "gedit", "nano", "vim", "xdg-open")
-
-    val dlg = component[Window[Unit]] {
-      window() {
-        header() {
-          label() {
-            text = "Open With"
-          }
-        }
-
-        label() {
-          text = files.mkString(", ")
-        }
-
-        vbox() {
-          apps.foreach { app => {
-            button() {
-              text = app
-              onAction = _ => {
-                new Thread(() => {
-                  Seq(app, files.head).!
-                  ()
-                }).start()
-                close()
-              }
-            }
-          }}
-        }
-
-      }
-    }
-
-
-    dlg.showAndWaitResult()
-  }
-
-  def duplicateFiles(files: Seq[String]): Unit =
-    new Thread(() => {
-      files.foreach { p =>
-        val path = Path.of(p)
-        val target = path.getParent.resolve(path.getFileName.toString + "_copy")
-        Seq("cp", "-r", p, target.toString).!
-      }
-      ()
-    }).start()
-
-  def extractFiles(files: Seq[String]): Unit =
-    new Thread(() => {
-      files.foreach { f =>
-        if (f.endsWith(".zip")) Seq("unzip", f).!
-        if (f.endsWith(".tar.gz")) Seq("tar", "-xzf", f).!
-      }
-      ()
-    }).start()
-
-  def createSymlink(files: Seq[String]): Unit =
-    new Thread(() => {
-      files.foreach { f =>
-        val path = Path.of(f)
-        val link = path.getParent.resolve(path.getFileName.toString + ".link")
-        Seq("ln", "-s", f, link.toString).!
-      }
-      ()
-    }).start()
-
-  def showPropertiesDialog(files: Seq[String]): Unit = {
-    val dialog = component[Window[Unit]] {
-      PropertiesDialog(files) {
-
-      }
-    }
-
-    dialog.showAndWaitResult()
-  }
 
   override def getFileIcon(file: String, large: Boolean): BufferedImage = {
     val bytes = LinuxNativeCopy.getFileIcon(file, large)
@@ -418,49 +188,22 @@ class LinuxFileUtils extends AbstractFileUtils {
     val moveToRecycleBinBox = new SimpleBooleanProperty(true)
 
     val confirmDialog = component[Window[String]] {
-      window() {
-        header() {
-          label() {
-            text = confirmTitle
-          }
+      ConfirmDialog(isDelete) {
+
+        label.unwrap("header") {
+          text = confirmTitle
         }
-        vbox() {
-          spacing = 12
-          padding = new Insets(10)
 
-          label() {
-            text = confirmHeader
-          }
+        label.unwrap("confirm") {
+          text = confirmHeader
+        }
 
-          if (isDelete) {
-            checkbox() {
-              text = "Move to Recycle Bin"
-              selectedProperty(prop => prop.bindBidirectional(moveToRecycleBinBox))
-            }
-          } else {
-            checkbox() {
-              text = "Replace existing files"
-              selectedProperty(prop => prop.bindBidirectional(replaceExistingBox))
-            }
-          }
+        checkbox.unwrap("moveToRecycle") {
+          selectedProperty(prop => moveToRecycleBinBox.bindBidirectional(prop))
+        }
 
-          region() {
-            vgrow = Priority.ALWAYS
-          }
-
-          hbox() {
-            spacing = 10
-            alignment = Pos.CENTER_RIGHT
-
-            button() {
-              text = "Cancel"
-              onAction = _ => closeWithResult("Cancel")
-            }
-            button() {
-              text = "OK"
-              onAction = _ => closeWithResult("Ok")
-            }
-          }
+        checkbox.unwrap("replaceExisting") {
+          selectedProperty(prop => replaceExistingBox.bindBidirectional(prop))
         }
       }
     }
@@ -526,50 +269,18 @@ class LinuxFileUtils extends AbstractFileUtils {
         }
 
         val progressDialog = component[Window[Unit]] {
-          window() {
-            header() {
-              label() {
-                text = "Progress"
-              }
+          ProgressDialog(cancelledFlag, task) {
+
+            label.unwrap("progressText") {
+              text = progressText
             }
 
-            vbox() {
-              spacing = 14
-              padding = new Insets(20)
+            label.unwrap("progress") {
+              textProperty(prop => progressString.bindBidirectional(prop))
+            }
 
-              label() {
-                text = progressText
-              }
-
-              progressBar() {
-                prefWidth = 380
-                progressProperty(prop => prop.bind(task.progressProperty()))
-              }
-
-              label() {
-                textProperty(prop => prop.bindBidirectional(progressString))
-              }
-
-              label() {
-                textProperty(prop => prop.bindBidirectional(fileString))
-              }
-
-              region() {
-                vgrow = Priority.ALWAYS
-              }
-
-              hbox() {
-                alignment = Pos.CENTER_RIGHT
-                button() {
-                  text = "Cancel"
-                  onAction = _ => {
-                    cancelledFlag.set(true)
-                    task.cancel()
-                    close()
-                    log.info("Operation cancelledFlag by user.")
-                  }
-                }
-              }
+            label.unwrap("file") {
+              textProperty(prop => fileString.bindBidirectional(prop))
             }
           }
         }

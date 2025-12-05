@@ -1,23 +1,33 @@
 package com.anjunar.jcommander.files
 
+import com.anjunar.javafx.dsl.DSL.component
+import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
+import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
+import com.anjunar.javafx.scene.control.{button, label}
+import com.anjunar.javafx.scene.layout.hbox
+import com.anjunar.javafx.scene.window.{close, closeWithResult}
+import com.anjunar.javafx.scene.{header, window}
+import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.components.{LocalFileTableComponent, VFS2FileTableComponent}
-import com.anjunar.jcommander.dsl.FileTable
+import com.anjunar.jcommander.dsl.RenameFileWindow.directoryName
+import com.anjunar.jcommander.dsl.{FileTable, MakeDirectoryWindow, ProgressDialog, RenameFileWindow}
 import com.anjunar.jcommander.ui.ThemedDialog
 import com.anjunar.jcommander.utils.{ProgressListener, VFSUtils}
+import com.typesafe.scalalogging.Logger
+import javafx.application.Platform
+import javafx.beans.property.SimpleStringProperty
 import javafx.concurrent
 import javafx.scene.input.MouseEvent
 import org.apache.commons.vfs2.FileObject
-import scalafx.Includes.observableList2ObservableBuffer
-import scalafx.application.Platform
-import scalafx.event.ActionEvent
-import scalafx.scene.control.*
-import scalafx.scene.layout.VBox
 
 import java.awt.image.BufferedImage
 import java.nio.file.Files
+import java.util.concurrent.atomic.AtomicBoolean
 import scala.jdk.CollectionConverters.*
 
 class StreamFileUtils extends FileUtils {
+  
+  private val log = Logger[StreamFileUtils]
 
   override def fileContext(files: Seq[String], event: MouseEvent): Unit = throw new NotImplementedError("Will not be implemented in Future")
 
@@ -30,56 +40,38 @@ class StreamFileUtils extends FileUtils {
   override def executeFile(file: String): Unit = throw new NotImplementedError("Will not be implemented in Future")
 
   override def mkDir(activeTable: FileTable): Unit = {
-    val textField: TextField = new TextField {
-      promptText = "Directory Name"
+
+    val dialog = component[Window[String]] {
+      MakeDirectoryWindow() {}
     }
 
-    val mkDirDialog = new ThemedDialog[ButtonType]() {
-      title = "Create Directory"
-      headerText = "Create Directory"
-      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      dialogPane.content = new VBox(10, textField)
-    }
-
-    mkDirDialog.resultConverter = btn => btn
-
-    mkDirDialog.showAndWaitDialog().foreach { result =>
-      if (result == ButtonType.OK) {
-        val newFileName = textField.text.value
-        activeTable.resolveDirectory
-          .resolveFile(newFileName)
-          .createFolder()
-      }
+    dialog.showAndWaitResult().foreach { result =>
+      val newFileName = result
+      activeTable.resolveDirectory
+        .resolveFile(newFileName)
+        .createFolder()
     }
   }
 
   override def renameFile(activeTable: FileTable): Unit = {
-    val textField = new TextField {
-      text = activeTable.node.getSelectionModel.getSelectedItem.name
-    }
 
-    val renameDialog = new ThemedDialog[ButtonType]() {
-      title = "Rename File"
-      headerText = "Rename File"
-      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
-      dialogPane.content = new VBox(10, textField)
-    }
-
-    renameDialog.resultConverter = btn => btn
-
-    renameDialog.showAndWaitDialog().foreach { result =>
-      if (result == ButtonType.OK) {
-        val selected = activeTable.node.getSelectionModel.getSelectedItems.head
-        val oldFile = activeTable.manager.resolveFile(selected.file)
-
-        val parent = Option(oldFile.getParent).getOrElse {
-          val parentName = oldFile.getName.getParent
-          activeTable.manager.resolveFile(parentName.getBaseName)
-        }
-
-        val newFile = parent.resolveFile(textField.text.value)
-        oldFile.moveTo(newFile)
+    val dialog = component[Window[String]] {
+      RenameFileWindow() {
+        directoryName = activeTable.node.getSelectionModel.getSelectedItem.name
       }
+    }
+
+    dialog.showAndWaitResult().foreach { result =>
+      val selected = activeTable.node.getSelectionModel.getSelectedItems.getFirst
+      val oldFile = activeTable.manager.resolveFile(selected.file)
+
+      val parent = Option(oldFile.getParent).getOrElse {
+        val parentName = oldFile.getName.getParent
+        activeTable.manager.resolveFile(parentName.getBaseName)
+      }
+
+      val newFile = parent.resolveFile(result)
+      oldFile.moveTo(newFile)
     }
   }
 
@@ -133,22 +125,41 @@ class StreamFileUtils extends FileUtils {
                    activeTable: FileTable,
                    otherTable: FileTable): Unit = {
 
-    val confirmDialog = new ThemedDialog[ButtonType]() {
-      title = confirmTitle
-      headerText = confirmHeader
-      dialogPane.buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
+    val confirmDialog = component[Window[String]] {
+      window() {
+        header() {
+          label() {
+            text = confirmTitle
+          }
+        }
+        label() {
+          text = confirmHeader
+        }
+
+        hbox() {
+          button() {
+            text = "Ok"
+            onAction = _ => {
+              closeWithResult("Ok")
+            }
+          }
+          button() {
+            text = "Cancel"
+            onAction = _ => {
+              close()
+            }
+          }
+        }
+      }
     }
 
-    confirmDialog.resultConverter = btn => btn
+    confirmDialog.showAndWaitResult().foreach { result =>
+      if (result == "Ok") {
 
-    confirmDialog.showAndWaitDialog().foreach { result =>
-      if (result == ButtonType.OK) {
+        val cancelledFlag = new AtomicBoolean(false)
 
-        val progressBar = new ProgressBar {
-          prefWidth = Double.MaxValue
-        }
-        val progressLabel = new Label("0 MB (0 MB/s)")
-        val fileLabel = new Label("...Calculating")
+        val progressString = new SimpleStringProperty()
+        val fileString = new SimpleStringProperty()
 
         val task = new concurrent.Task[Unit]() {
           override def call(): Unit = {
@@ -179,9 +190,9 @@ class StreamFileUtils extends FileUtils {
                 val bytesMb = bytes.toDouble / (1024 * 1024)
                 val speedMb = speedEwma / (1024 * 1024)
 
-                Platform.runLater {
-                  progressLabel.text = f"${bytesMb}%.2f MB (${speedMb}%.2f MB/s)"
-                  fileLabel.text = file.getPublicURIString
+                Platform.runLater { () =>
+                  progressString.set(f"${bytesMb}%.2f MB (${speedMb}%.2f MB/s)")
+                  fileString.set(file.getPublicURIString)
                 }
               }
             }
@@ -190,36 +201,49 @@ class StreamFileUtils extends FileUtils {
               listener.onFileProgress(file, bytes, totalBytes)
             })
 
-            Platform.runLater {
+            Platform.runLater { () =>
               activeTable.loadDirectory(activeTable.directoryProperty.get())
               otherTable.loadDirectory(otherTable.directoryProperty.get())
             }
           }
         }
 
-        val progressDialog = new ThemedDialog[Unit]() {
-          title = progressText
-          width = 1000
-          dialogPane.content = new VBox(10, progressBar, progressLabel, fileLabel) {
-            prefWidth = Double.MaxValue
+        val progressDialog = component[Window[Unit]] {
+          ProgressDialog(cancelledFlag, task) {
+
+            label.unwrap("progressText") {
+              text = progressText
+            }
+
+            label.unwrap("progress") {
+              textProperty(prop => progressString.bindBidirectional(prop))
+            }
+
+            label.unwrap("file") {
+              textProperty(prop => fileString.bindBidirectional(prop))
+            }
           }
-          dialogPane.buttonTypes = Seq(ButtonType.Cancel)
         }
 
-        progressDialog.dialogPane.lookupButton(ButtonType.Cancel).addEventFilter(ActionEvent.Action, _ => {
-          task.cancel()
+        task.setOnSucceeded { _ =>
           progressDialog.close()
-        })
+        }
 
-        progressBar.progress <== task.progressProperty()
+        task.setOnFailed { _ =>
+          progressDialog.close()
+          log.error("Task failed", task.getException)
+        }
 
-        task.setOnSucceeded(_ => progressDialog.close())
-        task.setOnFailed(_ => progressDialog.close())
+        task.setOnCancelled { _ =>
+          progressDialog.close()
+          log.info("Task was cancelledFlag.")
+        }
 
-        Platform.runLater {
+        Platform.runLater { () =>
           progressDialog.show()
         }
         new Thread(task).start()
+
       }
     }
   }

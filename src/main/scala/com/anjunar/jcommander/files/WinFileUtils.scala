@@ -131,11 +131,22 @@ class WinFileUtils extends AbstractFileUtils {
 
     val confirmDialog = component[Window[String]] {
       ConfirmDialog(isDelete) {
-        confirmHeader = confirmHeaderText
-        confirmText = confirmTitleText
-
-        moveToRecycle(prop => moveToRecycleBinBox.bindBidirectional(prop))
-        replaceExisting(prop => replaceExistingBox.bindBidirectional(prop))
+        
+        label.unwrap("header") {
+          text = confirmTitleText
+        }
+        
+        label.unwrap("confirm") {
+          text = confirmHeaderText
+        }
+        
+        checkbox.unwrap("moveToRecycle") {
+          selectedProperty(prop => moveToRecycleBinBox.bindBidirectional(prop))
+        }
+        
+        checkbox.unwrap("replaceExisting") {
+          selectedProperty(prop => replaceExistingBox.bindBidirectional(prop))
+        }
       }
     }
 
