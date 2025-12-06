@@ -1,6 +1,5 @@
 package com.anjunar.jcommander.manager
 
-import com.anjunar.jcommander.components.LocalFileTableComponent
 import com.anjunar.jcommander.configuration.FileTableConf
 import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.utils.CdiUtils.*

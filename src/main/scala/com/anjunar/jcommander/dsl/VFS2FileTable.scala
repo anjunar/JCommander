@@ -3,7 +3,6 @@ package com.anjunar.jcommander.dsl
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
-import com.anjunar.jcommander.components.VFS2ClientComponent.Connection
 import com.anjunar.jcommander.dsl.AbstractFileTable.loadImages
 import com.anjunar.jcommander.dsl.traits.HasDirectory
 import com.anjunar.jcommander.files.FileItem

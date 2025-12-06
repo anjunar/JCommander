@@ -17,7 +17,6 @@ import com.anjunar.javafx.scene.window
 import com.anjunar.javafx.scene.window.{close, closeWithResult}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.ConfigDir
-import com.anjunar.jcommander.components.VFS2ClientComponent.Connection
 import com.anjunar.jcommander.configuration.SFTPConnection
 import com.anjunar.jcommander.security.PasswordStore
 import com.anjunar.jcommander.utils.FileSystemManagerBuilder

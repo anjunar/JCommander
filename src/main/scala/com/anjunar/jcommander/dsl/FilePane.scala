@@ -13,8 +13,6 @@ import com.anjunar.javafx.scene.control.seperator.orientation
 import com.anjunar.javafx.scene.control.{button, seperator}
 import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.javafx.stage.Window
-import com.anjunar.jcommander.components.VFS2ClientComponent.Connection
-import com.anjunar.jcommander.configuration.SFTPConnection
 import com.anjunar.jcommander.dsl.BreadCrumb.table
 import com.anjunar.jcommander.dsl.DriveButtons.*
 import com.anjunar.jcommander.dsl.traits.HasDirectory

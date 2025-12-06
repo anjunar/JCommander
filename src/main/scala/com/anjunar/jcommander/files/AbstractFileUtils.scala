@@ -10,7 +10,6 @@ import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.javafx.scene.window.{close, closeWithResult}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
-import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.dsl.RenameFileWindow.directoryName
 import com.anjunar.jcommander.dsl.{FileTable, MakeDirectoryWindow, RenameFileWindow}
