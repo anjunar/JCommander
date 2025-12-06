@@ -6,19 +6,10 @@ import java.io.IOException;
 
 public class WinNativeCopy {
 
-    static {
-        try {
-            NativeUtils.loadWinNativeCopy("win_native_copy.dll");
-        } catch (IOException e) {
-            throw new UnsatisfiedLinkError("Failed to load native library: " + e.getMessage());
-        }
-    }
-    
     public static native void copyFiles(String[] sources, String targetDir, ProgressCallback callback, boolean overwrite);
     public static native void moveFiles(String[] sources, String targetDir, ProgressCallback callback, boolean overwrite);
     public static native void deleteFiles(String[] sources, ProgressCallback callback, boolean recycle);
     public static native void executeFile(String path);
-    public static native byte[] getFileIcon(String path, boolean large);
     public static native void fileContext(String[] paths, boolean darkMode);
 
     public interface ProgressCallback {

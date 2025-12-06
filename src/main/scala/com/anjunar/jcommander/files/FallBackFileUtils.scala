@@ -5,12 +5,10 @@ import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
 import com.anjunar.javafx.scene.control.{checkbox, label}
 import com.anjunar.javafx.scene.control.checkbox.selectedProperty
 import com.anjunar.javafx.stage.Window
-import com.anjunar.jcommander.components.DarkModeComponent
 import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog}
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.utils.OSType
-import com.anjunar.jcommander.{Main, WinNativeCopy}
 import com.typesafe.scalalogging.Logger
 import jakarta.enterprise.context.ApplicationScoped
 import javafx.application.Platform
@@ -22,6 +20,8 @@ import java.awt.image.BufferedImage
 import java.io.{BufferedInputStream, BufferedOutputStream, File}
 import java.nio.file.{Files, Path, StandardCopyOption, StandardOpenOption}
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.swing.Icon
+import javax.swing.filechooser.FileSystemView
 import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
@@ -30,7 +30,7 @@ class FallBackFileUtils extends AbstractFileUtils {
 
   override val log: Logger = Logger[FallBackFileUtils]
 
-  private val fileUtils = FileUtilsProducer.produce()
+  private val fileUtils = FileUtilsProducer.produceWithoutFallback()
 
   override def fileContext(files: Seq[String], event: MouseEvent): Unit = {
     OSType.osName match {
@@ -39,17 +39,19 @@ class FallBackFileUtils extends AbstractFileUtils {
     }
   }
 
+  override def executeFile(file: String): Unit = {
+    OSType.osName match {
+      case "win" =>
+      case _ => fileUtils.executeFile(file)
+    }
+  }
+
   override def console(workingDir: String): Unit = fileUtils.console(workingDir)
-
-  override def getFileIcon(file: String, large: Boolean): BufferedImage = fileUtils.getFileIcon(file, large)
-
-  override def executeFile(file: String): Unit = fileUtils.executeFile(file)
 
   override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (path: Path, target: Path, replaceExisting: Boolean, copyAttributes: Boolean, progressCallback: Double => Unit) => {
         val copyOption = copyOptions(replaceExisting, copyAttributes)
-
         copyFileWithProgress(path, target, replaceExisting, copyAttributes, progressCallback)
       },
       "Copy Files",
@@ -71,10 +73,10 @@ class FallBackFileUtils extends AbstractFileUtils {
 
         val copyOption = copyOptions(replaceExisting, copyAttributes)
 
-        if sameDrive then {
+        if sameDrive then
           Files.createDirectories(target.getParent)
           Files.move(path, target, copyOption *)
-        } else
+        else
           copyFileWithProgress(path, target, replaceExisting, copyAttributes, progressCallback)
           setWriteable(path)
           Files.delete(path)
@@ -90,12 +92,10 @@ class FallBackFileUtils extends AbstractFileUtils {
 
   private def copyOptions(replaceExisting: Boolean, copyAttributes: Boolean) = {
     var copyOption = Seq[StandardCopyOption]()
-    if (copyAttributes) {
+    if copyAttributes then
       copyOption = copyOption ++ Seq(StandardCopyOption.COPY_ATTRIBUTES)
-    }
-    if (replaceExisting) {
+    if replaceExisting then
       copyOption = copyOption ++ Seq(StandardCopyOption.REPLACE_EXISTING)
-    }
     copyOption
   }
 
@@ -115,13 +115,11 @@ class FallBackFileUtils extends AbstractFileUtils {
   }
 
   private def setWriteable(path: Path) = {
-    if (!path.toFile.canWrite) {
-      try {
+    if !path.toFile.canWrite then
+      try
         path.toFile.setWritable(true)
-      } catch {
+      catch
         case ex: Exception => log.error(ex.getMessage, ex)
-      }
-    }
   }
 
   def processFiles(strategy: FallBackFileStrategy,
@@ -157,7 +155,7 @@ class FallBackFileUtils extends AbstractFileUtils {
     }
 
     confirmDialog.showAndWaitResult().foreach { result =>
-      if (result == "Ok") {
+      if result == "Ok" then
 
         val replaceExisting = replaceExistingBox.get()
 
@@ -166,13 +164,13 @@ class FallBackFileUtils extends AbstractFileUtils {
 
         val allFiles = selectedItems.stream().flatMap { fileItem =>
           val path = Path.of(fileItem.file)
-          if (Files.isDirectory(path))
+          if Files.isDirectory(path) then
             Files.walk(path).sorted(java.util.Comparator.reverseOrder())
           else
             java.util.stream.Stream.of(path)
         }.toList.asScala.toSeq
 
-        if (lockedFiles.isEmpty) {
+        if lockedFiles.isEmpty then
 
           val cancelledFlag = new AtomicBoolean(false)
 
@@ -181,51 +179,94 @@ class FallBackFileUtils extends AbstractFileUtils {
 
           val task = new concurrent.Task[Unit]() {
             override def call(): Unit = {
-              val total = allFiles.size
               val baseSource = selectedItems.getFirst.parent
               val targetRoot = Path.of(otherTable.directoryProperty.get())
 
-              var totalBytesCopied: Long = 0
-              val startTime = System.nanoTime()
-              val totalBytes: Long = allFiles.map(path => if (Files.isRegularFile(path)) Files.size(path) else 0L).sum
+              val totalBytes: Long =
+                allFiles.map(path => if Files.isRegularFile(path) then Files.size(path) else 0L).sum
 
-              allFiles.zipWithIndex.foreach { case (path, i) =>
-                if (isCancelled) return
+              val startTime = System.nanoTime()
+              var processedBytesCompletedFiles: Long = 0L
+
+              if totalBytes == 0L then
+                Platform.runLater { () =>
+                  progressString.set("0.00 / 0.00 MB (0.00 MB/s), ETA: 00:00")
+                }
+
+              allFiles.foreach { path =>
+                if isCancelled then return
 
                 val relative = Path.of(baseSource).relativize(path)
                 val target = targetRoot.resolve(relative)
                 Files.createDirectories(target.getParent)
 
-                try {
-                  var fileProgress = 0.0
+                val fileSize = if Files.isRegularFile(path) then Files.size(path) else 0L
 
-                  strategy.process(path, target, replaceExisting, false, progress => {
-                    fileProgress = progress
-                    val globalProgress = (i + fileProgress) / total
-                    updateProgress(globalProgress, 1.0)
-                  })
-
-                  val fileSize = if (Files.isRegularFile(path)) Files.size(path) else 0L
-                  totalBytesCopied += fileSize
-
-                  val elapsedSeconds = (System.nanoTime() - startTime) / 1e9
-                  val mbCopied = totalBytesCopied / (1024.0 * 1024.0)
-                  val mbTotal = totalBytes / (1024.0 * 1024.0)
-                  val mbPerSec = if (elapsedSeconds > 0) mbCopied / elapsedSeconds else 0.0
-
-                  val remainingBytes = totalBytes - totalBytesCopied
-                  val etaSeconds = if (mbPerSec > 0) remainingBytes / (mbPerSec * 1024 * 1024) else 0.0
-                  val etaText = f"${(etaSeconds / 60).toInt}%02d:${(etaSeconds % 60).toInt}%02d"
-
-                  Platform.runLater { () =>
-                    progressString.set(f"$mbCopied%.2f / $mbTotal%.2f MB (${mbPerSec}%.2f MB/s), ETA: $etaText")
-                  }
-
-                } catch {
-                  case ex: Exception => log.error(ex.getMessage, ex)
+                Platform.runLater { () =>
+                  fileString.set(relative.toString)
                 }
 
-                updateProgress(i + 1, total)
+                if fileSize > 0 && !isDelete then
+                  try
+                    strategy.process(path, target, replaceExisting, false, progress => {
+                      if isCancelled then return
+
+                      val clamped =
+                        if progress.isNaN then 0.0
+                        else math.max(0.0, math.min(1.0, progress))
+
+                      val currentFileBytes = (fileSize.toDouble * clamped).toLong
+                      val totalBytesCopied = processedBytesCompletedFiles + currentFileBytes
+
+                      val elapsedSeconds = (System.nanoTime() - startTime) / 1e9
+                      val bytesPerSec = if elapsedSeconds > 0 then totalBytesCopied / elapsedSeconds else 0.0
+                      val mbCopied = totalBytesCopied / (1024.0 * 1024.0)
+                      val mbTotal = totalBytes / (1024.0 * 1024.0)
+                      val mbPerSec = bytesPerSec / (1024.0 * 1024.0)
+                      val mbitPerSec = mbPerSec * 8.0
+
+                      val remainingBytes = math.max(0L, totalBytes - totalBytesCopied)
+                      val etaSeconds = if bytesPerSec > 0 then remainingBytes / bytesPerSec else 0.0
+                      val etaMinutesPart = (etaSeconds / 60).toInt
+                      val etaSecondsPart = (etaSeconds % 60).toInt
+                      val etaText = f"$etaMinutesPart%02d:$etaSecondsPart%02d"
+
+                      updateProgress(totalBytesCopied.toDouble, totalBytes.toDouble)
+
+                      Platform.runLater { () =>
+                        progressString.set(f"$mbCopied%.2f / $mbTotal%.2f MB ($mbPerSec%.2f MB/s), ETA: $etaText")
+                      }
+                    })
+                  catch
+                    case ex: Exception => log.error(ex.getMessage, ex)
+                else
+                  try
+                    strategy.process(path, target, replaceExisting, false, _ => ())
+                  catch
+                    case ex: Exception => log.error(ex.getMessage, ex)
+
+                processedBytesCompletedFiles += fileSize
+
+                val totalBytesCopied = processedBytesCompletedFiles
+
+                val elapsedSeconds = (System.nanoTime() - startTime) / 1e9
+                val bytesPerSec = if elapsedSeconds > 0 then totalBytesCopied / elapsedSeconds else 0.0
+                val mbCopied = totalBytesCopied / (1024.0 * 1024.0)
+                val mbTotal = if totalBytes > 0 then totalBytes / (1024.0 * 1024.0) else 0.0
+                val mbPerSec = if elapsedSeconds > 0 && totalBytes > 0 then bytesPerSec / (1024.0 * 1024.0) else 0.0
+                val mbitPerSec = mbPerSec * 8.0
+
+                val remainingBytes = math.max(0L, totalBytes - totalBytesCopied)
+                val etaSeconds = if bytesPerSec > 0 then remainingBytes / bytesPerSec else 0.0
+                val etaMinutesPart = (etaSeconds / 60).toInt
+                val etaSecondsPart = (etaSeconds % 60).toInt
+                val etaText = f"$etaMinutesPart%02d:$etaSecondsPart%02d"
+
+                updateProgress(totalBytesCopied.toDouble, totalBytes.toDouble)
+
+                Platform.runLater { () =>
+                  progressString.set(f"$mbCopied%.2f / $mbTotal%.2f MB ($mbPerSec%.2f MB/s), ETA: $etaText")
+                }
               }
             }
           }
@@ -265,9 +306,6 @@ class FallBackFileUtils extends AbstractFileUtils {
             progressDialog.show()
           }
           new Thread(task).start()
-
-        }
-      }
     }
   }
 
@@ -279,25 +317,35 @@ class FallBackFileUtils extends AbstractFileUtils {
 
     Files.createDirectories(target.getParent)
 
-    if (Files.isRegularFile(source)) {
+    if Files.isRegularFile(source) then
 
       val totalBytes = Files.size(source)
-
       var copiedBytes: Long = 0
       val buffer = new Array[Byte](1024 * 1024)
 
+      val outOptions =
+        if replaceExisting then
+          Array(StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+        else
+          Array(StandardOpenOption.CREATE_NEW)
+
       Using.resources(
         new BufferedInputStream(Files.newInputStream(source)),
-        new BufferedOutputStream(Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+        new BufferedOutputStream(Files.newOutputStream(target, outOptions *))
       ) { (in, out) =>
         var bytesRead = in.read(buffer)
-        while (bytesRead != -1) {
+        while bytesRead != -1 do
           out.write(buffer, 0, bytesRead)
           copiedBytes += bytesRead
-          progressCallback(copiedBytes.toDouble / totalBytes)
+          if totalBytes > 0 then
+            progressCallback(copiedBytes.toDouble / totalBytes.toDouble)
           bytesRead = in.read(buffer)
-        }
       }
-    }
+
+      if copyAttributes then
+        try
+          Files.setLastModifiedTime(target, Files.getLastModifiedTime(source))
+        catch
+          case ex: Exception => log.error(ex.getMessage, ex)
   }
 }

@@ -50,11 +50,6 @@ class WinFileUtils extends AbstractFileUtils {
     ).directory(new File(workingDir)).start()
   }
 
-  override def getFileIcon(file: String, large: Boolean): BufferedImage = {
-    val bytes = WinNativeCopy.getFileIcon(file, large)
-    ImageIO.read(new ByteArrayInputStream(bytes))
-  }
-
   override def executeFile(file: String): Unit = WinNativeCopy.executeFile(file)
 
   override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {

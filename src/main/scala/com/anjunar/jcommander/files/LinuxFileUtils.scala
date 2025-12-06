@@ -109,11 +109,6 @@ class LinuxFileUtils extends AbstractFileUtils, UnixFileUtils {
     }).start()
 
 
-  override def getFileIcon(file: String, large: Boolean): BufferedImage = {
-    val bytes = LinuxNativeCopy.getFileIcon(file, large)
-    ImageIO.read(new ByteArrayInputStream(bytes))
-  }
-
   override def copyFiles(activeTable: FileTable, otherTable: FileTable): Unit = {
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, ProgressListener: LinuxNativeCopy.ProgressListener) => {

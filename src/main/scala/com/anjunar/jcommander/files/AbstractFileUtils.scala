@@ -17,14 +17,33 @@ import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 
+import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.{Files, Path}
+import javax.swing.Icon
+import javax.swing.filechooser.FileSystemView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 abstract class AbstractFileUtils extends FileUtils {
   
   val log = Logger[AbstractFileUtils]
+
+  private def iconToBufferedImage(icon: Icon): BufferedImage = {
+    val w = icon.getIconWidth
+    val h = icon.getIconHeight
+    val image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
+    val g = image.createGraphics()
+    icon.paintIcon(null, g, 0, 0)
+    g.dispose()
+    image
+  }
+
+  override def getFileIcon(file: String, large: Boolean): BufferedImage = {
+    val f = new File(file)
+    val icon = FileSystemView.getFileSystemView.getSystemIcon(f)
+    iconToBufferedImage(icon)
+  }
   
   override def executeFile(file: String, workingDir : String, args: Seq[String]): Unit = {
     Future {

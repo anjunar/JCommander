@@ -36,5 +36,6 @@ public class NativeUtils {
 
     public static void loadWinNativeCopy(String library) throws IOException {
         loadLibraryFromJar("/" + library);
+        throw new UnsupportedOperationException("Windows native copy is not supported yet.");
     }
 }

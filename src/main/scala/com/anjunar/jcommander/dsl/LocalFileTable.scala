@@ -159,6 +159,8 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
 
   override def afterBuild(): Unit = {
     loadDirectory(directoryProperty.get())
+
+    directoryProperty.addListener((_,_, newValue) => loadDirectory(newValue))
   }
 }
 

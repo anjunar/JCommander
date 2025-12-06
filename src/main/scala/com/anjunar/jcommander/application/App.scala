@@ -18,6 +18,7 @@ import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu}
 import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
 import com.anjunar.jcommander.utils.CdiUtils.inject
+import com.anjunar.jcommander.utils.{NativeUtils, OSType}
 import com.anjunar.scala.universe.introspector.BeanIntrospector
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.enterprise.inject.se.SeContainerInitializer
@@ -33,6 +34,16 @@ import java.io.File
 class App extends Application {
 
   override def start(primaryStage: Stage): Unit = {
+    
+    try {
+      OSType.osName match {
+        case "win" => NativeUtils.loadWinNativeCopy("win_native_copy.dll")
+        case "linux" => NativeUtils.loadWinNativeCopy("linux_native_copy.so")
+        case "mac" => NativeUtils.loadWinNativeCopy("osx_native_copy.dylib")
+      }
+    } catch {
+      case e : Exception => OSType.fallback = true 
+    }
 
     val container = SeContainerInitializer.newInstance().initialize()
 

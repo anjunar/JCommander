@@ -2,7 +2,7 @@ package com.anjunar.jcommander.manager
 
 import com.anjunar.jcommander.OSXNativeCopy
 import com.anjunar.jcommander.dsl.{FileTable, LocalFileTable, VFS2FileTable}
-import com.anjunar.jcommander.files.{OSXFileUtils, StreamFileUtils}
+import com.anjunar.jcommander.files.{FileUtilsProducer, OSXFileUtils, StreamFileUtils}
 import javafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage
@@ -10,7 +10,7 @@ import scala.jdk.CollectionConverters.*
 
 class OSXFileManager extends FileManager {
 
-  val fileUtils = new OSXFileUtils()
+  val fileUtils = FileUtilsProducer.produce()
   val streamFiles = new StreamFileUtils()
 
   override def fileContext(activeTable: FileTable, event: MouseEvent): Unit = activeTable match {

@@ -76,11 +76,6 @@ class OSXFileUtils extends AbstractFileUtils, UnixFileUtils {
     }).start()
 
 
-  override def getFileIcon(file: String, large: Boolean): BufferedImage = {
-    val bytes = OSXNativeCopy.getFileIcon(file, large)
-    ImageIO.read(new ByteArrayInputStream(bytes))
-  }
-
   override def deleteFiles(activeTable: FileTable, otherTable: FileTable): Unit =
     processFiles(
       (paths: Seq[Path], target: Path, overwrite, recycle, ProgressListener: OSXNativeCopy.ProgressListener) => {
