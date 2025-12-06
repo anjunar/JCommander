@@ -8,6 +8,7 @@ import com.anjunar.javafx.dsl.traits.HasSpacing.spacing
 import com.anjunar.javafx.scene.control.{menu, menuBar, menuItem}
 import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.javafx.stage.Window
+import com.anjunar.jcommander.dsl.window.ConfigurationWindow
 import javafx.scene.layout.HBox
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 

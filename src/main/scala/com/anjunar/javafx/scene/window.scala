@@ -8,12 +8,11 @@ import com.anjunar.javafx.dsl.ChildBuilder.{deregister, reactTo, register}
 import com.anjunar.javafx.dsl.traits.HasStyle.style
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow
 import com.anjunar.javafx.scene.layout.vbox
-import com.anjunar.javafx.stage.Window
+import com.anjunar.javafx.stage.{Resizable, Window}
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
-import com.anjunar.jcommander.ui.Resizable
 import com.anjunar.jcommander.utils.CdiUtils.inject
-import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.{SimpleBooleanProperty, SimpleObjectProperty}
 import javafx.scene.Scene
 import javafx.scene.layout.{Priority, VBox}
 import javafx.stage.{Stage, StageStyle}
@@ -31,10 +30,9 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
 
   private val header = new SimpleObjectProperty[header]()
 
-  private var resizableFlag = true
+  private var resizableFlag = SimpleBooleanProperty(false)
 
   lazy val node : Stage = {
-    stage.setResizable(resizableFlag)
     stage.initStyle(StageStyle.UNDECORATED)
 
     val ui = component[VBox] {
@@ -72,10 +70,14 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
       val theme = if (darkMode.value) "dark" else "light"
       scene.getStylesheets.clear()
       scene.getStylesheets.add(getClass.getResource(s"/$theme-theme.css").toExternalForm)
-    }
-    }
+    }}
 
-    new Resizable(stage, ui)
+    resizableFlag.addListener((_, _, newValue) => {
+      stage.setResizable(newValue)
+      if (newValue) {
+        new Resizable(stage, ui)
+      }
+    })
 
     stage.setScene(scene)
 
@@ -116,9 +118,9 @@ object window {
     h.write(() => h.node.close())
 
   def resizable[T](using h: window[T], b : ElementBuilder[?], ctx : BuildContext): Boolean =
-    h.read(h.resizableFlag)
+    h.read(h.resizableFlag.get())
 
   def resizable_=[T](value: Boolean)(using h: window[T], b : ElementBuilder[?], ctx : BuildContext): Unit =
-    h.write(() => h.resizableFlag = value)
+    h.write(() => h.resizableFlag.set(value))
 
 }

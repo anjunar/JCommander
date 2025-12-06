@@ -8,8 +8,9 @@ import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.javafx.scene.window.{close, closeWithResult}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
-import com.anjunar.jcommander.dsl.RenameFileWindow.directoryName
-import com.anjunar.jcommander.dsl.{FileTable, MakeDirectoryWindow, ProgressDialog, RenameFileWindow}
+import com.anjunar.jcommander.dsl.dialog.RenameFileDialog.directoryName
+import com.anjunar.jcommander.dsl.dialog.{MakeDirectoryDialog, ProgressDialog, RenameFileDialog}
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.utils.{ProgressListener, VFSUtils}
 import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
@@ -40,7 +41,7 @@ class StreamFileUtils extends FileUtils {
   override def mkDir(activeTable: FileTable): Unit = {
 
     val dialog = component[Window[String]] {
-      MakeDirectoryWindow() {}
+      MakeDirectoryDialog() {}
     }
 
     dialog.showAndWaitResult().foreach { result =>
@@ -54,7 +55,7 @@ class StreamFileUtils extends FileUtils {
   override def renameFile(activeTable: FileTable): Unit = {
 
     val dialog = component[Window[String]] {
-      RenameFileWindow() {
+      RenameFileDialog() {
         directoryName = activeTable.node.getSelectionModel.getSelectedItem.name
       }
     }

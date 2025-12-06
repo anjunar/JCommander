@@ -1,4 +1,4 @@
-package com.anjunar.jcommander.dsl
+package com.anjunar.jcommander.dsl.window
 
 import com.anjunar.javafx.dsl.ChildBuilder.reactTo
 import com.anjunar.javafx.dsl.DSL.component

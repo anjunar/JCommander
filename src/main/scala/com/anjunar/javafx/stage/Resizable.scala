@@ -1,4 +1,4 @@
-package com.anjunar.jcommander.ui
+package com.anjunar.javafx.stage
 
 import javafx.scene.Node
 import javafx.scene.input.MouseEvent

@@ -10,9 +10,10 @@ import com.anjunar.javafx.scene.window
 import com.anjunar.javafx.scene.window.close
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
-import com.anjunar.jcommander.dsl.{ConfirmDialog, FileTable, ProgressDialog}
+import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog}
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.utils.CdiUtils.inject
-import com.anjunar.jcommander.{Icons, OSXNativeCopy}
+import com.anjunar.jcommander.OSXNativeCopy
 import javafx.application.Platform
 import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}
 import javafx.concurrent

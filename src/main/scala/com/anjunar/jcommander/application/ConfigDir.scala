@@ -1,4 +1,4 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.application
 
 import com.anjunar.jcommander.utils.OSType
 

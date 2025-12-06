@@ -11,8 +11,9 @@ import com.anjunar.javafx.scene.window.{close, closeWithResult}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.configuration.DarkModeConf
-import com.anjunar.jcommander.dsl.RenameFileWindow.directoryName
-import com.anjunar.jcommander.dsl.{FileTable, MakeDirectoryWindow, RenameFileWindow}
+import com.anjunar.jcommander.dsl.dialog.RenameFileDialog.directoryName
+import com.anjunar.jcommander.dsl.dialog.{MakeDirectoryDialog, RenameFileDialog}
+import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 
@@ -42,7 +43,7 @@ abstract class AbstractFileUtils extends FileUtils {
   def mkDir(activeTable: FileTable): Unit = {
 
     val dialog = component[Window[String]] {
-      MakeDirectoryWindow() { }
+      MakeDirectoryDialog() { }
     }
 
     dialog.showAndWaitResult().foreach { result =>
@@ -54,7 +55,7 @@ abstract class AbstractFileUtils extends FileUtils {
   def renameFile(activeTable: FileTable): Unit = {
 
     val dialog = component[Window[String]] {
-      RenameFileWindow() {
+      RenameFileDialog() {
         directoryName = activeTable.node.getSelectionModel.getSelectedItem.name
       }
     }

@@ -1,18 +1,18 @@
-package com.anjunar.jcommander.dsl
+package com.anjunar.jcommander.dsl.dialog
 
 import com.anjunar.javafx.dsl.DSL.component
-import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasPadding.padding
 import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty, text_=}
 import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow
+import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Ref}
 import com.anjunar.javafx.scene.control.progressBar.progressProperty
 import com.anjunar.javafx.scene.control.{button, label, progressBar}
-import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
 import com.anjunar.javafx.scene.window.close
+import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.typesafe.scalalogging.Logger
 import javafx.beans.property.{DoubleProperty, StringProperty}

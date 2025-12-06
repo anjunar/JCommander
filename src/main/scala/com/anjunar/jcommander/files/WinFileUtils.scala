@@ -15,8 +15,9 @@ import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.WinNativeCopy
-import com.anjunar.jcommander.dsl.ConfirmDialog.{confirmHeader, confirmText, moveToRecycle, replaceExisting}
-import com.anjunar.jcommander.dsl.{ConfirmDialog, FileTable, ProgressDialog}
+import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog}
+import com.anjunar.jcommander.dsl.dialog.ConfirmDialog.{confirmHeader, confirmText, moveToRecycle, replaceExisting}
+import com.anjunar.jcommander.dsl.FileTable
 import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
 import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}

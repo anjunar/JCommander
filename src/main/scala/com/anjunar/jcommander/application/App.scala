@@ -1,4 +1,4 @@
-package com.anjunar.jcommander
+package com.anjunar.jcommander.application
 
 import com.anjunar.javafx.dsl.DSL.*
 import com.anjunar.javafx.dsl.traits.HasHeaderButtons.{closeable, maximizable, minimizable}
@@ -9,14 +9,14 @@ import com.anjunar.javafx.dsl.traits.IsNode.vgrow
 import com.anjunar.javafx.scene.control.splitPane.dividerPositions
 import com.anjunar.javafx.scene.control.{label, splitPane}
 import com.anjunar.javafx.scene.layout.{hbox, vbox}
-import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.scene.window.resizable
+import com.anjunar.javafx.scene.{header, window}
+import com.anjunar.javafx.stage.Resizable
 import com.anjunar.jcommander.configuration.{Configuration, DarkModeConf}
 import com.anjunar.jcommander.dsl.FilePane.onTableChange
 import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu}
 import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
-import com.anjunar.jcommander.ui.Resizable
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.scala.universe.introspector.BeanIntrospector
 import com.fasterxml.jackson.annotation.JsonProperty

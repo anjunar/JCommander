@@ -1,6 +1,6 @@
 package com.anjunar.jcommander.commands
 
-import com.anjunar.jcommander.ConfigDir
+import com.anjunar.jcommander.application.ConfigDir
 import com.anjunar.jcommander.configuration.Configuration
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
 import com.anjunar.jcommander.utils.CdiUtils.*

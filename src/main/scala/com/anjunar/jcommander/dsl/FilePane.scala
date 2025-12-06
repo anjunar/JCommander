@@ -15,6 +15,7 @@ import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.dsl.BreadCrumb.table
 import com.anjunar.jcommander.dsl.DriveButtons.*
+import com.anjunar.jcommander.dsl.dialog.VFS2ClientDialog
 import com.anjunar.jcommander.dsl.traits.HasDirectory
 import com.anjunar.jcommander.dsl.traits.HasDirectory.{directory, directoryProp, directory_=}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
@@ -88,7 +89,7 @@ class FilePane extends NodeBuilder[VBox] {
 
             onAction = _ => {
               val client = component[Window[Connection]] {
-                VFS2Client() {}
+                VFS2ClientDialog() {}
               }
 
               client.showAndWaitResult().foreach(connection => {

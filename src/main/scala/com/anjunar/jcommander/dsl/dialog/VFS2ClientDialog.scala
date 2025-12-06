@@ -1,23 +1,24 @@
-package com.anjunar.jcommander.dsl
+package com.anjunar.jcommander.dsl.dialog
 
 import com.anjunar.javafx.dsl.DSL.component
 import com.anjunar.javafx.dsl.traits.HasItems.items
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasPadding.padding
-import com.anjunar.javafx.dsl.traits.IstTextInput.promptText
 import com.anjunar.javafx.dsl.traits.HasSpacing.spacing
-import com.anjunar.javafx.dsl.{ElementBuilder, Producer, Ref}
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.IsNode.{onMouseClicked, onMouseClicked_=, vgrow}
+import com.anjunar.javafx.dsl.traits.IstTextInput.promptText
+import com.anjunar.javafx.dsl.{ElementBuilder, Producer, Ref}
 import com.anjunar.javafx.scene.control.comboBox.singleSelectionModel
 import com.anjunar.javafx.scene.control.listView.cellFactory
-import com.anjunar.javafx.scene.control.{button, comboBox, label, listView, passwordField, textField}
+import com.anjunar.javafx.scene.control.*
 import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.javafx.scene.window
 import com.anjunar.javafx.scene.window.{close, closeWithResult}
 import com.anjunar.javafx.stage.Window
-import com.anjunar.jcommander.ConfigDir
+import com.anjunar.jcommander.application.ConfigDir
 import com.anjunar.jcommander.configuration.SFTPConnection
+import com.anjunar.jcommander.dsl.Connection
 import com.anjunar.jcommander.security.PasswordStore
 import com.anjunar.jcommander.utils.FileSystemManagerBuilder
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -25,10 +26,9 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.value.{ChangeListener, ObservableValue}
 import javafx.collections.{FXCollections, ObservableList}
-import javafx.scene.control
-import javafx.collections.ObservableList
 import javafx.concurrent.Task
 import javafx.geometry.Insets
+import javafx.scene.control
 import javafx.scene.control.{ListCell, ListView, SingleSelectionModel}
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Priority
@@ -38,7 +38,7 @@ import java.io.File
 import java.nio.file.Files
 import scala.jdk.CollectionConverters.*
 
-class VFS2Client extends ElementBuilder[Window[Connection]] {
+class VFS2ClientDialog extends ElementBuilder[Window[Connection]] {
 
   private val manager = FileSystemManagerBuilder.build()
 
@@ -216,6 +216,6 @@ class VFS2Client extends ElementBuilder[Window[Connection]] {
 
 }
 
-object VFS2Client extends Producer[VFS2Client, Window[Connection]] {
-  override def createBuilder: VFS2Client = new VFS2Client()
+object VFS2ClientDialog extends Producer[VFS2ClientDialog, Window[Connection]] {
+  override def createBuilder: VFS2ClientDialog = new VFS2ClientDialog()
 }

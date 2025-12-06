@@ -1,4 +1,4 @@
-package com.anjunar.jcommander.dsl
+package com.anjunar.jcommander.dsl.dialog
 
 import com.anjunar.javafx.dsl.DSL.component
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
@@ -6,12 +6,12 @@ import com.anjunar.javafx.dsl.traits.HasPadding.padding
 import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.IsNode.vgrow
-import com.anjunar.javafx.dsl.{BuildContext, DSL, ElementBuilder, Producer, Ref}
+import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.scene.control.checkbox.selectedProperty
 import com.anjunar.javafx.scene.control.{button, checkbox, label}
-import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
 import com.anjunar.javafx.scene.window.closeWithResult
+import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import javafx.beans.property.BooleanProperty
 import javafx.geometry.{Insets, Pos}
