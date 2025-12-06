@@ -16,17 +16,14 @@ import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}
 import javafx.concurrent
 import javafx.scene.input.MouseEvent
 
-import java.awt.image.BufferedImage
 import java.io.{BufferedInputStream, BufferedOutputStream, File}
 import java.nio.file.{Files, Path, StandardCopyOption, StandardOpenOption}
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.swing.Icon
-import javax.swing.filechooser.FileSystemView
 import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
-class FallBackFileUtils extends AbstractFileUtils {
+class FallBackFileUtils extends AbstractFileUtils, WinFallbackFileUtils {
 
   override val log: Logger = Logger[FallBackFileUtils]
 
@@ -34,14 +31,14 @@ class FallBackFileUtils extends AbstractFileUtils {
 
   override def fileContext(files: Seq[String], event: MouseEvent): Unit = {
     OSType.osName match {
-      case "win" =>
+      case "win" => winFileContext(files, event)
       case _ => fileUtils.fileContext(files, event)
     }
   }
 
   override def executeFile(file: String): Unit = {
     OSType.osName match {
-      case "win" =>
+      case "win" => winExecuteFile(file)
       case _ => fileUtils.executeFile(file)
     }
   }

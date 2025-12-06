@@ -1,7 +1,7 @@
 package com.anjunar.jcommander.manager
 
 import com.anjunar.jcommander.dsl.{FileTable, LocalFileTable, VFS2FileTable}
-import com.anjunar.jcommander.files.{FileUtils, FileUtilsProducer, StreamFileUtils, WinFileUtils}
+import com.anjunar.jcommander.files.{FileUtils, FileUtilsProducer, StreamFileUtils, WinFallbackFileUtils}
 import javafx.scene.input.MouseEvent
 
 import java.awt.image.BufferedImage

@@ -1,50 +1,33 @@
 package com.anjunar.jcommander.files
 
-import com.anjunar.javafx.dsl.{BuildContext, ElementBuilder, Ref}
 import com.anjunar.javafx.dsl.DSL.component
+import com.anjunar.javafx.dsl.traits.HasGraphic.graphic
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
 import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing, spacing_=}
 import com.anjunar.javafx.dsl.traits.HasStyle.style
-import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
-import com.anjunar.javafx.dsl.traits.HasGraphic.graphic
-import com.anjunar.javafx.dsl.ChildBuilder.register
-import com.anjunar.javafx.dsl.traits.HasPadding.padding
-import com.anjunar.javafx.dsl.traits.HasWidth.prefWidth
-import com.anjunar.javafx.dsl.traits.IsNode.vgrow
-import com.anjunar.javafx.scene.control.checkbox.{selected, selectedProperty}
-import com.anjunar.javafx.scene.control.progressBar.progressProperty
-import com.anjunar.javafx.scene.control.{button, checkbox, contextMenu, label, menu, menuItem, progressBar, separatorMenuItem}
-import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
-import com.anjunar.javafx.scene.window.{close, closeWithResult}
-import com.anjunar.javafx.scene.{header, window}
+import com.anjunar.javafx.dsl.traits.HasText.text
+import com.anjunar.javafx.dsl.{BuildContext, ElementBuilder}
+import com.anjunar.javafx.scene.control.*
+import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
+import com.anjunar.jcommander.dsl.Icon
 import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
-import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog, UnixPropertiesDialog}
-import com.anjunar.jcommander.dsl.{FileTable, Icon}
+import com.anjunar.jcommander.dsl.dialog.{UnixPropertiesDialog, WindowsPropertiesDialog}
 import com.anjunar.jcommander.utils.CdiUtils.inject
-import com.anjunar.jcommander.LinuxNativeCopy
 import javafx.application.Platform
-import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}
-import javafx.concurrent
 import javafx.event.{ActionEvent, EventHandler}
-import javafx.geometry.{Insets, Pos}
+import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.{ContextMenu, Menu, MenuItem}
 import javafx.scene.input.MouseEvent
-import javafx.scene.layout.{HBox, Priority}
+import javafx.scene.layout.HBox
 
-import java.awt.image.BufferedImage
-import java.io.{ByteArrayInputStream, File}
-import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermissions}
+import java.io.File
 import java.nio.file.{Files, Path, Paths}
-import java.time.Instant
-import java.util.concurrent.atomic.AtomicBoolean
-import javax.imageio.ImageIO
-import scala.jdk.CollectionConverters.*
 import scala.sys.process.*
 
-trait UnixFileUtils extends FileUtils {
+trait WinFallbackFileUtils {
 
   private var contextMenuOpen = false
 
@@ -89,21 +72,20 @@ trait UnixFileUtils extends FileUtils {
     }
   }
 
-  override def fileContext(files: Seq[String], event: MouseEvent): Unit = {
-    if (files.isEmpty) return
-    if (contextMenuOpen) return
+  def winFileContext(files: Seq[String], event: MouseEvent): Unit = {
+    if files.isEmpty then return
+    if contextMenuOpen then return
 
     val single = files.size == 1
     val fHead = files.head
     val parentDir = Path.of(fHead).getParent.toString
 
-
-    val openWithApps = Seq("subl", "code", "gedit", "nano", "vim", "xdg-open")
+    val openWithApps = Seq("notepad.exe", "code", "wordpad.exe", "explorer.exe")
 
     val menu = component[ContextMenu] {
       contextMenu() {
-        if single then ctxItem("Execute", "mdi2p-play")(_ => {
-          executeFile(fHead)
+        if single then ctxItem("Open", "mdi2f-file")(_ => {
+          winExecuteFile(fHead)
         })
         ctxSubMenu(
           "Open With…",
@@ -111,7 +93,7 @@ trait UnixFileUtils extends FileUtils {
           openWithApps.map(app =>
             (elementBuilder, buildContext) => ctxItem(app, "mdi2a-application")(_ => {
               new Thread(() => {
-                Seq(app, fHead).!
+                Seq("cmd", "/c", "start", "", app, fHead).!
                 ()
               }).start()
             })(using elementBuilder, buildContext)
@@ -141,21 +123,13 @@ trait UnixFileUtils extends FileUtils {
           "Compress",
           "mdi2z-zip-box",
           Seq(
-            (elementBuilder, buildContext) => ctxItem("Create tar.gz", "mdi2f-folder-download")(_ => {
-              new Thread(() => {
-                val dir = new File(files.head).getParent
-                val names = files.map(f => new File(f).getName)
-                val cmd = Seq("tar", "-czf", s"$dir/archive.tar.gz", "-C", dir) ++ names
-                cmd.!
-                ()
-              }).start()
-            })(using elementBuilder, buildContext),
             (elementBuilder, buildContext) => ctxItem("Create zip", "mdi2z-zip-box")(_ => {
               new Thread(() => {
-                val dir = new File(files.head).getParent
-                val names = files.map(f => new File(f).getName)
-                val cmd = Seq("zip", "-j", s"$dir/archive.zip") ++ names.map(n => s"$dir/$n")
-                cmd.!
+                val dir = new File(files.head).getParentFile
+                val zipPath = Paths.get(dir.getAbsolutePath, "archive.zip").toString
+                val args = files.mkString("','")
+                val script = s"Compress-Archive -LiteralPath '${args}' -DestinationPath '$zipPath' -Force"
+                Seq("powershell", "-NoProfile", "-Command", script).!
                 ()
               }).start()
             })(using elementBuilder, buildContext)
@@ -169,7 +143,7 @@ trait UnixFileUtils extends FileUtils {
         })
         separatorMenuItem() {}
         ctxItem("Open Terminal Here", "mdi2c-console")(_ => {
-          new Thread(() => console(Paths.get(files.head).getParent.toAbsolutePath.toString)).start()
+          new Thread(() => winConsole(Paths.get(files.head).getParent.toAbsolutePath.toString)).start()
         })
         ctxItem("Properties", "mdi2c-cog")(_ => {
           showPropertiesDialog(files)
@@ -185,7 +159,7 @@ trait UnixFileUtils extends FileUtils {
 
       val closer = new javafx.event.EventHandler[javafx.scene.input.MouseEvent] {
         override def handle(ev: javafx.scene.input.MouseEvent): Unit = {
-          if (ev.isPrimaryButtonDown) menu.hide()
+          if ev.isPrimaryButtonDown then menu.hide()
         }
       }
 
@@ -200,43 +174,59 @@ trait UnixFileUtils extends FileUtils {
     }
   }
 
-  def duplicateFiles(files: Seq[String]): Unit =
+  def winExecuteFile(file: String): Unit = {
     new Thread(() => {
-      files.foreach { p =>
-        val path = Path.of(p)
-        val target = path.getParent.resolve(path.getFileName.toString + "_copy")
-        Seq("cp", "-r", p, target.toString).!
-      }
+      Seq("cmd", "/c", "start", "", file).!
       ()
     }).start()
+  }
+
+  def winConsole(workingDir: String): Unit = {
+    new Thread(() => {
+      Seq("cmd", "/c", "start", "cmd", "/K", s"cd /d \"$workingDir\"").!
+      ()
+    }).start()
+  }
+
+  def duplicateFiles(files: Seq[String]): Unit = {
+    files.foreach { p =>
+      val path = Path.of(p)
+      val parent = path.getParent
+      val name = path.getFileName.toString
+      val copyName = s"${name}_copy"
+      val target = parent.resolve(copyName)
+      if Files.isDirectory(path) then
+        Seq("cmd", "/c", "xcopy", "/E", "/I", "/Y", p, target.toString).!
+      else
+        Files.copy(path, target)
+    }
+    ()
+  }
 
   def showPropertiesDialog(files: Seq[String]): Unit = {
     val dialog = component[Window[Unit]] {
-      UnixPropertiesDialog(files) {
-
-      }
+      WindowsPropertiesDialog(files) {}
     }
-
     dialog.showAndWaitResult()
   }
 
-  def extractFiles(files: Seq[String]): Unit =
-    new Thread(() => {
-      files.foreach { f =>
-        if (f.endsWith(".zip")) Seq("unzip", f).!
-        if (f.endsWith(".tar.gz")) Seq("tar", "-xzf", f).!
-      }
-      ()
-    }).start()
+  def extractFiles(files: Seq[String]): Unit = {
+    files.foreach { f =>
+      if f.toLowerCase.endsWith(".zip") then
+        val file = new File(f)
+        val dir = file.getParentFile.getAbsolutePath
+        val script = s"Expand-Archive -LiteralPath '${file.getAbsolutePath}' -DestinationPath '$dir' -Force"
+        Seq("powershell", "-NoProfile", "-Command", script).!
+    }
+    ()
+  }
 
-  def createSymlink(files: Seq[String]): Unit =
-    new Thread(() => {
-      files.foreach { f =>
-        val path = Path.of(f)
-        val link = path.getParent.resolve(path.getFileName.toString + ".link")
-        Seq("ln", "-s", f, link.toString).!
-      }
-      ()
-    }).start()
-
+  def createSymlink(files: Seq[String]): Unit = {
+    files.foreach { f =>
+      val path = Path.of(f)
+      val link = path.getParent.resolve(path.getFileName.toString + ".lnk")
+      Seq("cmd", "/c", "mklink", link.toString, f).!
+    }
+    ()
+  }
 }

@@ -25,7 +25,7 @@ import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermissions}
 import java.nio.file.{Files, Paths}
 import scala.sys.process.stringSeqToProcess
 
-class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] {
+class UnixPropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] {
   
   lazy val node: Window[Unit] = {
     val ownerR = Ref[checkbox]()
@@ -487,10 +487,10 @@ class PropertiesDialog(files: Seq[String]) extends ElementBuilder[Window[Unit]] 
   override def build(): Window[Unit] = node
 }
 
-object PropertiesDialog {
+object UnixPropertiesDialog {
 
-  def apply[T](files: Seq[String])(body: (PropertiesDialog, BuildContext) ?=> Unit)
+  def apply[T](files: Seq[String])(body: (UnixPropertiesDialog, BuildContext) ?=> Unit)
               (using ctx: BuildContext, parent: ElementBuilder[?]): Window[Unit] =
-    DSL.create[Window[Unit], PropertiesDialog](Ref(), new PropertiesDialog(files))(body)
+    DSL.create[Window[Unit], UnixPropertiesDialog](Ref(), new UnixPropertiesDialog(files))(body)
 
 }

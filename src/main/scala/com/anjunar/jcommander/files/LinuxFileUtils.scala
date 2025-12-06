@@ -20,7 +20,7 @@ import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
-import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog, PropertiesDialog}
+import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog, UnixPropertiesDialog}
 import com.anjunar.jcommander.dsl.{FileTable, Icon}
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.LinuxNativeCopy

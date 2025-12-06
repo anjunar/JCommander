@@ -36,7 +36,7 @@ import scala.jdk.CollectionConverters.*
 
 class WinFileUtils extends AbstractFileUtils {
 
-  override val log = Logger[WinFileUtils]
+  override val log = Logger[WinFallbackFileUtils]
 
   override def fileContext(files: Seq[String], event: MouseEvent): Unit = {
     WinNativeCopy.fileContext(files.toArray, true)
