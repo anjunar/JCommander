@@ -44,7 +44,6 @@ class FilePane extends NodeBuilder[VBox] {
 
         hbox() {
           padding = new Insets(10)
-          borderPaneAlignment = Pos.CENTER_LEFT
 
           DriveButtons() {
             change = (file: File) => {
@@ -66,10 +65,16 @@ class FilePane extends NodeBuilder[VBox] {
                   fileTableRef {
                     directory = file.getAbsolutePath
                   }
+                  breadCrumbRef {
+                    directory = file.getAbsolutePath
+                  }
               }
             }
             unmount = drive => {
               fileTableRef {
+                directory = System.getProperty("user.home")
+              }
+              breadCrumbRef {
                 directory = System.getProperty("user.home")
               }
             }
