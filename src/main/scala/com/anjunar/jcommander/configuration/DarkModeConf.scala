@@ -9,10 +9,10 @@ import scala.beans.BeanProperty
 @ApplicationScoped
 class DarkModeConf {
 
-  @JsonProperty("value")
-  @BeanProperty  
-  var value : Boolean = false
-  
-  val valueProperty = new SimpleBooleanProperty(value)
+  val valueProperty = new SimpleBooleanProperty(true)
 
+  @JsonProperty("value")
+  def getValue() : Boolean = valueProperty.getValue
+  def setValue(value : Boolean): Unit = valueProperty.setValue(value)
+  
 }

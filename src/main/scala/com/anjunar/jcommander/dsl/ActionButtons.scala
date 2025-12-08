@@ -8,10 +8,13 @@ import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.scene.control.button
 import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.jcommander.commands.*
+import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.scene.layout.{HBox, Priority}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 class ActionButtons extends NodeBuilder[HBox] {
+
+  private val darkModeConf = inject(classOf[DarkModeConf])
 
   lazy val node : HBox = {
     val actionButtons = component[HBox] {
@@ -84,7 +87,7 @@ class ActionButtons extends NodeBuilder[HBox] {
           button() {
             text = "Dark Mode"
             onAction = _ => {
-
+              darkModeConf.valueProperty.setValue(! darkModeConf.valueProperty.getValue)
             }
           }
 

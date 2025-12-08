@@ -15,7 +15,7 @@ class Icon extends NodeBuilder[FontIcon] {
 
   lazy val node : FontIcon = new FontIcon()
 
-  node.setIconColor(if (darkMode.value) Color.WHITE else Color.BLACK)
+  node.setIconColor(if (darkMode.getValue()) Color.WHITE else Color.BLACK)
 
   darkMode.valueProperty.addListener { (_, _, isDark) =>
     node.setIconColor(if (isDark) Color.WHITE else Color.BLACK)

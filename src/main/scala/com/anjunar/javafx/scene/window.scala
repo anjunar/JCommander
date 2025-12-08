@@ -64,10 +64,10 @@ class window[E](width: Double, height: Double, stage : Stage) extends ElementBui
 
     val lightCSS = getClass.getResource("/light-theme.css").toExternalForm
     val darkCSS = getClass.getResource("/dark-theme.css").toExternalForm
-    scene.getStylesheets.add(if darkMode.value then darkCSS else lightCSS)
+    scene.getStylesheets.add(if darkMode.getValue() then darkCSS else lightCSS)
 
     darkMode.valueProperty.addListener { (_, _, isDark) => {
-      val theme = if (darkMode.value) "dark" else "light"
+      val theme = if (darkMode.getValue()) "dark" else "light"
       scene.getStylesheets.clear()
       scene.getStylesheets.add(getClass.getResource(s"/$theme-theme.css").toExternalForm)
     }}

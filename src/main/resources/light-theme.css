@@ -31,6 +31,20 @@
     -fx-background-color: linear-gradient(to bottom, #dcdcdc, #c8c8c8);
 }
 
+.title-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #111;
+    -fx-border-color: transparent;
+}
+
+.title-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f0f0f0, #dcdcdc);
+}
+
+.title-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #dcdcdc, #c8c8c8);
+}
+
 /* ===== Dialoge ===== */
 
 .dialog-pane {
