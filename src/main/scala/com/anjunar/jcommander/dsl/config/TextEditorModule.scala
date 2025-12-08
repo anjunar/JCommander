@@ -13,15 +13,13 @@ import com.anjunar.javafx.scene.control.fileChooser.title
 import com.anjunar.javafx.scene.control.{button, fileChooser, label, textField}
 import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.jcommander.configuration.TextEditorConf
-import com.anjunar.jcommander.utils.CdiUtils.inject
-import jakarta.enterprise.context.ApplicationScoped
+
 import javafx.scene.layout.{Priority, Region}
 import javafx.stage.FileChooser
 
-@ApplicationScoped
 class TextEditorModule extends ConfigModule {
 
-  private val textEditor: TextEditorConf = inject(classOf[TextEditorConf])
+  private val textEditor: TextEditorConf = TextEditorConf()
 
   private val textFieldRef = Ref[textField]()
 

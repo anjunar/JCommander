@@ -1,7 +1,6 @@
 package com.anjunar.jcommander.configuration
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.enterprise.context.ApplicationScoped
 
 import java.io.File
 import scala.beans.BeanProperty
@@ -17,10 +16,18 @@ class FileTableConf {
 
 object FileTableConf {
   
-  @ApplicationScoped
   class Left extends FileTableConf
+  
+  object Left {
+    val instance = new Left
+    def apply() : Left = instance
+  }
 
-  @ApplicationScoped
   class Right extends FileTableConf
+  
+  object Right {
+    val instance = new Right
+    def apply() : Right = instance
+  }
   
 }

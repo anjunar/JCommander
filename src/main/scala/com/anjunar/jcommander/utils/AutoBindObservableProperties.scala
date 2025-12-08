@@ -1,7 +1,6 @@
 package com.anjunar.jcommander.utils
 
 import com.anjunar.javafx.dsl.ElementBuilder
-import com.anjunar.scala.universe.TypeResolver
 import javafx.beans.property.{Property, SimpleListProperty}
 import javafx.collections.ListChangeListener.Change
 import javafx.collections.ObservableList

@@ -17,12 +17,8 @@ import com.anjunar.jcommander.dsl.FilePane.onTableChange
 import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu}
 import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
-import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.utils.{NativeUtils, OSType}
-import com.anjunar.scala.universe.introspector.BeanIntrospector
 import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.enterprise.inject.se.SeContainerInitializer
-import jakarta.inject.Inject
 import javafx.application.Application
 import javafx.geometry.{Insets, Pos}
 import javafx.scene.Scene
@@ -45,11 +41,9 @@ class App extends Application {
       case e : Exception => OSType.fallback = true 
     }
 
-    val container = SeContainerInitializer.newInstance().initialize()
+    val fileTableManager = FileTableManager()
 
-    val fileTableManager = inject(classOf[FileTableManager])
-
-    val darkMode = inject(classOf[DarkModeConf])
+    val darkMode = DarkModeConf()
     
     val configuration = ConfigurationLoader.load()
 

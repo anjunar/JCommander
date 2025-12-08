@@ -9,12 +9,12 @@ import com.anjunar.javafx.scene.control.button
 import com.anjunar.javafx.scene.layout.hbox
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.configuration.DarkModeConf
-import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.scene.layout.{HBox, Priority}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
+
 class ActionButtons extends NodeBuilder[HBox] {
 
-  private val darkModeConf = inject(classOf[DarkModeConf])
+  private val darkModeConf = DarkModeConf()
 
   lazy val node : HBox = {
     val actionButtons = component[HBox] {
@@ -28,47 +28,47 @@ class ActionButtons extends NodeBuilder[HBox] {
           button() {
             text = "F2 Rename"
             onAction = _ => {
-              inject(classOf[RenameCommand]).execute()
+              new RenameCommand().execute()
             }
           },
           button() {
             text = "F3 Edit"
             onAction = _ => {
-              inject(classOf[EditCommand]).execute()
+              new EditCommand().execute()
             }
           },
           button() {
             text = "F4 Console"
             onAction = _ => {
-              inject(classOf[ConsoleCommand]).execute()
+              new ConsoleCommand().execute()
             }
 
           },
           button() {
             text = "F5 Copy"
             onAction = _ => {
-              inject(classOf[CopyCommand]).execute()
+              new CopyCommand().execute()
             }
 
           },
           button() {
             text = "F6 Move"
             onAction = _ => {
-              inject(classOf[MoveCommand]).execute()
+              new MoveCommand().execute()
             }
 
           },
           button() {
             text = "F7 MkDir"
             onAction = _ => {
-              inject(classOf[MkDirCommand]).execute()
+              new MkDirCommand().execute()
             }
 
           },
           button() {
             text = "F8 Delete"
             onAction = _ => {
-              inject(classOf[DeleteCommand]).execute()
+              new DeleteCommand().execute()
             }
 
           },
@@ -81,7 +81,7 @@ class ActionButtons extends NodeBuilder[HBox] {
           button() {
             text = "F10 Quit"
             onAction = _ => {
-              inject(classOf[QuitCommand]).execute()
+              new QuitCommand().execute()
             }
           },
           button() {

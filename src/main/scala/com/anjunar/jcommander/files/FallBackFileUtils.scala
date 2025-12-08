@@ -7,10 +7,8 @@ import com.anjunar.javafx.scene.control.checkbox.selectedProperty
 import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.dsl.FileTable
 import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog}
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.anjunar.jcommander.utils.OSType
 import com.typesafe.scalalogging.Logger
-import jakarta.enterprise.context.ApplicationScoped
 import javafx.application.Platform
 import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}
 import javafx.concurrent

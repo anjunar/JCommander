@@ -11,7 +11,6 @@ import com.anjunar.javafx.scene.layout.vbox
 import com.anjunar.javafx.stage.{Resizable, Window}
 import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
-import com.anjunar.jcommander.utils.CdiUtils.inject
 import javafx.beans.property.{SimpleBooleanProperty, SimpleObjectProperty}
 import javafx.scene.Scene
 import javafx.scene.layout.{Priority, VBox}
@@ -22,7 +21,7 @@ import scala.concurrent.Promise
 
 class window[E](width: Double, height: Double, stage : Stage) extends ElementBuilder[Stage], HasHeaderButtons {
 
-  private val darkMode: DarkModeConf = inject(classOf[DarkModeConf])
+  private val darkMode: DarkModeConf = DarkModeConf()
 
   private val promise = Promise[E]()
 

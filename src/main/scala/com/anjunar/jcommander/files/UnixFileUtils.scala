@@ -22,7 +22,7 @@ import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
 import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog, UnixPropertiesDialog}
 import com.anjunar.jcommander.dsl.{FileTable, Icon}
-import com.anjunar.jcommander.utils.CdiUtils.inject
+
 import com.anjunar.jcommander.LinuxNativeCopy
 import javafx.application.Platform
 import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}
@@ -126,14 +126,14 @@ trait UnixFileUtils extends FileUtils {
         })
         if single then
           ctxItem("Rename", "mdi2r-rename-box")(_ => {
-            val command = inject(classOf[RenameCommand])
+            val command = new RenameCommand
             command.execute()
           })
         ctxItem("Duplicate", "mdi2c-content-copy")(_ => {
           new Thread(() => duplicateFiles(files)).start()
         })
         ctxItem("Delete", "mdi2d-delete")(_ => {
-          val command = inject(classOf[DeleteCommand])
+          val command = new DeleteCommand
           command.execute()
         })
         separatorMenuItem() {}

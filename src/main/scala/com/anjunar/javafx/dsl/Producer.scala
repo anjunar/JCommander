@@ -1,7 +1,5 @@
 package com.anjunar.javafx.dsl
 
-import com.anjunar.scala.universe.TypeResolver
-
 trait Producer[B <: ElementBuilder[? <: R], R] {
   
   def createBuilder : B
@@ -12,9 +10,9 @@ trait Producer[B <: ElementBuilder[? <: R], R] {
 
   def unwrap(ref : String)(body: (B, BuildContext) ?=> Unit)
             (using ctx: BuildContext, parent: ElementBuilder[?]): Unit = {
-    val resolvedClass = TypeResolver.resolve(parent.getClass)
-    val resolvedMethod = resolvedClass.findField(ref + "Ref")
-    val refB = resolvedMethod.get(parent).asInstanceOf[Ref[B]]
+    val resolvedClass = parent.getClass
+    val field = resolvedClass.getField(ref + "Ref")
+    val refB = field.get(parent).asInstanceOf[Ref[B]]
     if (refB.get != null)
       body(using refB.get, ctx)
   }

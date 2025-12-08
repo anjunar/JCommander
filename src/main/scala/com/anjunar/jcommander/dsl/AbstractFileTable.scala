@@ -12,8 +12,7 @@ import com.anjunar.javafx.scene.image.imageView
 import com.anjunar.javafx.scene.image.imageView.{fitHeight, fitWidth, image}
 import com.anjunar.jcommander.commands.*
 import com.anjunar.jcommander.files.{FileItem, FileWatcher}
-import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
-import com.anjunar.jcommander.utils.CdiUtils.inject
+import com.anjunar.jcommander.manager.{FileManager, FileManagerProducer, FileTableManager}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import javafx.beans.value.{ChangeListener, ObservableValue}
 import javafx.collections.FXCollections
@@ -33,7 +32,7 @@ import scala.compiletime.uninitialized
 
 class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
 
-  private val fileManager: FileManager = inject(classOf[FileManager])
+  private val fileManager: FileManager = FileManagerProducer.produces()
 
   private val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm")
 
@@ -47,14 +46,14 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
 
         addEventHandler(KeyEvent.KEY_PRESSED, { event => {
           event.getCode match {
-            case KeyCode.F2 => inject(classOf[RenameCommand]).execute()
-            case KeyCode.F3 => inject(classOf[EditCommand]).execute()
-            case KeyCode.F4 => inject(classOf[ConsoleCommand]).execute()
-            case KeyCode.F5 => inject(classOf[CopyCommand]).execute()
-            case KeyCode.F6 => inject(classOf[MoveCommand]).execute()
-            case KeyCode.F7 => inject(classOf[MkDirCommand]).execute()
-            case KeyCode.F8 => inject(classOf[DeleteCommand]).execute()
-            case KeyCode.F10 => inject(classOf[QuitCommand]).execute()
+            case KeyCode.F2 => new RenameCommand().execute()
+            case KeyCode.F3 => new EditCommand().execute()
+            case KeyCode.F4 => new ConsoleCommand().execute()
+            case KeyCode.F5 => new CopyCommand().execute()
+            case KeyCode.F6 => new MoveCommand().execute()
+            case KeyCode.F7 => new MkDirCommand().execute()
+            case KeyCode.F8 => new DeleteCommand().execute()
+            case KeyCode.F10 => new QuitCommand().execute()
             case _ =>
           }
         }

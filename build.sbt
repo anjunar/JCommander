@@ -11,13 +11,11 @@ lazy val root = (project in file("."))
   .settings(
     name := "JCommander",
     libraryDependencies ++= Seq(
-      "com.anjunar"% "scalauniverse2_3" % "0.1.0-SNAPSHOT",
       "com.google.guava" % "guava" % "33.5.0-jre",
       "ch.qos.logback" % "logback-classic" % "1.5.20",
       "org.slf4j" % "slf4j-api" % "2.0.17",
       "org.slf4j" % "jul-to-slf4j" % "2.0.17",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.6",
-      "org.jboss.weld.se" % "weld-se-core" % "6.0.3.Final",
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.20.1",
       "com.fasterxml.jackson.core" % "jackson-core" % "2.20.1",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.20.1",

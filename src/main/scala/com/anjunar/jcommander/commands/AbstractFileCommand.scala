@@ -1,14 +1,13 @@
 package com.anjunar.jcommander.commands
 
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
-import com.anjunar.jcommander.utils.CdiUtils.*
+import com.anjunar.jcommander.manager.{FileManager, FileManagerProducer, FileTableManager}
 
 abstract class AbstractFileCommand extends Command {
 
-  val fileTableManager = inject(classOf[FileTableManager])
+  val fileTableManager = FileTableManager()
 
-  val fileUtils: FileManager = inject(classOf[FileManager])
+  val fileUtils: FileManager = FileManagerProducer.produces()
 
   override def canExecute: Boolean = {
     val isItemSelected = fileTableManager.source.node.getSelectionModel.getSelectedItem != null

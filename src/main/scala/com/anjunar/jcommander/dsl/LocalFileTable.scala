@@ -7,8 +7,7 @@ import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
 import com.anjunar.jcommander.dsl.AbstractFileTable.loadImages
 import com.anjunar.jcommander.dsl.traits.HasDirectory
 import com.anjunar.jcommander.files.{FileItem, FileWatcher}
-import com.anjunar.jcommander.manager.FileManager
-import com.anjunar.jcommander.utils.CdiUtils.inject
+import com.anjunar.jcommander.manager.{FileManager, FileManagerProducer}
 import com.anjunar.jcommander.utils.FileSystemManagerBuilder
 import javafx.event.EventHandler
 import javafx.scene.control.TableView
@@ -38,7 +37,7 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
 
   private var currentWatcher: Option[FileWatcher] = None
 
-  private val fileManager: FileManager = inject(classOf[FileManager])
+  private val fileManager: FileManager = FileManagerProducer.produces()
 
   private val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm")
   
