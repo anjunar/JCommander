@@ -34,7 +34,7 @@ public class NativeUtils {
         System.load(tempFile.toAbsolutePath().toString());
     }
 
-    public static void loadWinNativeCopy(String library) throws IOException {
+    public static void load(String library) throws IOException {
         loadLibraryFromJar("/" + library);
     }
 }

@@ -76,6 +76,17 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
       node.getSortOrder.add(option.get)
       node.sort()
     }
+
+    val lastSelectionOption = lastSelections.get(dir.getAbsolutePath)
+    if (lastSelectionOption.nonEmpty) {
+      val lastSelection = lastSelectionOption.get
+      val maybeFileItem = node.getItems.asScala.find(_.file == lastSelection)
+      if (maybeFileItem.nonEmpty) {
+        node.scrollTo(maybeFileItem.get)
+        node.getSelectionModel.select(maybeFileItem.get)
+      }
+    }
+
   }
 
   def updateFile(file: Path, kind: WatchEvent.Kind[?]): Unit = {
@@ -128,10 +139,12 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
         addEventHandler(KeyEvent.KEY_PRESSED, { event => {
           if (event.getCode == KeyCode.ENTER) {
             val selectedItem = node.getSelectionModel.getSelectedItem
-            if (selectedItem.isDir || selectedItem.isUpDir) {
-              loadDirectory(selectedItem.file)
-            } else {
-              fileManager.executeFile(this)
+            if (selectedItem != null) {
+              if (selectedItem.isDir || selectedItem.isUpDir) {
+                loadDirectory(selectedItem.file)
+              } else {
+                fileManager.executeFile(this)
+              }
             }
           }
         }

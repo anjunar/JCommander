@@ -18,6 +18,14 @@ class PrimaryStageConf {
   @BeanProperty
   @JsonProperty("height")
   var height: Double = 600
+
+  @BeanProperty
+  @JsonProperty("x")
+  var x: Double = 0
+
+  @BeanProperty
+  @JsonProperty("y")
+  var y: Double = 0
   
   @Inject
   @BeanProperty

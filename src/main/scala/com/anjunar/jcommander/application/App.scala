@@ -37,9 +37,9 @@ class App extends Application {
     
     try {
       OSType.osName match {
-        case "win" => NativeUtils.loadWinNativeCopy("win_native_copy.dll")
-        case "linux" => NativeUtils.loadWinNativeCopy("linux_native_copy.so")
-        case "mac" => NativeUtils.loadWinNativeCopy("osx_native_copy.dylib")
+        case "win" => NativeUtils.load("win_native_copy.dll")
+        case "linux" => NativeUtils.load("linux_native_copy.so")
+        case "mac" => NativeUtils.load("osx_native_copy.dylib")
       }
     } catch {
       case e : Exception => OSType.fallback = true 
@@ -47,39 +47,11 @@ class App extends Application {
 
     val container = SeContainerInitializer.newInstance().initialize()
 
-    val configuration = inject(classOf[Configuration])
-
     val fileTableManager = inject(classOf[FileTableManager])
 
-    val objectMapper = ObjectMapperBuilder.build()
-
-    val configDir = ConfigDir.path()
-    val configFile = new File(configDir, "configuration.json")
-
-    def loadConfiguration(target: AnyRef, source: AnyRef, clazz: Class[? <: AnyRef]): Unit = {
-      val beanModel = BeanIntrospector.createWithType(clazz)
-      beanModel.properties.foreach(property => {
-        if (property.findAnnotation(classOf[JsonProperty]) != null) {
-
-          val sourceValue = property.get(source)
-          val targetValue = property.get(target)
-
-          if (property.findAnnotation(classOf[Inject]) != null) {
-            loadConfiguration(targetValue.asInstanceOf[AnyRef], sourceValue.asInstanceOf[AnyRef], property.propertyType.raw.asInstanceOf[Class[AnyRef]])
-          } else {
-            property.set(target, sourceValue)
-          }
-        }
-      })
-    }
-
-    if (configFile.exists()) {
-      val loadedConf = objectMapper.readValue(configFile, classOf[Configuration])
-
-      loadConfiguration(configuration, loadedConf, classOf[Configuration])
-    }
-
     val darkMode = inject(classOf[DarkModeConf])
+    
+    val configuration = ConfigurationLoader.load()
 
     val ui = component[Stage] {
       window(configuration.primaryStage.width, configuration.primaryStage.height, primaryStage) {
@@ -124,6 +96,25 @@ class App extends Application {
         }
       }
     }
+
+    ui.setX(configuration.primaryStage.x)
+    ui.setY(configuration.primaryStage.y)
+
+    primaryStage.widthProperty().addListener((_, _, newValue) => {
+      configuration.primaryStage.width = newValue.doubleValue()
+    })
+
+    primaryStage.heightProperty().addListener((_, _, newValue) => {
+      configuration.primaryStage.height = newValue.doubleValue()
+    })
+
+    primaryStage.xProperty().addListener((_, _, newValue) => {
+      configuration.primaryStage.x = newValue.doubleValue()
+    })
+
+    primaryStage.yProperty().addListener((_, _, newValue) => {
+      configuration.primaryStage.y = newValue.doubleValue()
+    })
 
     ui.show()
 
