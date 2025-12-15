@@ -13,6 +13,7 @@ public class LinuxNativeCopy {
     public static native void copyFiles(String[] sources, String targetDir, boolean overwrite, ProgressListener listener);
     public static native void moveFiles(String[] sources, String targetDir, boolean overwrite, ProgressListener listener);
     public static native void deleteFiles(String[] sources, boolean useTrash, ProgressListener listener);
+    public static native byte[] getFileIcon(String path, boolean large);
 
     public interface ProgressListener {
         void onFileProgress(int operation, String source, String target, long bytesDone, long bytesTotal);
