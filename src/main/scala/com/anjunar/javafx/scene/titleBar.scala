@@ -9,6 +9,7 @@ import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.HasGraphic.graphic
 import com.anjunar.javafx.dsl.ChildBuilder.{deregister, reactTo, register}
+import com.anjunar.javafx.dsl.traits.HasPadding.padding
 import com.anjunar.javafx.dsl.traits.IsNode.{hgrow, onMouseClicked, onMouseDragged, onMousePressed}
 import com.anjunar.jcommander.utils.AutoBindObservableProperties
 import com.anjunar.javafx.scene.control.button
@@ -16,10 +17,9 @@ import com.anjunar.javafx.scene.layout.{hbox, region, vbox}
 import com.anjunar.jcommander.commands.QuitCommand
 import com.anjunar.jcommander.dsl.Icon
 import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
-
 import javafx.beans.property.SimpleListProperty
 import javafx.collections.{FXCollections, ObservableList}
-import javafx.geometry.Pos
+import javafx.geometry.{Insets, Pos}
 import javafx.scene.layout.{HBox, Priority}
 import javafx.stage.{Screen, Stage}
 
@@ -80,7 +80,9 @@ class titleBar(val stage: Stage) extends ChildNodeBuilder[HBox, ElementBuilder[?
         spacing = 5
 
         hbox() {
+          padding = new Insets(0,0,0,10)
           spacing = 10
+          alignment = Pos.CENTER_LEFT
           reactTo(content)
         }
 

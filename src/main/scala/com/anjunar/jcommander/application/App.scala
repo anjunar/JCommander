@@ -55,14 +55,7 @@ class App extends Application {
         resizable = true
 
         header() {
-          hbox() {
-            padding = new Insets(0, 0, 0, 10)
-            alignment = Pos.CENTER_LEFT
-            label() {
-              text = "JCommander"
-            }
-            MainMenu() {}
-          }
+          MainMenu() {}
         }
         vbox() {
           vgrow = Priority.ALWAYS

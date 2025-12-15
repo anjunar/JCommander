@@ -11,7 +11,8 @@ trait Producer[B <: ElementBuilder[? <: R], R] {
   def unwrap(ref : String)(body: (B, BuildContext) ?=> Unit)
             (using ctx: BuildContext, parent: ElementBuilder[?]): Unit = {
     val resolvedClass = parent.getClass
-    val field = resolvedClass.getField(ref + "Ref")
+    val field = resolvedClass.getDeclaredField(ref + "Ref")
+    field.setAccessible(true)
     val refB = field.get(parent).asInstanceOf[Ref[B]]
     if (refB.get != null)
       body(using refB.get, ctx)
