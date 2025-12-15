@@ -5,23 +5,24 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 public class Launcher {
     static void main(String[] args) throws Exception {
-        File distDir = new File("lib");
-        
-        if (!distDir.exists() || !distDir.isDirectory()) {
-            distDir = new File("app/lib");
-            if (!distDir.exists() || !distDir.isDirectory()) {
-                distDir = new File("../lib/app/lib");
-                if (!distDir.exists() || !distDir.isDirectory()) {
-                    throw new RuntimeException("Could not find lib directory.");
-                }
-            }
-        }
 
+        Path baseDir = Paths.get(
+                Launcher.class
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation()
+                        .toURI()
+        ).getParent();
+
+        File distDir = baseDir.resolve("lib").toFile();
+        
         URL[] urls = Stream.of(Objects.requireNonNull(distDir.listFiles()))
                 .filter(f -> f.getName().endsWith(".jar"))
                 .map(f -> {

@@ -105,9 +105,6 @@ jpackage := {
   val outputDir = (Compile / target).value / s"jpackage-$osName"
   IO.createDirectory(outputDir)
 
-  val resDir = (ThisBuild / baseDirectory).value / "src" / "jpackage" / "linux"
-  if (!resDir.exists()) sys.error(s"resource-dir not found: ${resDir.getAbsolutePath}")
-
   val common = Seq(
     jpackageExe,
     "--name", "JCommander",
