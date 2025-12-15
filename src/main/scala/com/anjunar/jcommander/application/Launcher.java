@@ -11,10 +11,14 @@ import java.util.stream.Stream;
 public class Launcher {
     static void main(String[] args) throws Exception {
         File distDir = new File("lib");
+        
         if (!distDir.exists() || !distDir.isDirectory()) {
             distDir = new File("app/lib");
             if (!distDir.exists() || !distDir.isDirectory()) {
-                throw new RuntimeException("Dist-Directory not found: " + distDir.getAbsolutePath());
+                distDir = new File("../lib/app/lib");
+                if (!distDir.exists() || !distDir.isDirectory()) {
+                    throw new RuntimeException("Could not find lib directory.");
+                }
             }
         }
 

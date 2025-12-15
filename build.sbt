@@ -79,14 +79,22 @@ lazy val jpackage = taskKey[Unit]("Create installer with jpackage")
 jpackage := {
   val log = streams.value.log
 
+  val osName = System.getProperty("os.name") match {
+    case n if n.startsWith("Linux")   => "linux"
+    case n if n.startsWith("Mac")     => "mac"
+    case n if n.startsWith("Windows") => "win"
+    case _ => throw new Exception("Unknown platform!")
+  }
+
   val javaHome = sys.props("java.home")
   val jpackageExe =
     if (scala.util.Properties.isWin) s"$javaHome\\bin\\jpackage.exe"
     else s"$javaHome/bin/jpackage"
 
   val stageDir = (Universal / stage).value
-  val mainJar = (stageDir / "jcommander_3-1.0.0.jar")
+  val mainJar  = stageDir / "jcommander_3-1.0.0.jar"
 
+  log.info(s"OS         = $osName")
   log.info(s"Stage dir  = ${stageDir.getAbsolutePath}")
   log.info(s"Main JAR   = ${mainJar.getAbsolutePath}")
   log.info(s"jpackage   = $jpackageExe")
@@ -94,22 +102,50 @@ jpackage := {
   if (!mainJar.exists())
     sys.error(s"Main jar not found: $mainJar")
 
-  val outputDir = (Compile / target).value / "jpackage"
+  val outputDir = (Compile / target).value / s"jpackage-$osName"
   IO.createDirectory(outputDir)
 
-  val cmd = Seq(
+  val resDir = (ThisBuild / baseDirectory).value / "src" / "jpackage" / "linux"
+  if (!resDir.exists()) sys.error(s"resource-dir not found: ${resDir.getAbsolutePath}")
+
+  val common = Seq(
     jpackageExe,
-    "--type", "msi",
     "--name", "JCommander",
+    "--app-version", version.value,
     "--input", stageDir.getAbsolutePath,
     "--main-jar", mainJar.getName,
     "--main-class", "com.anjunar.jcommander.application.Launcher",
-    "--dest", outputDir.getAbsolutePath,
-    "--icon", "src/main/resources/icon.ico",
-    "--win-menu",
-    "--win-shortcut",
-    "--win-dir-chooser"
+    "--dest", outputDir.getAbsolutePath
   )
+
+  val platformSpecific = osName match {
+    case "win" =>
+      Seq(
+        "--type", "msi",
+        "--icon", "src/main/resources/icon.ico",
+        "--win-menu",
+        "--win-shortcut",
+        "--win-dir-chooser"
+      )
+
+    case "linux" =>
+      Seq(
+        "--type", "deb",
+        "--icon", "src/main/resources/icon.png",
+        "--linux-shortcut",
+        "--linux-menu-group", "Utility",
+        "--linux-package-name", "jcommander",
+        "--linux-app-category", "Utility"
+      )
+
+    case "mac" =>
+      Seq(
+        "--type", "dmg",
+        "--icon", "src/main/resources/icon.png"
+      )
+  }
+
+  val cmd = common ++ platformSpecific
 
   log.info("Running: " + cmd.mkString(" "))
 
