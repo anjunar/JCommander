@@ -14,7 +14,6 @@ import com.anjunar.jcommander.configuration.DarkModeConf
 import com.anjunar.jcommander.dsl.dialog.RenameFileDialog.directoryName
 import com.anjunar.jcommander.dsl.dialog.{MakeDirectoryDialog, RenameFileDialog}
 import com.anjunar.jcommander.dsl.FileTable
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.typesafe.scalalogging.Logger
 
 import java.awt.image.BufferedImage

@@ -1,16 +1,13 @@
 package com.anjunar.jcommander.commands
 
 import com.anjunar.jcommander.files.FileUtils
-import com.anjunar.jcommander.manager.{FileManager, FileTableManager}
-import com.anjunar.jcommander.utils.CdiUtils.*
-import jakarta.enterprise.context.Dependent
+import com.anjunar.jcommander.manager.{FileManager, FileManagerProducer, FileTableManager}
 
-@Dependent
 class MkDirCommand extends Command {
 
-  val fileTableManager = inject(classOf[FileTableManager])
+  val fileTableManager = FileTableManager()
 
-  val fileUtils: FileManager = inject(classOf[FileManager])
+  val fileUtils: FileManager = FileManagerProducer.produces()
 
   override def canExecute: Boolean = true
 

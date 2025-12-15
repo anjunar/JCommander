@@ -13,8 +13,8 @@ import com.anjunar.javafx.scene.control.{borderPane, label, listView}
 import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
-import com.anjunar.jcommander.dsl.config.ConfigModule
-import com.anjunar.jcommander.utils.CdiUtils.*
+import com.anjunar.jcommander.configuration.TextEditorConf
+import com.anjunar.jcommander.dsl.config.{ConfigModule, TextEditorModule}
 import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.control.MultipleSelectionModel
@@ -22,7 +22,7 @@ import javafx.scene.layout.Priority
 
 class ConfigurationWindow extends ElementBuilder[Window[Unit]] {
 
-  private val modules = injectInstance(classOf[ConfigModule])
+  private val modules = Seq(new TextEditorModule())
 
   private val content = FXCollections.observableArrayList[ElementBuilder[?]](modules.head.getView)
 

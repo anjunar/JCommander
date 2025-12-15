@@ -22,7 +22,6 @@ import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
 import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog, UnixPropertiesDialog}
 import com.anjunar.jcommander.dsl.{FileTable, Icon}
-import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.LinuxNativeCopy
 import javafx.application.Platform
 import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}

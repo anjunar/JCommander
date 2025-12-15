@@ -7,8 +7,7 @@ import com.anjunar.javafx.dsl.traits.HasEventHandler.addEventHandler
 import com.anjunar.jcommander.dsl.AbstractFileTable.loadImages
 import com.anjunar.jcommander.dsl.traits.HasDirectory
 import com.anjunar.jcommander.files.{FileItem, FileWatcher}
-import com.anjunar.jcommander.manager.FileManager
-import com.anjunar.jcommander.utils.CdiUtils.inject
+import com.anjunar.jcommander.manager.{FileManager, FileManagerProducer}
 import com.anjunar.jcommander.utils.FileSystemManagerBuilder
 import javafx.event.EventHandler
 import javafx.scene.control.TableView
@@ -38,7 +37,7 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
 
   private var currentWatcher: Option[FileWatcher] = None
 
-  private val fileManager: FileManager = inject(classOf[FileManager])
+  private val fileManager: FileManager = FileManagerProducer.produces()
 
   private val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm")
   
@@ -76,6 +75,17 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
       node.getSortOrder.add(option.get)
       node.sort()
     }
+
+    val lastSelectionOption = lastSelections.get(dir.getAbsolutePath)
+    if (lastSelectionOption.nonEmpty) {
+      val lastSelection = lastSelectionOption.get
+      val maybeFileItem = node.getItems.asScala.find(_.file == lastSelection)
+      if (maybeFileItem.nonEmpty) {
+        node.scrollTo(maybeFileItem.get)
+        node.getSelectionModel.select(maybeFileItem.get)
+      }
+    }
+
   }
 
   def updateFile(file: Path, kind: WatchEvent.Kind[?]): Unit = {
@@ -128,10 +138,12 @@ class LocalFileTable extends NodeBuilder[TableView[FileItem]], FileTable, HasDir
         addEventHandler(KeyEvent.KEY_PRESSED, { event => {
           if (event.getCode == KeyCode.ENTER) {
             val selectedItem = node.getSelectionModel.getSelectedItem
-            if (selectedItem.isDir || selectedItem.isUpDir) {
-              loadDirectory(selectedItem.file)
-            } else {
-              fileManager.executeFile(this)
+            if (selectedItem != null) {
+              if (selectedItem.isDir || selectedItem.isUpDir) {
+                loadDirectory(selectedItem.file)
+              } else {
+                fileManager.executeFile(this)
+              }
             }
           }
         }

@@ -3,17 +3,14 @@ package com.anjunar.jcommander.commands
 import com.anjunar.jcommander.application.ConfigDir
 import com.anjunar.jcommander.configuration.Configuration
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
-import com.anjunar.jcommander.utils.CdiUtils.*
-import jakarta.enterprise.context.Dependent
 
 import java.io.{File, PrintWriter}
 import java.nio.charset.StandardCharsets
 import scala.util.Using
 
-@Dependent
 class QuitCommand extends Command {
 
-  val configuration: Configuration = inject(classOf[Configuration])
+  val configuration: Configuration = Configuration()
 
   override def canExecute: Boolean = true
 

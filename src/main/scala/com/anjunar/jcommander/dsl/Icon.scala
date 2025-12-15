@@ -3,7 +3,7 @@ package com.anjunar.jcommander.dsl
 import com.anjunar.javafx.dsl.*
 import com.anjunar.javafx.scene.layout.vbox
 import com.anjunar.jcommander.configuration.DarkModeConf
-import com.anjunar.jcommander.utils.CdiUtils.inject
+
 import javafx.scene.Node
 import javafx.scene.paint.Color
 import org.kordamp.ikonli.javafx.FontIcon
@@ -11,11 +11,11 @@ import com.anjunar.jcommander.utils.AutoBindObservableProperties
 
 class Icon extends NodeBuilder[FontIcon] {
 
-  val darkMode = inject(classOf[DarkModeConf])
+  val darkMode = DarkModeConf()
 
   lazy val node : FontIcon = new FontIcon()
 
-  node.setIconColor(if (darkMode.value) Color.WHITE else Color.BLACK)
+  node.setIconColor(if (darkMode.getValue()) Color.WHITE else Color.BLACK)
 
   darkMode.valueProperty.addListener { (_, _, isDark) =>
     node.setIconColor(if (isDark) Color.WHITE else Color.BLACK)

@@ -14,7 +14,7 @@ import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.dsl.Icon
 import com.anjunar.jcommander.dsl.Icon.{iconLiteral, iconSize}
 import com.anjunar.jcommander.dsl.dialog.{UnixPropertiesDialog, WindowsPropertiesDialog}
-import com.anjunar.jcommander.utils.CdiUtils.inject
+
 import javafx.application.Platform
 import javafx.event.{ActionEvent, EventHandler}
 import javafx.geometry.Pos
@@ -108,14 +108,14 @@ trait WinFallbackFileUtils {
         })
         if single then
           ctxItem("Rename", "mdi2r-rename-box")(_ => {
-            val command = inject(classOf[RenameCommand])
+            val command = new RenameCommand
             command.execute()
           })
         ctxItem("Duplicate", "mdi2c-content-copy")(_ => {
           new Thread(() => duplicateFiles(files)).start()
         })
         ctxItem("Delete", "mdi2d-delete")(_ => {
-          val command = inject(classOf[DeleteCommand])
+          val command = new DeleteCommand
           command.execute()
         })
         separatorMenuItem() {}

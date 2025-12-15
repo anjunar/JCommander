@@ -12,7 +12,7 @@ import com.anjunar.javafx.stage.Window
 import com.anjunar.jcommander.commands.{DeleteCommand, RenameCommand}
 import com.anjunar.jcommander.dsl.dialog.{ConfirmDialog, ProgressDialog}
 import com.anjunar.jcommander.dsl.FileTable
-import com.anjunar.jcommander.utils.CdiUtils.inject
+
 import com.anjunar.jcommander.OSXNativeCopy
 import javafx.application.Platform
 import javafx.beans.property.{SimpleBooleanProperty, SimpleStringProperty}

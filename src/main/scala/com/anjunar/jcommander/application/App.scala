@@ -17,12 +17,8 @@ import com.anjunar.jcommander.dsl.FilePane.onTableChange
 import com.anjunar.jcommander.dsl.{ActionButtons, FilePane, MainMenu}
 import com.anjunar.jcommander.manager.FileTableManager
 import com.anjunar.jcommander.objectmapper.ObjectMapperBuilder
-import com.anjunar.jcommander.utils.CdiUtils.inject
 import com.anjunar.jcommander.utils.{NativeUtils, OSType}
-import com.anjunar.scala.universe.introspector.BeanIntrospector
 import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.enterprise.inject.se.SeContainerInitializer
-import jakarta.inject.Inject
 import javafx.application.Application
 import javafx.geometry.{Insets, Pos}
 import javafx.scene.Scene
@@ -37,49 +33,19 @@ class App extends Application {
     
     try {
       OSType.osName match {
-        case "win" => NativeUtils.loadWinNativeCopy("win_native_copy.dll")
-        case "linux" => NativeUtils.loadWinNativeCopy("linux_native_copy.so")
-        case "mac" => NativeUtils.loadWinNativeCopy("osx_native_copy.dylib")
+        case "win" => NativeUtils.load("win_native_copy.dll")
+        case "linux" => NativeUtils.load("linux_native_copy.so")
+        case "mac" => NativeUtils.load("osx_native_copy.dylib")
       }
     } catch {
       case e : Exception => OSType.fallback = true 
     }
 
-    val container = SeContainerInitializer.newInstance().initialize()
+    val fileTableManager = FileTableManager()
 
-    val configuration = inject(classOf[Configuration])
-
-    val fileTableManager = inject(classOf[FileTableManager])
-
-    val objectMapper = ObjectMapperBuilder.build()
-
-    val configDir = ConfigDir.path()
-    val configFile = new File(configDir, "configuration.json")
-
-    def loadConfiguration(target: AnyRef, source: AnyRef, clazz: Class[? <: AnyRef]): Unit = {
-      val beanModel = BeanIntrospector.createWithType(clazz)
-      beanModel.properties.foreach(property => {
-        if (property.findAnnotation(classOf[JsonProperty]) != null) {
-
-          val sourceValue = property.get(source)
-          val targetValue = property.get(target)
-
-          if (property.findAnnotation(classOf[Inject]) != null) {
-            loadConfiguration(targetValue.asInstanceOf[AnyRef], sourceValue.asInstanceOf[AnyRef], property.propertyType.raw.asInstanceOf[Class[AnyRef]])
-          } else {
-            property.set(target, sourceValue)
-          }
-        }
-      })
-    }
-
-    if (configFile.exists()) {
-      val loadedConf = objectMapper.readValue(configFile, classOf[Configuration])
-
-      loadConfiguration(configuration, loadedConf, classOf[Configuration])
-    }
-
-    val darkMode = inject(classOf[DarkModeConf])
+    val darkMode = DarkModeConf()
+    
+    val configuration = ConfigurationLoader.load()
 
     val ui = component[Stage] {
       window(configuration.primaryStage.width, configuration.primaryStage.height, primaryStage) {
@@ -89,14 +55,7 @@ class App extends Application {
         resizable = true
 
         header() {
-          hbox() {
-            padding = new Insets(0, 0, 0, 10)
-            alignment = Pos.CENTER_LEFT
-            label() {
-              text = "JCommander"
-            }
-            MainMenu() {}
-          }
+          MainMenu() {}
         }
         vbox() {
           vgrow = Priority.ALWAYS
@@ -124,6 +83,25 @@ class App extends Application {
         }
       }
     }
+
+    ui.setX(configuration.primaryStage.x)
+    ui.setY(configuration.primaryStage.y)
+
+    primaryStage.widthProperty().addListener((_, _, newValue) => {
+      configuration.primaryStage.width = newValue.doubleValue()
+    })
+
+    primaryStage.heightProperty().addListener((_, _, newValue) => {
+      configuration.primaryStage.height = newValue.doubleValue()
+    })
+
+    primaryStage.xProperty().addListener((_, _, newValue) => {
+      configuration.primaryStage.x = newValue.doubleValue()
+    })
+
+    primaryStage.yProperty().addListener((_, _, newValue) => {
+      configuration.primaryStage.y = newValue.doubleValue()
+    })
 
     ui.show()
 

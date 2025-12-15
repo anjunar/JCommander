@@ -12,8 +12,7 @@ import com.anjunar.javafx.scene.image.imageView
 import com.anjunar.javafx.scene.image.imageView.*
 import com.anjunar.javafx.scene.image.imageView.{fitHeight, fitWidth, image}
 import com.anjunar.javafx.scene.layout.hbox
-import com.anjunar.jcommander.manager.{Drive, DriveDetectionService, FileManager}
-import com.anjunar.jcommander.utils.CdiUtils.*
+import com.anjunar.jcommander.manager.{Drive, DriveDetectionService, FileManager, FileManagerProducer}
 import com.typesafe.scalalogging.Logger
 import javafx.scene.Node
 import javafx.scene.layout.HBox
@@ -31,7 +30,7 @@ class DriveButtons extends NodeBuilder[HBox] {
 
   private val log = Logger[DriveButtons]
   private val running = new AtomicBoolean(true)
-  private val fileUtils = inject(classOf[FileManager])
+  private val fileUtils = FileManagerProducer.produces()
   private val driveService = new DriveDetectionService
   private val pollIntervalMillis = 3000
 

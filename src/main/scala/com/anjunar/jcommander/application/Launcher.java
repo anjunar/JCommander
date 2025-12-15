@@ -30,7 +30,7 @@ public class Launcher {
 
         Thread.currentThread().setContextClassLoader(loader);
 
-        Class<?> mainClass = Class.forName("com.anjunar.jcommander.Main", true, loader);
+        Class<?> mainClass = Class.forName("com.anjunar.jcommander.application.Main", true, loader);
         Method mainMethod = mainClass.getMethod("main", String[].class);
         mainMethod.invoke(null, (Object) args);
     }

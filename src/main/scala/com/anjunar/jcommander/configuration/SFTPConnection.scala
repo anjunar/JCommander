@@ -16,6 +16,9 @@ class SFTPConnection {
 
 object SFTPConnection {
   
+  val instance = new SFTPConnection
+  def apply() : SFTPConnection = instance
+  
   def apply(connectionType : String, host : String, port : Int, username : String, password : String): SFTPConnection = {
     val newConnection = new SFTPConnection()
     newConnection.connectionType = connectionType

@@ -7,21 +7,21 @@ ThisBuild / scalaVersion := "3.7.3"
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
 lazy val root = (project in file("."))
-  .enablePlugins(JavaAppPackaging, UniversalPlugin, JlinkPlugin, JDKPackagerPlugin)
+  .enablePlugins(JavaAppPackaging, UniversalPlugin, JDKPackagerPlugin)
   .settings(
     name := "JCommander",
     libraryDependencies ++= Seq(
-      "com.anjunar"% "scalauniverse2_3" % "0.1.0-SNAPSHOT",
       "com.google.guava" % "guava" % "33.5.0-jre",
       "ch.qos.logback" % "logback-classic" % "1.5.20",
       "org.slf4j" % "slf4j-api" % "2.0.17",
       "org.slf4j" % "jul-to-slf4j" % "2.0.17",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.6",
-      "org.jboss.weld.se" % "weld-se-core" % "6.0.3.Final",
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.20.1",
       "com.fasterxml.jackson.core" % "jackson-core" % "2.20.1",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.20.1",
       "com.jcraft" % "jsch" % "0.1.55",
+      "org.apache.httpcomponents" % "httpclient" % "4.5.14",
+      "org.apache.httpcomponents" % "httpcore"   % "4.4.16",
       "com.github.oshi" % "oshi-core" % "6.9.1",
       "commons-net" % "commons-net" % "3.12.0",
       "org.apache.commons" % "commons-vfs2" % "2.10.0",
@@ -40,7 +40,7 @@ lazy val root = (project in file("."))
       Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
         .map(m => "org.openjfx" % s"javafx-$m" % "25" classifier osName)
     },
-    Compile / mainClass := Some("com.anjunar.jcommander.Launcher"),
+    Compile / mainClass := Some("com.anjunar.jcommander.application.Launcher"),
 
     Universal / packageName := "jcommander",
 

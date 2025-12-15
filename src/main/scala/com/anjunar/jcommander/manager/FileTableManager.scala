@@ -2,15 +2,12 @@ package com.anjunar.jcommander.manager
 
 import com.anjunar.jcommander.configuration.FileTableConf
 import com.anjunar.jcommander.dsl.FileTable
-import com.anjunar.jcommander.utils.CdiUtils.*
-import jakarta.enterprise.context.ApplicationScoped
 import javafx.beans.value.{ChangeListener, ObservableValue}
 import javafx.event.EventHandler
 import javafx.scene.input.{KeyCode, KeyEvent, MouseEvent}
 
 import scala.compiletime.uninitialized
 
-@ApplicationScoped
 class FileTableManager {
 
   var source: FileTable = uninitialized
@@ -133,4 +130,9 @@ class FileTableManager {
     rightKeyHandler = createTabSwitchHandler
     table.node.addEventHandler(KeyEvent.KEY_PRESSED, rightKeyHandler)
   }
+}
+
+object FileTableManager {
+  val instance = new FileTableManager()
+  def apply(): FileTableManager = instance
 }

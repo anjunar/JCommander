@@ -1,14 +1,10 @@
 package com.anjunar.jcommander.configuration
 
-import com.anjunar.jcommander.utils.CdiUtils.*
 import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
 
 import scala.beans.BeanProperty
 import scala.compiletime.uninitialized
 
-@ApplicationScoped
 class PrimaryStageConf {
 
   @BeanProperty
@@ -18,21 +14,31 @@ class PrimaryStageConf {
   @BeanProperty
   @JsonProperty("height")
   var height: Double = 600
+
+  @BeanProperty
+  @JsonProperty("x")
+  var x: Double = 0
+
+  @BeanProperty
+  @JsonProperty("y")
+  var y: Double = 0
   
-  @Inject
   @BeanProperty
   @JsonProperty("darkMode")
-  var darkMode: DarkModeConf = uninitialized
+  var darkMode: DarkModeConf = DarkModeConf()
 
-  @Inject
   @BeanProperty
   @JsonProperty("leftFileTable")
-  var leftTable : FileTableConf.Left = uninitialized
+  var leftTable : FileTableConf.Left = FileTableConf.Left()
 
-  @Inject
   @BeanProperty
   @JsonProperty("rightFileTable")
-  var rightTable: FileTableConf.Right = uninitialized
+  var rightTable: FileTableConf.Right = FileTableConf.Right()
 
 
+}
+
+object PrimaryStageConf {
+  val instance = new PrimaryStageConf
+  def apply() : PrimaryStageConf = instance
 }
