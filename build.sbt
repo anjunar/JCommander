@@ -50,7 +50,7 @@ lazy val root = (project in file("."))
       val classPathString = cp.map(jar => s"lib/$jar").mkString(" ")
 
       Package.ManifestAttributes(
-        "Main-Class" -> "com.anjunar.jcommander.Launcher",
+        "Main-Class" -> "com.anjunar.jcommander.application.Launcher",
         "Class-Path" -> classPathString
       )
     },
@@ -99,11 +99,11 @@ jpackage := {
 
   val cmd = Seq(
     jpackageExe,
-    "--type", "exe",
+    "--type", "msi",
     "--name", "JCommander",
     "--input", stageDir.getAbsolutePath,
     "--main-jar", mainJar.getName,
-    "--main-class", "com.anjunar.jcommander.Launcher",
+    "--main-class", "com.anjunar.jcommander.application.Launcher",
     "--dest", outputDir.getAbsolutePath,
     "--icon", "src/main/resources/icon.ico",
     "--win-menu",
