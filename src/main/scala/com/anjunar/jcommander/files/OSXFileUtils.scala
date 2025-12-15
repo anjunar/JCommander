@@ -36,6 +36,11 @@ class OSXFileUtils extends AbstractFileUtils, UnixFileUtils {
   override def console(workingDir: String): Unit =
     new Thread(() => { Seq("open", "-a", "Terminal", workingDir).!; () }).start()
 
+  override def getFileIcon(file: String, large: Boolean): BufferedImage = {
+    val bytes = OSXNativeCopy.getFileIcon(file, large)
+    ImageIO.read(new ByteArrayInputStream(bytes))
+  }
+
   override def executeFile(file: String): Unit =
     new Thread(() => {
       val out = new StringBuilder
