@@ -41,17 +41,22 @@ class FileTableManager {
         val newSource = source
         newSource.node.requestFocus()
 
-        val lastSelectionName = newSource.lastSelections(newSource.directoryProperty.get())
+        val lastSelectionNameOpt = newSource.lastSelections.get(newSource.directoryProperty.get())
 
-        val itemOpt = newSource.node.getItems.stream()
-          .filter(item => item.file == lastSelectionName)
-          .findFirst()
+        if (lastSelectionNameOpt.isDefined) {
+          val lastSelectionName = lastSelectionNameOpt.get
 
-        val itemToSelect =
-          if (itemOpt.isPresent) itemOpt.get()
-          else newSource.node.getItems.get(0)
+          val itemOpt = newSource.node.getItems.stream()
+            .filter(item => item.file == lastSelectionName)
+            .findFirst()
 
-        newSource.node.getSelectionModel.select(itemToSelect)
+          val itemToSelect =
+            if (itemOpt.isPresent) itemOpt.get()
+            else newSource.node.getItems.get(0)
+
+          newSource.node.getSelectionModel.select(itemToSelect)
+        }
+
       }
     }
   }

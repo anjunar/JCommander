@@ -2,9 +2,11 @@ package com.anjunar.jcommander.files
 
 import com.anjunar.javafx.dsl.DSL.component
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
+import com.anjunar.javafx.dsl.traits.HasPadding.padding
+import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.{text, textProperty}
 import com.anjunar.javafx.scene.control.{button, label}
-import com.anjunar.javafx.scene.layout.hbox
+import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.javafx.scene.window.{close, closeWithResult}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
@@ -16,6 +18,7 @@ import com.typesafe.scalalogging.Logger
 import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
 import javafx.concurrent
+import javafx.geometry.{Insets, Pos}
 import javafx.scene.input.MouseEvent
 import org.apache.commons.vfs2.FileObject
 
@@ -131,24 +134,36 @@ class StreamFileUtils extends FileUtils {
             text = confirmTitle
           }
         }
-        label() {
-          text = confirmHeader
-        }
+        
+        vbox() {
+          
+          padding = new Insets(10)
+          spacing = 10
+          
+          label() {
+            text = confirmHeader
+          }
 
-        hbox() {
-          button() {
-            text = "Ok"
-            onAction = _ => {
-              closeWithResult("Ok")
+          hbox() {
+            
+            spacing = 10
+            alignment = Pos.CENTER_RIGHT
+            
+            button() {
+              text = "Ok"
+              onAction = _ => {
+                closeWithResult("Ok")
+              }
             }
-          }
-          button() {
-            text = "Cancel"
-            onAction = _ => {
-              close()
+            button() {
+              text = "Cancel"
+              onAction = _ => {
+                close()
+              }
             }
           }
         }
+        
       }
     }
 

@@ -50,7 +50,7 @@ class FilePane extends NodeBuilder[VBox] {
               fileTableRef.get match {
                 case vfs2FileTable: VFS2FileTable =>
                   content.clear()
-                  content.add(LocalFileTable.build() {
+                  content.add(LocalFileTable.build(fileTableRef.asInstanceOf[Ref[LocalFileTable]]) {
                     vgrow = Priority.ALWAYS
                     directory = file.getAbsolutePath
                     directoryProp((prop: StringProperty) => {
@@ -61,6 +61,7 @@ class FilePane extends NodeBuilder[VBox] {
                       })
                     })
                   })
+                  onTableChange(fileTableRef.get)
                 case _ =>
                   fileTableRef {
                     directory = file.getAbsolutePath
@@ -110,6 +111,7 @@ class FilePane extends NodeBuilder[VBox] {
                     })
                   })
                 })
+                onTableChange(fileTableRef.get)
               })
             }
           }

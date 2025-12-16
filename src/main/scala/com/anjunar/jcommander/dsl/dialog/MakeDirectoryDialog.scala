@@ -2,14 +2,17 @@ package com.anjunar.jcommander.dsl.dialog
 
 import com.anjunar.javafx.dsl.DSL.component
 import com.anjunar.javafx.dsl.traits.HasOnAction.onAction
+import com.anjunar.javafx.dsl.traits.HasPadding.padding
+import com.anjunar.javafx.dsl.traits.HasSpacing.{alignment, spacing}
 import com.anjunar.javafx.dsl.traits.HasText.text
 import com.anjunar.javafx.dsl.traits.IstTextInput.promptText
 import com.anjunar.javafx.dsl.{ElementBuilder, Producer, Ref}
 import com.anjunar.javafx.scene.control.{button, label, textField}
-import com.anjunar.javafx.scene.layout.hbox
+import com.anjunar.javafx.scene.layout.{hbox, vbox}
 import com.anjunar.javafx.scene.window.{close, closeWithResult}
 import com.anjunar.javafx.scene.{header, window}
 import com.anjunar.javafx.stage.Window
+import javafx.geometry.{Insets, Pos}
 
 class MakeDirectoryDialog extends ElementBuilder[Window[String]] {
 
@@ -22,25 +25,36 @@ class MakeDirectoryDialog extends ElementBuilder[Window[String]] {
           text = "Create Directory"
         }
       }
+      
+      vbox() {
+        
+        spacing = 10
+        padding = new Insets(10)
+        
+        textField(textFieldRef) {
+          promptText = "Directory Name"
+        }
 
-      textField(textFieldRef) {
-        promptText = "Directory Name"
-      }
-
-      hbox() {
-        button() {
-          text = "OK"
-          onAction = _ => {
-            closeWithResult(textFieldRef.get.node.getText)
+        hbox() {
+          
+          spacing = 10
+          alignment = Pos.CENTER_RIGHT
+          
+          button() {
+            text = "OK"
+            onAction = _ => {
+              closeWithResult(textFieldRef.get.node.getText)
+            }
+          }
+          button() {
+            text = "Cancel"
+            onAction = _ => {
+              close()
+            }
           }
         }
-        button() {
-          text = "Cancel"
-          onAction = _ => {
-            close()
-          }
-        }
       }
+      
     }
   }
 
