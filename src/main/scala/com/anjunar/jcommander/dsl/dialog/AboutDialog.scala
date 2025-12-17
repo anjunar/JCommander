@@ -27,7 +27,7 @@ class AboutDialog extends ElementBuilder[Window[Unit]] {
         vgrow = Priority.ALWAYS
         alignment = Pos.CENTER
         label() {
-          text = "JCommander v1.0.0"
+          text = "JCommander v1.0.1"
         }
       }
     }
