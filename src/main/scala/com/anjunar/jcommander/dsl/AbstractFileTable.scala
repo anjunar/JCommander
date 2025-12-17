@@ -18,7 +18,7 @@ import javafx.beans.value.{ChangeListener, ObservableValue}
 import javafx.collections.FXCollections
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.Node
-import javafx.scene.control.{TableCell, TableColumn, TableView}
+import javafx.scene.control.{SelectionMode, TableCell, TableColumn, TableView}
 import javafx.scene.input.{KeyCode, KeyEvent}
 
 import java.io.File
@@ -114,7 +114,10 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
           })
         })
 
-        selectionModel(prop => {
+        selectionModel((prop : TableView.TableViewSelectionModel[FileItem]) => {
+
+          prop.setSelectionMode(SelectionMode.MULTIPLE)
+
           prop.selectedItemProperty().addListener((observable, oldValue, newValue) => {
             if (newValue != null && newValue.file != null && newValue.parent != null) {
               lastSelections.update(newValue.parent, newValue.file)
@@ -176,6 +179,8 @@ class AbstractFileTable extends NodeBuilder[TableView[FileItem]] {
 
       }
     }
+
+
 
     abstractFileTable
   }
