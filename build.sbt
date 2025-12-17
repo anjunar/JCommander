@@ -138,7 +138,7 @@ jpackage := {
     case "mac" =>
       Seq(
         "--type", "dmg",
-        "--icon", "src/main/resources/icon.png"
+        "--icon", "src/main/resources/icon.icns"
       )
   }
 
