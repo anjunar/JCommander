@@ -92,7 +92,7 @@ jpackage := {
     else s"$javaHome/bin/jpackage"
 
   val stageDir = (Universal / stage).value
-  val mainJar  = stageDir / "jcommander_3-1.0.0.jar"
+  val mainJar  = stageDir / "jcommander_3-1.0.1.jar"
 
   log.info(s"OS         = $osName")
   log.info(s"Stage dir  = ${stageDir.getAbsolutePath}")
